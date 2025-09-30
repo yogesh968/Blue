@@ -1,0 +1,106 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int     @id @default(autoincrement())
+  name      String
+  email     String  @unique
+  password  String
+  phone     String?
+  role      String
+
+  doctor    Doctor?
+  patient   Patient?
+}
+
+model Hospital {
+  id        Int       @id @default(autoincrement())
+  name      String
+  city      String
+  address   String
+  phone     String?
+
+  doctors   Doctor[]
+}
+
+model Doctor {
+  id           Int             @id @default(autoincrement())
+  userId       Int  @unique
+  hospitalId   Int
+  speciality   String
+  experience   Int
+  fees         Int
+  qualification String
+
+  user         User            @relation(fields: [userId], references: [id])
+  hospital     Hospital        @relation(fields: [hospitalId], references: [id])
+  timings      DoctorTiming[]
+  appointments Appointment[]
+  reviews      Review[]
+}
+
+model DoctorTiming {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+  dayOfWeek String
+  startTime String
+  endTime   String
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+}
+
+model Patient {
+  id        Int       @id @default(autoincrement())
+  userId    Int @unique
+  gender    String
+  dob       DateTime?
+  medicalHistory Json?
+
+  user         User         @relation(fields: [userId], references: [id])
+  appointments Appointment[]
+  reviews      Review[]
+}
+
+model Appointment {
+  id              Int       @id @default(autoincrement())
+  patientId       Int
+  doctorId        Int
+  appointmentDate DateTime
+  durationMinutes Int?
+  reason          String
+  status          String    @default("Pending")
+
+  patient  Patient   @relation(fields: [patientId], references: [id])
+  doctor   Doctor    @relation(fields: [doctorId], references: [id])
+  payment  Payment?
+}
+
+model Payment {
+  id            Int       @id @default(autoincrement())
+  appointmentId Int @unique
+  amount        Float
+  paymentStatus String    @default("Pending")
+  paymentMethod String
+  transactionId String?
+  createdAt     DateTime  @default(now())
+
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Review {
+  id         Int      @id @default(autoincrement())
+  rating     Int
+  reviewText String?
+  patientId  Int
+  doctorId   Int
+
+  patient  Patient @relation(fields: [patientId], references: [id])
+  doctor   Doctor  @relation(fields: [doctorId], references: [id])
+}
