@@ -8,13 +8,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  DOCTOR
+  PATIENT
+  ADMIN
+  HOSPITAL
+}
+
 model User {
   id        Int     @id @default(autoincrement())
   name      String
   email     String  @unique
   password  String
   phone     String?
-  role      String
+  role      Role
 
   doctor    Doctor?
   patient   Patient?
@@ -46,10 +53,20 @@ model Doctor {
   reviews      Review[]
 }
 
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
 model DoctorTiming {
   id        Int      @id @default(autoincrement())
   doctorId  Int
-  dayOfWeek String
+  dayOfWeek DayOfWeek
   startTime String
   endTime   String
 
@@ -68,6 +85,13 @@ model Patient {
   reviews      Review[]
 }
 
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+}
+
 model Appointment {
   id              Int       @id @default(autoincrement())
   patientId       Int
@@ -75,19 +99,33 @@ model Appointment {
   appointmentDate DateTime
   durationMinutes Int?
   reason          String
-  status          String    @default("Pending")
+  status          AppointmentStatus    @default(PENDING)
 
   patient  Patient   @relation(fields: [patientId], references: [id])
   doctor   Doctor    @relation(fields: [doctorId], references: [id])
   payment  Payment?
 }
 
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+  REFUNDED
+}
+
+enum PaymentMethod {
+  CARD
+  UPI
+  NETBANKING
+  CASH
+}
+
 model Payment {
   id            Int       @id @default(autoincrement())
   appointmentId Int @unique
   amount        Float
-  paymentStatus String    @default("Pending")
-  paymentMethod String
+  paymentStatus PaymentStatus @default(PENDING)
+  paymentMethod PaymentMethod
   transactionId String?
   createdAt     DateTime  @default(now())
 
