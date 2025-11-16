@@ -1,0 +1,132 @@
+.role-selection-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 1rem;
+}
+
+.role-selection-container {
+  background: white;
+  border-radius: 12px;
+  padding: 2rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 800px;
+}
+
+.role-selection-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.role-selection-header h1 {
+  margin: 0 0 0.5rem 0;
+  color: #1f2937;
+  font-size: 2rem;
+  font-weight: 700;
+}
+
+.role-selection-header p {
+  margin: 0;
+  color: #6b7280;
+  font-size: 1.125rem;
+}
+
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.role-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 2rem;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  background: white;
+}
+
+.role-card:hover {
+  border-color: var(--role-color);
+  transform: translateY(-2px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+}
+
+.role-card.selected {
+  border-color: var(--role-color);
+  background: rgba(59, 130, 246, 0.05);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.role-icon {
+  margin-bottom: 1rem;
+}
+
+.role-card h3 {
+  margin: 0 0 1rem 0;
+  color: #1f2937;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.role-card p {
+  margin: 0 0 1.5rem 0;
+  color: #6b7280;
+  line-height: 1.6;
+}
+
+.role-selector {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+}
+
+.role-selector input[type="radio"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--role-color);
+}
+
+.continue-btn {
+  width: 100%;
+  padding: 1rem 2rem;
+  background: #3b82f6;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.continue-btn:hover:not(:disabled) {
+  background: #2563eb;
+  transform: translateY(-1px);
+}
+
+.continue-btn:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+  transform: none;
+}
+
+@media (max-width: 640px) {
+  .roles-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .role-selection-container {
+    padding: 1.5rem;
+  }
+  
+  .role-selection-header h1 {
+    font-size: 1.75rem;
+  }
+}
