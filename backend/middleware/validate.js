@@ -1,23 +1,49 @@
-const { prisma } = require('../db/config.js');
-const bcrypt = require('bcrypt');
+// Input validation middleware
+const validateRegistration = (req, res, next) => {
+  const { name, email, password, role } = req.body;
+  
+  if (!name || !email || !password || !role) {
+    return res.status(400).json({ 
+      error: 'Missing required fields: name, email, password, role' 
+    });
+  }
+  
+  if (password.length < 6) {
+    return res.status(400).json({ 
+      error: 'Password must be at least 6 characters long' 
+    });
+  }
+  
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(email)) {
+    return res.status(400).json({ 
+      error: 'Invalid email format' 
+    });
+  }
+  
+  const validRoles = ['PATIENT', 'DOCTOR', 'HOSPITAL'];
+  if (!validRoles.includes(role)) {
+    return res.status(400).json({ 
+      error: 'Invalid role. Must be PATIENT, DOCTOR, or HOSPITAL' 
+    });
+  }
+  
+  next();
+};
 
-const validate = async () => {
-    app.post('/login', async (req, res) => {
-        const { email, password } = req.body;
-        if (!email || !password || email.trim()=='')
-            return res.status(400).send('Bewakoof hai kya')
-        const data = await prisma.user.findUnique({
-            where:
-                { email }
-        })
-        const hashedPassword = await bcrypt.hash(password, 10)
-        if (!data)
-            return res.status(400).send('user not found')
-        if (data) {
-            if (data.password != hashedPassword)
-                return res.status(401).send('Wrong Password')
-            return res.status(200).send('Access Granted')
-        }
-    })
-}
-module.exports = { validate }
+const validateLogin = (req, res, next) => {
+  const { email, password } = req.body;
+  
+  if (!email || !password) {
+    return res.status(400).json({ 
+      error: 'Email and password are required' 
+    });
+  }
+  
+  next();
+};
+
+module.exports = {
+  validateRegistration,
+  validateLogin
+};
