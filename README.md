@@ -19,71 +19,169 @@ A comprehensive healthcare management and appointment booking platform built wit
 - MySQL with Prisma ORM
 - JWT Authentication
 - bcrypt for password hashing
-- Google OAuth 2.0
 
 **Frontend:**
 - React (Vite)
 - Modern CSS with responsive design
 - Fetch API for backend communication
 
-## 👥 Team Structure
+## 📋 Prerequisites
 
-This project is developed by a team of 4 members:
-- **Person 1**: Authentication & User Management (JWT, Google OAuth, Patient profiles)
-- **Person 2**: Doctor & Appointment System
-- **Person 3**: Hospital & Emergency Services  
-- **Person 4**: Core Setup & Payment System
+- Node.js (v16 or higher)
+- MySQL (v8.0 or higher)
+- npm or yarn
 
 ## 🔧 Installation & Setup
 
-### Prerequisites
-- Node.js (v16 or higher)
-- MySQL (v8.0 or higher)
-- Google OAuth credentials
+### 1. Clone the Repository
+```bash
+git clone <repository-url>
+cd AP-Project
+```
 
-### Setup Instructions
-1. Clone the repository
-2. Install dependencies: `npm run install:all`
-3. Configure environment variables
-4. Set up database and run migrations
-5. Start development servers: `npm run dev`
+### 2. Backend Setup
+```bash
+cd backend
 
-## 📱 Current Features (Person 1 - Authentication)
+# Install dependencies
+npm install
 
-### Authentication System
-- JWT-based authentication
-- Google OAuth 2.0 integration
-- Role-based access control (Patient, Doctor, Hospital)
-- Secure password hashing with bcrypt
+# Setup environment variables
+cp .env.example .env
+# Edit .env with your database credentials
 
-### User Management
-- User registration and login
-- Role selection for new users
-- Patient profile management
-- Medical records system
+# Setup database
+mysql -u root -p
+CREATE DATABASE healthcare_db;
+exit
 
-### API Endpoints
+# Run Prisma migrations
+npx prisma migrate dev
+npx prisma generate
+
+# Start backend server
+npm run dev
+```
+
+### 3. Frontend Setup
+```bash
+cd ../frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+## 🗄️ Database Configuration
+
+Update your `.env` file in the backend directory:
+
+```env
+DATABASE_URL="mysql://username:password@localhost:3306/healthcare_db"
+JWT_SECRET="your_super_secret_jwt_key"
+PORT=5000
+NODE_ENV=development
+```
+
+## 🚀 Running the Application
+
+1. **Start Backend**: `cd backend && npm run dev` (Port 5000)
+2. **Start Frontend**: `cd frontend && npm run dev` (Port 5173)
+3. **Access Application**: Open http://localhost:5173
+
+## 📱 API Endpoints
+
+### Authentication
 - `POST /api/auth/register` - User registration
 - `POST /api/auth/login` - User login
-- `GET /api/auth/google` - Google OAuth login
-- `POST /api/auth/complete-registration` - Complete OAuth registration
-- `POST /api/patients/profile` - Create patient profile
-- `GET /api/patients/profile` - Get patient profile
-- `POST /api/patients/medical-records` - Add medical record
+
+### Doctors
+- `GET /api/doctors` - Get all doctors
+- `GET /api/doctors/:id` - Get doctor by ID
+- `PUT /api/doctors/:id` - Update doctor profile
+
+### Hospitals
+- `GET /api/hospitals` - Get all hospitals
+- `GET /api/hospitals/:id` - Get hospital by ID
+- `PUT /api/hospitals/:id` - Update hospital info
+
+### Appointments
+- `POST /api/appointments` - Create appointment
+- `GET /api/appointments` - Get user appointments
+- `PUT /api/appointments/:id/status` - Update appointment status
+
+### Payments
+- `POST /api/payments` - Process payment
+
+### Reviews
+- `POST /api/reviews` - Create review
+
+## 🏗️ Project Structure
+
+```
+AP-Project/
+├── backend/
+│   ├── controllers/     # Business logic
+│   ├── routes/         # API routes
+│   ├── middleware/     # Authentication & validation
+│   ├── prisma/         # Database schema & migrations
+│   ├── db/            # Database configuration
+│   └── server.js      # Express server setup
+├── frontend/
+│   ├── src/
+│   │   ├── components/ # Reusable UI components
+│   │   ├── pages/     # Page components
+│   │   ├── services/  # API service functions
+│   │   └── utils/     # Utility functions
+│   └── public/        # Static assets
+└── README.md
+```
+
+## 🎨 UI/UX Features
+
+- **Clean Healthcare Theme**: White background with soft blue/green accents
+- **Responsive Design**: Mobile-first approach
+- **Intuitive Navigation**: Easy-to-use interface
+- **Quick Actions**: Emergency services, appointment booking
+- **Search Functionality**: Find doctors and hospitals easily
 
 ## 🔐 Security Features
 
-- JWT token-based authentication
-- Google OAuth 2.0 integration
+- JWT-based authentication
 - Password hashing with bcrypt
 - Role-based access control
 - Input validation and sanitization
-- Session management
+
+## 🚑 Emergency Features
+
+- Quick ambulance booking
+- Hospital bed availability
+- Emergency contact system
+- Location-based services
+
+## 📈 Future Enhancements
+
+- Real-time notifications
+- Video consultation
+- Medical records management
+- Insurance integration
+- Multi-language support
+- Mobile app development
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
 
 ## 📄 License
 
 This project is licensed under the MIT License.
 
-## 🤝 Contributing
+## 📞 Support
 
-This is a collaborative project. Each team member works on their assigned module and integrates through pull requests.
+For support and queries, please contact the development team.
