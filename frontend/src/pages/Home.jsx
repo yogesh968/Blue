@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import SearchBar from '../components/SearchBar';
-import DoctorCard from '../components/DoctorCard';
+import SearchBar from './components/SearchBar';
+import DoctorCard from './components/DoctorCard';
 import './Home.css';
 
 const Home = () => {
