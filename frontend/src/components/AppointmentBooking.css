@@ -1,0 +1,296 @@
+.appointment-booking-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+  
+  .modal-content {
+    background: white;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  }
+  
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #6b7280;
+  }
+  
+  .progress-bar {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .progress-steps {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  
+  .progress-step {
+    width: 2rem;
+    height: 2rem;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e5e7eb;
+    color: #6b7280;
+    font-weight: 600;
+  }
+  
+  .progress-step.active {
+    background: #3b82f6;
+    color: white;
+  }
+  
+  .progress-line {
+    height: 4px;
+    background: #e5e7eb;
+    border-radius: 2px;
+    position: relative;
+  }
+  
+  .progress-fill {
+    height: 100%;
+    background: #3b82f6;
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  
+  .modal-body {
+    padding: 1.5rem;
+  }
+  
+  .booking-step {
+    min-height: 300px;
+  }
+  
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.5rem;
+    color: #1f2937;
+  }
+  
+  .date-time-selection {
+    display: grid;
+    gap: 1.5rem;
+  }
+  
+  .time-slots {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .time-slot {
+    padding: 0.5rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    background: white;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  
+  .time-slot:hover {
+    border-color: #3b82f6;
+  }
+  
+  .time-slot.selected {
+    background: #3b82f6;
+    color: white;
+    border-color: #3b82f6;
+  }
+  
+  .reason-selection textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    resize: vertical;
+    margin-top: 0.5rem;
+  }
+  
+  .reason-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+  
+  .reason-tag {
+    padding: 0.25rem 0.75rem;
+    background: #f3f4f6;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .reason-tag:hover {
+    background: #e5e7eb;
+  }
+  
+  .patient-form {
+    display: grid;
+    gap: 1rem;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+  
+  .form-group {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #374151;
+  }
+  
+  .form-group input, .form-group select, .form-group textarea {
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 1rem;
+  }
+  
+  .booking-summary {
+    background: #f9fafb;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+  }
+  
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  
+  .summary-item.total {
+    font-weight: 600;
+    font-size: 1.125rem;
+    border-bottom: none;
+    color: #1f2937;
+  }
+  
+  .payment-options {
+    display: flex;
+    gap: 1rem;
+    margin-top: 0.5rem;
+  }
+  
+  .payment-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+  }
+  
+  .success-step {
+    text-align: center;
+    padding: 2rem 0;
+  }
+  
+  .success-icon {
+    color: #10b981;
+    margin-bottom: 1rem;
+  }
+  
+  .appointment-details {
+    background: #f0fdf4;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1rem 0;
+    text-align: left;
+  }
+  
+  .modal-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-top: 1px solid #e5e7eb;
+  }
+  
+  .btn-primary, .btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary {
+    background: #3b82f6;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background: #2563eb;
+  }
+  
+  .btn-secondary {
+    background: white;
+    color: #374151;
+    border: 1px solid #d1d5db;
+  }
+  
+  .btn-secondary:hover {
+    background: #f9fafb;
+  }
+  
+  @media (max-width: 640px) {
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+    
+    .time-slots {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    
+    .payment-options {
+      flex-direction: column;
+    }
+  }
