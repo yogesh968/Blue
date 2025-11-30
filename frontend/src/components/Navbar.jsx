@@ -51,7 +51,7 @@ const Navbar = ({ user, onLogout }) => {
           ) : (
             <div className="auth-buttons">
               <Link to="/login" className="btn btn-secondary btn-sm">Login</Link>
-              <Link to="/register" className="btn btn-primary btn-sm">Book Appointment</Link>
+              <Link to="/register" className="btn btn-primary btn-sm">Sign Up</Link>
             </div>
           )}
         </div>
@@ -99,7 +99,7 @@ const Navbar = ({ user, onLogout }) => {
             ) : (
               <>
                 <Link to="/login" className="btn btn-secondary" onClick={() => setIsMenuOpen(false)}>Login</Link>
-                <Link to="/register" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>Book Appointment</Link>
+                <Link to="/register" className="btn btn-primary" onClick={() => setIsMenuOpen(false)}>Sign Up</Link>
               </>
             )}
           </div>
