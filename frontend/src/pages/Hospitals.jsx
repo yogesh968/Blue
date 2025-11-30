@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Filter, Star, MapPin, Bed, Ambulance, Phone } from 'lucide-react';
+import { Search, Filter, Star, MapPin, Bed, Truck, Phone } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import './Hospitals.css';
 
@@ -162,7 +162,7 @@ const Hospitals = () => {
                     )}
                     {hospital.ambulance && (
                       <div className="stat-item">
-                        <Ambulance size={16} />
+                        <Truck size={16} />
                         <span>Ambulance Available</span>
                       </div>
                     )}

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Bed, Ambulance, Users, Calendar, DollarSign, Activity } from 'lucide-react';
+import { Bed, Truck, Users, Calendar, DollarSign, Activity } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import './HospitalPortal.css';
 
@@ -119,7 +119,7 @@ const HospitalPortal = () => {
               </div>
             </div>
             <div className="stat-card">
-              <Ambulance size={24} />
+              <Truck size={24} />
               <div>
                 <h3>{hospitalStats.availableAmbulances}</h3>
                 <p>Available Ambulances</p>
