@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Plus, Calendar, User, Hospital, Download } from 'lucide-react';
+import { FileText, Plus, Calendar, User, Building2, Download } from 'lucide-react';
 import toast from 'react-hot-toast';
 import './MedicalRecords.css';
 
@@ -153,7 +153,7 @@ const MedicalRecords = () => {
                 )}
                 {record.hospitalName && (
                   <div className="detail-item">
-                    <Hospital size={14} />
+                    <Building2 size={14} />
                     <span>{record.hospitalName}</span>
                   </div>
                 )}
