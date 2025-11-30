@@ -1,0 +1,258 @@
+.emergency-page {
+  min-height: 100vh;
+  background: var(--color-gray-50);
+}
+
+.emergency-header {
+  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+  border-bottom: 1px solid #fca5a5;
+  padding: 2rem 0;
+}
+
+.emergency-alert {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.alert-icon {
+  font-size: 3rem;
+  animation: pulse 2s infinite;
+}
+
+.emergency-header h1 {
+  color: #991b1b;
+  font-size: 2.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.emergency-header p {
+  color: #7f1d1d;
+  font-size: 1.125rem;
+}
+
+.emergency-content {
+  padding: 2rem 0;
+}
+
+.emergency-grid {
+  display: grid;
+  gap: 2rem;
+  margin-bottom: 3rem;
+}
+
+.emergency-section {
+  background: var(--color-white);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--color-gray-200);
+}
+
+.emergency-section h2 {
+  color: var(--color-gray-900);
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+}
+
+.emergency-services {
+  display: grid;
+  gap: 1rem;
+}
+
+.service-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.service-card:hover {
+  border-color: var(--color-error);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+}
+
+.service-icon {
+  font-size: 2.5rem;
+}
+
+.service-info {
+  flex: 1;
+}
+
+.service-info h3 {
+  color: var(--color-gray-900);
+  margin-bottom: 0.25rem;
+}
+
+.service-info p {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+
+.service-phone {
+  font-weight: 600;
+  color: var(--color-error);
+  font-size: 1.125rem;
+}
+
+.btn-emergency {
+  background: var(--color-error);
+  color: var(--color-white);
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-emergency:hover {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.ambulance-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--color-gray-700);
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+}
+
+.form-group input,
+.form-group select {
+  padding: 0.75rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.hospitals-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.hospital-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.hospital-item:hover {
+  border-color: var(--color-primary-600);
+  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+}
+
+.hospital-info h4 {
+  color: var(--color-gray-900);
+  margin-bottom: 0.5rem;
+}
+
+.hospital-details {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--color-gray-600);
+}
+
+.beds.available {
+  color: var(--color-success);
+}
+
+.beds.limited {
+  color: #f59e0b;
+}
+
+.hospital-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.emergency-tips {
+  background: var(--color-white);
+  border-radius: 1rem;
+  padding: 2rem;
+  border: 1px solid var(--color-gray-200);
+}
+
+.emergency-tips h2 {
+  color: var(--color-gray-900);
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.tip-card {
+  padding: 1.5rem;
+  border: 1px solid var(--color-gray-200);
+  border-radius: 0.75rem;
+  background: var(--color-gray-50);
+}
+
+.tip-card h4 {
+  color: var(--color-gray-900);
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.tip-card p {
+  color: var(--color-gray-600);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+@keyframes pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+@media (max-width: 768px) {
+  .emergency-alert {
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+  }
+  
+  .hospital-item {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+  
+  .hospital-actions {
+    justify-content: center;
+  }
+}
