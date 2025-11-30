@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('./config/passport');
+const { prisma } = require('./db/config.js');
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -34,8 +35,16 @@ app.use(passport.session());
 // Routes - Person 1 Authentication
 app.use('/api/auth', require('./routes/auth'));
 app.use('/api/auth', require('./routes/googleAuth'));
+app.use('/api/users', require('./routes/users'));
+app.use('/api/doctors', require('./routes/doctors'));
+app.use('/api/hospitals', require('./routes/hospitals'));
+app.use('/api/appointments', require('./routes/appointments'));
+app.use('/api/payments', require('./routes/payments'));
+app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/patients', require('./routes/patients'));
-
+app.use('/api/bed-bookings', require('./routes/bedBookings'));
+app.use('/api/ambulances', require('./routes/ambulances'));
+app.use('/api', require('./routes/doctorLocations'));
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 
@@ -81,3 +90,4 @@ app.listen(PORT, () => {
   console.log(`📍 Health check: http://localhost:${PORT}/api/health`);
   console.log(`🔐 Auth endpoints: http://localhost:${PORT}/api/auth`);
 });
+module.exports = { app, prisma };
