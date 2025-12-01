@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Calendar, FileText, User, Clock, MapPin, DollarSign, Heart, Loader } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import MedicalRecords from '../components/MedicalRecords';
@@ -6,6 +7,7 @@ import api from '../services/api';
 import './UserPortal.css';
 
 const UserPortal = () => {
+  const location = useLocation();
   const [appointments, setAppointments] = useState([]);
   const [bills, setBills] = useState([]);
   const [activeTab, setActiveTab] = useState('appointments');
@@ -15,6 +17,13 @@ const UserPortal = () => {
   useEffect(() => {
     fetchUserData();
   }, []);
+
+  useEffect(() => {
+    const hash = location.hash.replace('#', '');
+    if (hash && ['appointments', 'bills', 'records'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, [location.hash]);
 
   const fetchUserData = async () => {
     try {
@@ -149,29 +158,7 @@ const UserPortal = () => {
         <h1>My Healthcare Dashboard</h1>
       </div>
 
-      <div className="portal-tabs">
-        <button 
-          className={`tab ${activeTab === 'appointments' ? 'active' : ''}`}
-          onClick={() => setActiveTab('appointments')}
-        >
-          <Calendar size={20} />
-          My Appointments
-        </button>
-        <button 
-          className={`tab ${activeTab === 'bills' ? 'active' : ''}`}
-          onClick={() => setActiveTab('bills')}
-        >
-          <FileText size={20} />
-          My Bills
-        </button>
-        <button 
-          className={`tab ${activeTab === 'records' ? 'active' : ''}`}
-          onClick={() => setActiveTab('records')}
-        >
-          <Heart size={20} />
-          Medical Records
-        </button>
-      </div>
+
 
       {activeTab === 'appointments' && (
         <div className="appointments-section">
