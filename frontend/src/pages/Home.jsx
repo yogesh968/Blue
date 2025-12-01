@@ -158,7 +158,7 @@ const Home = () => {
                   WebkitTextFillColor: 'transparent',
                 }}
               >
-                Find Top Doctors & Hospitals Near You
+                Your Health, Our Priority
               </Typography>
               <Typography
                 variant="h5"
@@ -170,8 +170,7 @@ const Home = () => {
                   fontSize: { xs: '1.1rem', md: '1.3rem' },
                 }}
               >
-                Book appointments with verified doctors, get instant consultations,
-                and access quality healthcare services at your convenience.
+                Connect with top doctors, book appointments instantly, and manage your health with BlueVitals - your trusted healthcare companion.
               </Typography>
               
               {/* Search Bar */}
