@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
+import theme from './theme/theme';
 import Navbar from './components/Navbar';
 import Home from './pages/Home';
 import Login from './pages/Login';
@@ -14,7 +17,6 @@ import DoctorPortal from './pages/DoctorPortal';
 import HospitalPortal from './pages/HospitalPortal';
 import RoleSelection from './pages/RoleSelection';
 import AuthSuccess from './pages/AuthSuccess';
-import './App.css';
 
 function App() {
   const [user, setUser] = useState(null);
@@ -52,11 +54,13 @@ function App() {
   };
 
   return (
-    <Router>
-      <div className="App">
-        <Toaster position="top-right" />
-        <Navbar user={user} onLogout={handleLogout} />
-        <main>
+    <ThemeProvider theme={theme}>
+      <CssBaseline />
+      <Router>
+        <div className="App">
+          <Toaster position="top-right" />
+          <Navbar user={user} onLogout={handleLogout} />
+          <main>
           <Routes>
             <Route path="/" element={!user ? <Home /> : <Navigate to={getRoleBasedRedirect()} />} />
             <Route 
@@ -105,9 +109,10 @@ function App() {
               element={user && (user.role === 'hospital' || user.role === 'HOSPITAL') ? <HospitalPortal /> : <Navigate to="/user-portal" />} 
             />
           </Routes>
-        </main>
-      </div>
-    </Router>
+          </main>
+        </div>
+      </Router>
+    </ThemeProvider>
   );
 }
 

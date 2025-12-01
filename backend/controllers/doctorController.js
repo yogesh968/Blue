@@ -52,6 +52,37 @@ const getDoctorById = async (req, res) => {
   }
 };
 
+const createDoctorProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    const { hospitalId, speciality, experience, fees, qualification } = req.body;
+
+    const existingDoctor = await prisma.doctor.findUnique({ where: { userId } });
+    if (existingDoctor) {
+      return res.status(400).json({ error: 'Doctor profile already exists' });
+    }
+
+    const doctor = await prisma.doctor.create({
+      data: {
+        userId,
+        hospitalId: parseInt(hospitalId),
+        speciality,
+        experience: parseInt(experience),
+        fees: parseInt(fees),
+        qualification
+      },
+      include: {
+        user: { select: { name: true, email: true } },
+        hospital: { select: { name: true, city: true } }
+      }
+    });
+
+    res.status(201).json(doctor);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create doctor profile' });
+  }
+};
+
 const updateDoctorProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -69,4 +100,4 @@ const updateDoctorProfile = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctorById, updateDoctorProfile };
+module.exports = { getDoctors, getDoctorById, createDoctorProfile, updateDoctorProfile };

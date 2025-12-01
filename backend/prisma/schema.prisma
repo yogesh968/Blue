@@ -35,7 +35,9 @@ model Hospital {
   address   String
   phone     String?
 
-  doctors   Doctor[]
+  doctors     Doctor[]
+  bedBookings BedBooking[]
+  ambulances  Ambulance[]
 }
 
 model Doctor {
@@ -52,6 +54,7 @@ model Doctor {
   timings      DoctorTiming[]
   appointments Appointment[]
   reviews      Review[]
+  locations    DoctorLocation[]
 }
 
 enum DayOfWeek {
@@ -81,9 +84,11 @@ model Patient {
   dob       DateTime?
   medicalHistory Json?
 
-  user         User         @relation(fields: [userId], references: [id])
-  appointments Appointment[]
-  reviews      Review[]
+  user              User               @relation(fields: [userId], references: [id])
+  appointments      Appointment[]
+  reviews           Review[]
+  bedBookings       BedBooking[]
+  ambulanceBookings AmbulanceBooking[]
 }
 
 enum AppointmentStatus {
@@ -142,4 +147,81 @@ model Review {
 
   patient  Patient @relation(fields: [patientId], references: [id])
   doctor   Doctor  @relation(fields: [doctorId], references: [id])
+}
+
+model DoctorLocation {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
+  name      String
+  address   String
+  city      String
+  phone     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+}
+
+enum BedType {
+  GENERAL
+  ICU
+  PRIVATE
+  SEMI_PRIVATE
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  CHECKED_IN
+  CHECKED_OUT
+  CANCELLED
+}
+
+model BedBooking {
+  id            Int           @id @default(autoincrement())
+  patientId     Int
+  hospitalId    Int
+  bedType       BedType
+  admissionDate DateTime
+  dischargeDate DateTime?
+  status        BookingStatus @default(PENDING)
+  totalAmount   Float?
+  charges       Json?
+  createdAt     DateTime      @default(now())
+
+  patient       Patient       @relation(fields: [patientId], references: [id])
+  hospital      Hospital      @relation(fields: [hospitalId], references: [id])
+}
+
+enum AmbulanceType {
+  BASIC
+  ADVANCED
+  ICU
+}
+
+model Ambulance {
+  id           Int              @id @default(autoincrement())
+  vehicleNumber String          @unique
+  type         AmbulanceType
+  hospitalId   Int
+  isAvailable  Boolean          @default(true)
+  location     String?
+
+  hospital     Hospital         @relation(fields: [hospitalId], references: [id])
+  bookings     AmbulanceBooking[]
+}
+
+model AmbulanceBooking {
+  id          Int      @id @default(autoincrement())
+  patientId   Int
+  ambulanceId Int
+  pickupLocation String
+  destination String
+  bookingTime DateTime
+  status      BookingStatus @default(PENDING)
+  amount      Float?
+  createdAt   DateTime @default(now())
+
+  patient     Patient  @relation(fields: [patientId], references: [id])
+  ambulance   Ambulance @relation(fields: [ambulanceId], references: [id])
 }

@@ -1,27 +1,65 @@
 import React from 'react';
+import { motion } from 'framer-motion';
+import { Star, MapPin, Clock, ArrowRight } from 'lucide-react';
 import './DoctorCard.css';
 
 const DoctorCard = ({ doctor }) => {
   return (
-    <div className="doctor-card">
+    <motion.div 
+      className="doctor-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      whileHover={{ y: -8, transition: { duration: 0.2 } }}
+      viewport={{ once: true }}
+    >
       <div className="doctor-header">
-        <div className="doctor-avatar">{doctor.image}</div>
+        <motion.div 
+          className="doctor-avatar"
+          whileHover={{ scale: 1.1 }}
+          transition={{ duration: 0.2 }}
+        >
+          {doctor.image}
+        </motion.div>
         <div className="doctor-status">
-          <span className={`status-badge ${doctor.available ? 'available' : 'busy'}`}>
+          <motion.span 
+            className={`status-badge ${doctor.available ? 'available' : 'busy'}`}
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.3, type: "spring", stiffness: 500 }}
+          >
+            <div className={`status-dot ${doctor.available ? 'available' : 'busy'}`}></div>
             {doctor.available ? 'Available' : 'Busy'}
-          </span>
+          </motion.span>
         </div>
       </div>
       
       <div className="doctor-info">
         <h3 className="doctor-name">{doctor.name}</h3>
         <p className="doctor-specialty">{doctor.specialty}</p>
-        <p className="doctor-experience">{doctor.experience}</p>
-        <p className="doctor-hospital">{doctor.hospital}</p>
+        <div className="doctor-details">
+          <div className="detail-item">
+            <Clock size={14} />
+            <span>{doctor.experience}</span>
+          </div>
+          <div className="detail-item">
+            <MapPin size={14} />
+            <span>{doctor.hospital}</span>
+          </div>
+        </div>
       </div>
       
       <div className="doctor-rating">
-        <span className="rating-stars">⭐ {doctor.rating}</span>
+        <div className="rating-stars">
+          {[...Array(5)].map((_, i) => (
+            <Star 
+              key={i} 
+              size={16} 
+              className={i < Math.floor(doctor.rating) ? 'filled' : 'empty'}
+            />
+          ))}
+          <span className="rating-value">{doctor.rating}</span>
+        </div>
         <span className="rating-count">({doctor.reviews} reviews)</span>
       </div>
       
@@ -31,10 +69,23 @@ const DoctorCard = ({ doctor }) => {
       </div>
       
       <div className="doctor-actions">
-        <button className="btn btn-secondary">View Profile</button>
-        <button className="btn btn-primary">Book Appointment</button>
+        <motion.button 
+          className="btn btn-secondary"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          View Profile
+        </motion.button>
+        <motion.button 
+          className="btn btn-primary"
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+        >
+          Book Now
+          <ArrowRight size={16} className="ml-1" />
+        </motion.button>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
