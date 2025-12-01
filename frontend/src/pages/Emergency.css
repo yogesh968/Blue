@@ -1,34 +1,57 @@
 .emergency-page {
-  min-height: 100vh;
-  background: var(--color-gray-50);
+  min-height: calc(100vh - 80px);
+  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
+  padding-top: 0;
 }
 
 .emergency-header {
-  background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-  border-bottom: 1px solid #fca5a5;
-  padding: 2rem 0;
+  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
+  color: white;
+  padding: 4rem 0;
+  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.25);
+  position: relative;
+}
+
+.emergency-header::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #ef4444, transparent);
 }
 
 .emergency-alert {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 1.5rem;
+  position: relative;
+  z-index: 1;
 }
 
 .alert-icon {
-  font-size: 3rem;
+  font-size: 4rem;
   animation: pulse 2s infinite;
+  background: rgba(255, 255, 255, 0.15);
+  padding: 1rem;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .emergency-header h1 {
-  color: #991b1b;
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
+  color: white;
+  font-size: 2.75rem;
+  margin-bottom: 0.75rem;
+  font-weight: 800;
+  letter-spacing: -0.5px;
 }
 
 .emergency-header p {
-  color: #7f1d1d;
+  color: rgba(255, 255, 255, 0.95);
   font-size: 1.125rem;
+  font-weight: 400;
 }
 
 .emergency-content {
@@ -42,10 +65,16 @@
 }
 
 .emergency-section {
-  background: var(--color-white);
-  border-radius: 1rem;
-  padding: 2rem;
-  border: 1px solid var(--color-gray-200);
+  background: white;
+  border-radius: 16px;
+  padding: 2.5rem;
+  border: 1px solid rgba(229, 231, 235, 0.6);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+  transition: all 0.3s ease;
+}
+
+.emergency-section:hover {
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
 }
 
 .emergency-section h2 {
@@ -62,20 +91,56 @@
 .service-card {
   display: flex;
   align-items: center;
-  gap: 1rem;
-  padding: 1.5rem;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.75rem;
-  transition: all 0.2s ease;
+  gap: 1.5rem;
+  padding: 1.75rem;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.service-card::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: linear-gradient(180deg, #dc2626, #ef4444);
+  transform: scaleY(0);
+  transition: transform 0.3s ease;
+}
+
+.service-card:hover::before {
+  transform: scaleY(1);
 }
 
 .service-card:hover {
-  border-color: var(--color-error);
-  box-shadow: 0 4px 12px -2px rgb(0 0 0 / 0.1);
+  border-color: #fee2e2;
+  box-shadow: 0 8px 24px rgba(220, 38, 38, 0.12);
+  transform: translateX(4px);
+  background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
 }
 
 .service-icon {
   font-size: 2.5rem;
+  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
+  transition: all 0.3s ease;
+}
+
+.service-card:hover .service-icon {
+  transform: scale(1.05);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
 }
 
 .service-info {
@@ -94,25 +159,47 @@
 }
 
 .service-phone {
-  font-weight: 600;
-  color: var(--color-error);
-  font-size: 1.125rem;
+  font-weight: 700;
+  color: #dc2626;
+  font-size: 1.25rem;
+  letter-spacing: 0.5px;
+  font-family: 'Courier New', monospace;
 }
 
 .btn-emergency {
-  background: var(--color-error);
-  color: var(--color-white);
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  color: white;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
+  padding: 1rem 2rem;
+  border-radius: 8px;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  font-size: 0.9375rem;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-emergency::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s ease;
+}
+
+.btn-emergency:hover::before {
+  left: 100%;
 }
 
 .btn-emergency:hover {
-  background: #dc2626;
-  transform: translateY(-1px);
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
 }
 
 .ambulance-form {
@@ -213,16 +300,33 @@
 }
 
 .tip-card {
-  padding: 1.5rem;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.75rem;
-  background: var(--color-gray-50);
+  padding: 1.75rem;
+  border: 1px solid #f3f4f6;
+  border-radius: 12px;
+  background: white;
+  transition: all 0.3s ease;
+  border-left: 3px solid #fca5a5;
+}
+
+.tip-card:hover {
+  border-left-color: #dc2626;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  transform: translateY(-2px);
 }
 
 .tip-card h4 {
-  color: var(--color-gray-900);
+  color: #1f2937;
   margin-bottom: 0.75rem;
-  font-size: 1rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.tip-card h4::before {
+  content: '💡';
+  font-size: 1.25rem;
 }
 
 .tip-card p {
@@ -232,8 +336,14 @@
 }
 
 @keyframes pulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
+  0%, 100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 0.85;
+    transform: scale(1.05);
+  }
 }
 
 @media (max-width: 768px) {

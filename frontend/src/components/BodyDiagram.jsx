@@ -4,12 +4,12 @@ import './BodyDiagram.css';
 
 const BodyDiagram = ({ selectedPart, onPartSelect }) => {
   const bodyParts = [
-    { id: 'head', name: 'Head', bodyX: 50, bodyY: 18, labelX: 50, labelY: 5, arrowDirection: 'down' },
-    { id: 'chest', name: 'Chest', bodyX: 50, bodyY: 35, labelX: 85, labelY: 35, arrowDirection: 'left' },
-    { id: 'abdomen', name: 'Abdomen', bodyX: 50, bodyY: 52, labelX: 50, labelY: 95, arrowDirection: 'up' },
-    { id: 'arms', name: 'Arms', bodyX: 20, bodyY: 40, labelX: 5, labelY: 40, arrowDirection: 'right' },
-    { id: 'legs', name: 'Legs', bodyX: 50, bodyY: 75, labelX: 15, labelY: 85, arrowDirection: 'right' },
-    { id: 'skin', name: 'Skin', bodyX: 80, bodyY: 45, labelX: 95, labelY: 60, arrowDirection: 'left' }
+    { id: 'head', name: 'Head', bodyX: 50, bodyY: 12, labelX: 50, labelY: 2, arrowDirection: 'down' },
+    { id: 'chest', name: 'Chest', bodyX: 50, bodyY: 32, labelX: 88, labelY: 32, arrowDirection: 'left' },
+    { id: 'abdomen', name: 'Abdomen', bodyX: 50, bodyY: 48, labelX: 50, labelY: 98, arrowDirection: 'up' },
+    { id: 'arms', name: 'Arms', bodyX: 28, bodyY: 38, labelX: 8, labelY: 38, arrowDirection: 'right' },
+    { id: 'legs', name: 'Legs', bodyX: 50, bodyY: 72, labelX: 12, labelY: 78, arrowDirection: 'right' },
+    { id: 'skin', name: 'Skin', bodyX: 72, bodyY: 42, labelX: 92, labelY: 55, arrowDirection: 'left' }
   ];
 
   return (

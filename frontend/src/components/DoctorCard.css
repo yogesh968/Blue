@@ -5,37 +5,41 @@
     border: 1px solid var(--color-gray-100);
     transition: all 0.2s ease;
     position: relative;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   }
   
   .doctor-card:hover {
-    box-shadow: 0 10px 25px -5px rgb(0 0 0 / 0.1);
-    transform: translateY(-2px);
-    border-color: var(--color-primary-200);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+    transform: translateY(-4px);
+    border-color: var(--color-primary-300);
   }
   
   .doctor-header {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
     margin-bottom: 1rem;
   }
   
   .doctor-avatar {
-    font-size: 3rem;
+    font-size: 2.5rem;
     width: 60px;
     height: 60px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--color-gray-50);
+    background: linear-gradient(135deg, #f0fdfa, #e6fffa);
     border-radius: 50%;
-    border: 2px solid var(--color-gray-200);
+    border: 2px solid var(--color-primary-200);
+    flex-shrink: 0;
   }
   
   .doctor-status {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
+    margin-left: auto;
   }
   
   .status-badge {
@@ -125,6 +129,7 @@
   .doctor-actions {
     display: flex;
     gap: 0.75rem;
+    margin-top: auto;
   }
   
   .doctor-actions .btn {
