@@ -38,6 +38,7 @@ model Hospital {
   doctors     Doctor[]
   bedBookings BedBooking[]
   ambulances  Ambulance[]
+  invitations DoctorInvitation[]
 }
 
 model Doctor {
@@ -48,6 +49,7 @@ model Doctor {
   experience   Int
   fees         Int
   qualification String
+  createdAt    DateTime        @default(now())
 
   user         User            @relation(fields: [userId], references: [id])
   hospital     Hospital        @relation(fields: [hospitalId], references: [id])
@@ -55,6 +57,8 @@ model Doctor {
   appointments Appointment[]
   reviews      Review[]
   locations    DoctorLocation[]
+  schedule     DoctorSchedule?
+  invitations  DoctorInvitation[]
 }
 
 enum DayOfWeek {
@@ -214,14 +218,45 @@ model Ambulance {
 model AmbulanceBooking {
   id          Int      @id @default(autoincrement())
   patientId   Int
-  ambulanceId Int
+  hospitalId  Int?
+  ambulanceId Int?
   pickupLocation String
   destination String
   bookingTime DateTime
   status      BookingStatus @default(PENDING)
   amount      Float?
+  ambulanceNumber String?
+  driverName  String?
   createdAt   DateTime @default(now())
 
   patient     Patient  @relation(fields: [patientId], references: [id])
-  ambulance   Ambulance @relation(fields: [ambulanceId], references: [id])
+  ambulance   Ambulance? @relation(fields: [ambulanceId], references: [id])
+}
+
+model DoctorSchedule {
+  id        Int      @id @default(autoincrement())
+  doctorId  Int      @unique
+  schedule  Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model DoctorInvitation {
+  id         Int              @id @default(autoincrement())
+  hospitalId Int
+  doctorId   Int
+  status     InvitationStatus @default(PENDING)
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
+
+  hospital   Hospital         @relation(fields: [hospitalId], references: [id])
+  doctor     Doctor           @relation(fields: [doctorId], references: [id])
 }
