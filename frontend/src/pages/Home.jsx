@@ -1,13 +1,42 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { Loader } from 'lucide-react';
 import SearchBar from '../components/SearchBar';
 import DoctorCard from '../components/DoctorCard';
+import api from '../services/api';
 import './Home.css';
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
+  const [featuredDoctors, setFeaturedDoctors] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  const featuredDoctors = [
+  useEffect(() => {
+    fetchFeaturedDoctors();
+  }, []);
+
+  const fetchFeaturedDoctors = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const response = await api.getDoctors('?limit=3&featured=true');
+      
+      if (response.ok) {
+        const data = await response.json();
+        setFeaturedDoctors(data);
+      } else {
+        throw new Error('Failed to fetch doctors');
+      }
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching doctors:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const mockFeaturedDoctors = [
     {
       id: 1,
       name: "Dr. Sarah Johnson",
@@ -45,6 +74,9 @@ const Home = () => {
       available: false
     }
   ];
+
+  // Fallback to mock data if API fails
+  const displayDoctors = featuredDoctors.length > 0 ? featuredDoctors : (error ? mockFeaturedDoctors : []);
 
   return (
     <div className="home">
@@ -123,9 +155,20 @@ const Home = () => {
           </div>
           
           <div className="grid grid-3">
-            {featuredDoctors.map(doctor => (
-              <DoctorCard key={doctor.id} doctor={doctor} />
-            ))}
+            {loading ? (
+              <div className="loading-doctors">
+                <Loader className="spinner" size={32} />
+                <p>Loading doctors...</p>
+              </div>
+            ) : displayDoctors.length === 0 ? (
+              <div className="no-doctors">
+                <p>No featured doctors available</p>
+              </div>
+            ) : (
+              displayDoctors.map(doctor => (
+                <DoctorCard key={doctor.id} doctor={doctor} />
+              ))
+            )}
           </div>
           
           <div className="text-center" style={{marginTop: '2rem'}}>

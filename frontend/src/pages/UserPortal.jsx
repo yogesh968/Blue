@@ -1,92 +1,129 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, FileText, User, Clock, MapPin, DollarSign, Heart } from 'lucide-react';
+import { Calendar, FileText, User, Clock, MapPin, DollarSign, Heart, Loader } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import MedicalRecords from '../components/MedicalRecords';
+import api from '../services/api';
 import './UserPortal.css';
 
 const UserPortal = () => {
   const [appointments, setAppointments] = useState([]);
   const [bills, setBills] = useState([]);
   const [activeTab, setActiveTab] = useState('appointments');
-
-  // Mock user appointments
-  const mockAppointments = [
-    {
-      id: 1,
-      doctorName: 'Dr. Sarah Johnson',
-      specialty: 'Cardiologist',
-      date: '2024-01-15',
-      time: '10:00 AM',
-      hospital: 'Apollo Hospital',
-      location: 'Mumbai',
-      status: 'confirmed',
-      fee: 800
-    },
-    {
-      id: 2,
-      doctorName: 'Dr. Michael Chen',
-      specialty: 'Neurologist',
-      date: '2024-01-20',
-      time: '2:00 PM',
-      hospital: 'Max Healthcare',
-      location: 'Delhi',
-      status: 'pending',
-      fee: 1200
-    }
-  ];
-
-  // Mock user bills
-  const mockBills = [
-    {
-      id: 1,
-      hospitalName: 'Apollo Hospital',
-      admissionDate: '2024-01-10',
-      dischargeDate: '2024-01-15',
-      totalAmount: 15800,
-      status: 'paid',
-      charges: {
-        bedCharge: 10000,
-        foodCharge: 2500,
-        medicineCharge: 1500,
-        doctorFee: 800,
-        otherCharges: 1000
-      }
-    },
-    {
-      id: 2,
-      hospitalName: 'Fortis Hospital',
-      admissionDate: '2024-01-05',
-      dischargeDate: '2024-01-08',
-      totalAmount: 8500,
-      status: 'pending',
-      charges: {
-        bedCharge: 6000,
-        foodCharge: 1500,
-        medicineCharge: 800,
-        doctorFee: 600,
-        otherCharges: 600
-      }
-    }
-  ];
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    setAppointments(mockAppointments);
-    setBills(mockBills);
+    fetchUserData();
   }, []);
 
-  const cancelAppointment = (id) => {
-    setAppointments(prev => 
-      prev.map(apt => apt.id === id ? { ...apt, status: 'cancelled' } : apt)
-    );
-    toast.success('Appointment cancelled successfully!');
+  const fetchUserData = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        setError('Please login to view your data');
+        return;
+      }
+
+      const [appointmentsRes, billsRes] = await Promise.all([
+        api.getAppointments(token),
+        api.getBedBookings(token)
+      ]);
+
+      if (appointmentsRes.ok) {
+        const appointmentsData = await appointmentsRes.json();
+        setAppointments(appointmentsData);
+      } else {
+        throw new Error('Failed to fetch appointments');
+      }
+
+      if (billsRes.ok) {
+        const billsData = await billsRes.json();
+        setBills(billsData);
+      } else {
+        console.warn('Failed to fetch bills');
+        setBills([]);
+      }
+    } catch (err) {
+      setError(err.message);
+      toast.error('Failed to load data');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const payBill = (id) => {
-    setBills(prev => 
-      prev.map(bill => bill.id === id ? { ...bill, status: 'paid' } : bill)
-    );
-    toast.success('Bill paid successfully!');
+  const cancelAppointment = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3001/api/appointments/${id}/status`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: 'cancelled' })
+      });
+
+      if (response.ok) {
+        setAppointments(prev => 
+          prev.map(apt => apt.id === id ? { ...apt, status: 'cancelled' } : apt)
+        );
+        toast.success('Appointment cancelled successfully!');
+      } else {
+        throw new Error('Failed to cancel appointment');
+      }
+    } catch (err) {
+      toast.error('Failed to cancel appointment');
+    }
   };
+
+  const payBill = async (id) => {
+    try {
+      const token = localStorage.getItem('token');
+      const bill = bills.find(b => b.id === id);
+      
+      const response = await api.createPayment({
+        billId: id,
+        amount: bill.totalAmount,
+        type: 'bill_payment'
+      }, token);
+
+      if (response.ok) {
+        setBills(prev => 
+          prev.map(bill => bill.id === id ? { ...bill, status: 'paid' } : bill)
+        );
+        toast.success('Bill paid successfully!');
+      } else {
+        throw new Error('Payment failed');
+      }
+    } catch (err) {
+      toast.error('Payment failed');
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="user-portal">
+        <div className="loading-container">
+          <Loader className="spinner" size={40} />
+          <p>Loading your data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="user-portal">
+        <div className="error-container">
+          <p className="error-message">{error}</p>
+          <button onClick={fetchUserData} className="btn-retry">Retry</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="user-portal">
@@ -124,7 +161,12 @@ const UserPortal = () => {
         <div className="appointments-section">
           <h2>My Appointments</h2>
           <div className="appointments-list">
-            {appointments.map(appointment => (
+            {appointments.length === 0 ? (
+              <div className="empty-state">
+                <Calendar size={48} />
+                <p>No appointments found</p>
+              </div>
+            ) : appointments.map(appointment => (
               <div key={appointment.id} className="appointment-card">
                 <div className="appointment-info">
                   <div className="doctor-info">
@@ -161,7 +203,12 @@ const UserPortal = () => {
         <div className="bills-section">
           <h2>My Bills</h2>
           <div className="bills-list">
-            {bills.map(bill => (
+            {bills.length === 0 ? (
+              <div className="empty-state">
+                <FileText size={48} />
+                <p>No bills found</p>
+              </div>
+            ) : bills.map(bill => (
               <div key={bill.id} className="bill-card">
                 <div className="bill-header">
                   <h4>{bill.hospitalName}</h4>
