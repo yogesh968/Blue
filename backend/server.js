@@ -42,7 +42,7 @@ app.use('/api/appointments', require('./routes/appointments'));
 app.use('/api/payments', require('./routes/payments'));
 app.use('/api/reviews', require('./routes/reviews'));
 app.use('/api/patients', require('./routes/patients'));
-app.use('/api/bed-bookings', require('./routes/bedBookings'));
+app.use('/api/bed-bookings', require('./routes/bedBooking'));
 app.use('/api/ambulances', require('./routes/ambulances'));
 app.use('/api', require('./routes/doctorLocations'));
 // Health check endpoint
