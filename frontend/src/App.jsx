@@ -5,6 +5,7 @@ import { CssBaseline } from '@mui/material';
 import { Toaster } from 'react-hot-toast';
 import theme from './theme/theme';
 import Navbar from './components/Navbar';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -43,7 +44,8 @@ function App() {
   // Role-based redirect function
   const getRoleBasedRedirect = () => {
     if (!user) return '/';
-    switch (user.role) {
+    const role = user.role?.toLowerCase();
+    switch (role) {
       case 'doctor': return '/doctor-portal';
       case 'hospital': return '/hospital-portal';
       case 'user':
@@ -80,33 +82,36 @@ function App() {
               element={user ? <Navigate to={getRoleBasedRedirect()} /> : <AuthSuccess onLogin={handleLogin} />} 
             />
             
-            {/* Public routes - restricted for doctors */}
-            <Route 
-              path="/doctors" 
-              element={user && (user.role === 'doctor' || user.role === 'DOCTOR') ? <Navigate to="/doctor-portal" /> : <Doctors />} 
-            />
-            <Route 
-              path="/hospitals" 
-              element={user && (user.role === 'doctor' || user.role === 'DOCTOR') ? <Navigate to="/doctor-portal" /> : <Hospitals />} 
-            />
-            <Route 
-              path="/services" 
-              element={user && (user.role === 'doctor' || user.role === 'DOCTOR') ? <Navigate to="/doctor-portal" /> : <Services />} 
-            />
+            {/* Public routes */}
+            <Route path="/doctors" element={<Doctors />} />
+            <Route path="/hospitals" element={<Hospitals />} />
+            <Route path="/services" element={<Services />} />
             <Route path="/emergency" element={<Emergency />} />
             
             {/* Protected role-based routes */}
             <Route 
               path="/user-portal" 
-              element={user ? <UserPortal /> : <Navigate to="/login" />} 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['user', 'patient']}>
+                  <UserPortal />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/doctor-portal" 
-              element={user && (user.role === 'doctor' || user.role === 'DOCTOR') ? <DoctorPortal /> : <Navigate to="/user-portal" />} 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['doctor']}>
+                  <DoctorPortal />
+                </ProtectedRoute>
+              } 
             />
             <Route 
               path="/hospital-portal" 
-              element={user && (user.role === 'hospital' || user.role === 'HOSPITAL') ? <HospitalPortal /> : <Navigate to="/user-portal" />} 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['hospital']}>
+                  <HospitalPortal />
+                </ProtectedRoute>
+              } 
             />
           </Routes>
           </main>
