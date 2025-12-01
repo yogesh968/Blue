@@ -45,6 +45,8 @@ app.use('/api/patients', require('./routes/patients'));
 app.use('/api/bed-bookings', require('./routes/bedBooking'));
 app.use('/api/ambulances', require('./routes/ambulances'));
 app.use('/api', require('./routes/doctorLocations'));
+app.use('/api', require('./routes/doctorSchedule'));
+app.use('/api', require('./routes/hospitalManagement'));
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 

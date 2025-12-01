@@ -90,7 +90,7 @@ const api = {
     }),
 
   getDoctorAppointments: (doctorId, date, token) =>
-    fetch(`${API_BASE_URL}/doctor/${doctorId}/appointments${date ? `?date=${date}` : ''}`, {
+    fetch(`${API_BASE_URL}/doctors/${doctorId}/appointments${date ? `?date=${date}` : ''}`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }),
 
@@ -156,7 +156,59 @@ const api = {
     }),
 
   getAvailableAmbulances: () =>
-    fetch(`${API_BASE_URL}/ambulances/available`)
+    fetch(`${API_BASE_URL}/ambulances/available`),
+
+  // Doctor Schedule endpoints
+  getDoctorSchedule: (doctorId, token) =>
+    fetch(`${API_BASE_URL}/doctor/${doctorId}/schedule`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }),
+
+  updateDoctorSchedule: (doctorId, scheduleData, token) =>
+    fetch(`${API_BASE_URL}/doctor/${doctorId}/schedule`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(scheduleData)
+    }),
+
+  // Hospital Management endpoints
+  getHospitalDoctors: (hospitalId, token) =>
+    fetch(`${API_BASE_URL}/hospital/${hospitalId}/doctors`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }),
+
+  getHospitalBedBookings: (hospitalId, token) =>
+    fetch(`${API_BASE_URL}/hospital/${hospitalId}/bed-bookings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }),
+
+  getHospitalAmbulanceBookings: (hospitalId, token) =>
+    fetch(`${API_BASE_URL}/hospital/${hospitalId}/ambulance-bookings`, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    }),
+
+  updateBedBookingStatus: (bookingId, status, token) =>
+    fetch(`${API_BASE_URL}/bed-bookings/${bookingId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    }),
+
+  updateAmbulanceBookingStatus: (bookingId, status, token) =>
+    fetch(`${API_BASE_URL}/ambulances/bookings/${bookingId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    })
 };
 
 export default api;
