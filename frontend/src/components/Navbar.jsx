@@ -20,10 +20,10 @@ import {
 import {
   Menu as MenuIcon,
   AccountCircle,
-  LocalHospital,
   Logout,
   Dashboard,
 } from '@mui/icons-material';
+import Logo from './Logo';
 
 const Navbar = ({ user, onLogout }) => {
   const [anchorEl, setAnchorEl] = useState(null);
@@ -51,19 +51,23 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   const getMenuItems = () => {
-    if (user && (user.role === 'doctor' || user.role === 'DOCTOR')) {
+    if (user && user.role?.toLowerCase() === 'doctor') {
       return [
         { text: 'Dashboard', path: '/doctor-portal' },
-        { text: 'Appointments', path: '/doctor-portal#appointments' },
-        { text: 'My Locations', path: '/doctor-portal#locations' },
-        { text: 'Schedule', path: '/doctor-portal#schedule' },
+        { text: 'Appointments', path: '/doctor-portal', hash: 'appointments' },
+        { text: 'My Locations', path: '/doctor-portal', hash: 'locations' },
+        { text: 'Schedule', path: '/doctor-portal', hash: 'schedule' },
       ];
-    } else if (user && (user.role === 'hospital' || user.role === 'HOSPITAL')) {
+    } else if (user && user.role?.toLowerCase() === 'hospital') {
       return [
-        { text: 'Dashboard', path: '/hospital-portal' },
-        { text: 'Doctors', path: '/hospital-portal#doctors' },
-        { text: 'Beds', path: '/hospital-portal#beds' },
-        { text: 'Ambulances', path: '/hospital-portal#ambulances' },
+        { text: 'Emergency', path: '/emergency' },
+      ];
+    } else if (user && (user.role?.toLowerCase() === 'user' || user.role?.toLowerCase() === 'patient')) {
+      return [
+        { text: 'My Appointments', path: '/user-portal', hash: 'appointments' },
+        { text: 'My Bills', path: '/user-portal', hash: 'bills' },
+        { text: 'Medical Records', path: '/user-portal', hash: 'records' },
+        { text: 'Emergency', path: '/emergency' },
       ];
     } else {
       return [
@@ -86,7 +90,7 @@ const Navbar = ({ user, onLogout }) => {
             button
             key={item.text}
             component={Link}
-            to={item.path}
+            to={item.tab ? `${item.path}?tab=${item.tab}` : item.hash ? `${item.path}#${item.hash}` : item.path}
             onClick={handleDrawerToggle}
             sx={{
               color: item.text === 'Emergency' ? 'error.main' : 'text.primary',
@@ -124,7 +128,15 @@ const Navbar = ({ user, onLogout }) => {
         <Toolbar sx={{ px: { xs: 2, md: 4 } }}>
           <Box
             component={Link}
-            to="/"
+            to={
+              user
+                ? user.role === 'DOCTOR' || user.role === 'doctor'
+                  ? '/doctor-portal'
+                  : user.role === 'HOSPITAL' || user.role === 'hospital'
+                  ? '/hospital-portal'
+                  : '/user-portal'
+                : '/'
+            }
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -132,25 +144,7 @@ const Navbar = ({ user, onLogout }) => {
               mr: 4,
             }}
           >
-            <LocalHospital
-              sx={{
-                fontSize: 32,
-                color: 'primary.main',
-                mr: 1,
-              }}
-            />
-            <Typography
-              variant="h5"
-              sx={{
-                fontWeight: 700,
-                background: 'linear-gradient(135deg, #4DB6E2 0%, #1A2A33 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              HealthCare+
-            </Typography>
+            <Logo width={168} height={56} />
           </Box>
 
           {!isMobile && (
@@ -159,7 +153,7 @@ const Navbar = ({ user, onLogout }) => {
                 <Button
                   key={item.text}
                   component={Link}
-                  to={item.path}
+                  to={item.tab ? `${item.path}?tab=${item.tab}` : item.hash ? `${item.path}#${item.hash}` : item.path}
                   sx={{
                     mx: 1,
                     color: item.text === 'Emergency' ? 'error.main' : 'text.primary',
