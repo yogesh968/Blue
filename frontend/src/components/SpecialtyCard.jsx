@@ -1,7 +1,14 @@
 import React from 'react';
 import './SpecialtyCard.css';
 
-const SpecialtyCard = ({ specialty, isSelected, onClick }) => {
+const SpecialtyCard = ({ specialty, isSelected, onClick, onViewDoctors }) => {
+  const handleViewDoctors = (e) => {
+    e.stopPropagation();
+    if (onViewDoctors) {
+      onViewDoctors();
+    }
+  };
+
   return (
     <div 
       className={`specialty-card ${isSelected ? 'selected' : ''}`}
@@ -13,7 +20,10 @@ const SpecialtyCard = ({ specialty, isSelected, onClick }) => {
       <div className="specialty-stats">
         <span className="doctor-count">{specialty.doctors}+ Doctors</span>
       </div>
-      <button className="btn btn-primary specialty-btn">
+      <button 
+        className="btn btn-primary specialty-btn"
+        onClick={handleViewDoctors}
+      >
         View Doctors
       </button>
     </div>

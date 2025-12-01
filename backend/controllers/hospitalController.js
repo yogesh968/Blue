@@ -57,6 +57,20 @@ const getHospitalById = async (req, res) => {
   }
 };
 
+const createHospitalProfile = async (req, res) => {
+  try {
+    const { name, city, address, phone } = req.body;
+
+    const hospital = await prisma.hospital.create({
+      data: { name, city, address, phone }
+    });
+
+    res.status(201).json(hospital);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to create hospital profile' });
+  }
+};
+
 const updateHospital = async (req, res) => {
   try {
     const { id } = req.params;
@@ -73,4 +87,4 @@ const updateHospital = async (req, res) => {
   }
 };
 
-module.exports = { getHospitals, getHospitalById, updateHospital };
+module.exports = { getHospitals, getHospitalById, createHospitalProfile, updateHospital };

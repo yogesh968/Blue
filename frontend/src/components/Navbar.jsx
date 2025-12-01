@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaHospital, FaUserMd, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import './Navbar.css';
 
 const Navbar = ({ user, onLogout }) => {
@@ -9,7 +10,7 @@ const Navbar = ({ user, onLogout }) => {
     <nav className="navbar">
       <div className="nav-container">
         <Link to="/" className="nav-logo">
-          <div className="logo-icon">🏥</div>
+          <FaHospital className="logo-icon" />
           <span className="logo-text">HealthCare+</span>
         </Link>
 
@@ -42,7 +43,7 @@ const Navbar = ({ user, onLogout }) => {
         <div className="nav-actions">
           {user ? (
             <div className="user-menu">
-              <span className="user-greeting">Hi, Dr. {user.name}</span>
+              <span className="user-greeting">Hi, {user.role === 'DOCTOR' || user.role === 'doctor' ? 'Dr. ' : ''}{user.name}</span>
               <span className="user-role">({user.role})</span>
               <button onClick={onLogout} className="btn btn-secondary btn-sm">
                 Logout

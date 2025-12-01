@@ -35,16 +35,29 @@ const getAppointments = async (req, res) => {
     let where = {};
     if (role === 'PATIENT') {
       const patient = await prisma.patient.findUnique({ where: { userId } });
-      where.patientId = patient?.id;
+      if (!patient) {
+        return res.json([]);
+      }
+      where.patientId = patient.id;
     } else if (role === 'DOCTOR') {
       const doctor = await prisma.doctor.findUnique({ where: { userId } });
-      where.doctorId = doctor?.id;
+      if (!doctor) {
+        return res.json([]);
+      }
+      where.doctorId = doctor.id;
+    } else {
+      return res.json([]);
     }
 
     const appointments = await prisma.appointment.findMany({
       where,
       include: {
-        doctor: { include: { user: { select: { name: true } } } },
+        doctor: { 
+          include: { 
+            user: { select: { name: true } },
+            hospital: { select: { name: true, city: true } }
+          } 
+        },
         patient: { include: { user: { select: { name: true } } } },
         payment: true
       },

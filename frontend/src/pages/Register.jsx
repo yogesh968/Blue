@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FaEye, FaEyeSlash, FaUser, FaUserMd, FaHospital } from 'react-icons/fa';
 import api from '../services/api';
 import GoogleLoginButton from '../components/GoogleLoginButton';
 import './Auth.css';
@@ -122,7 +123,7 @@ const Register = ({ onLogin }) => {
                 onClick={() => setShowPassword(!showPassword)}
                 className="password-toggle"
               >
-                {showPassword ? '👁️' : '👁️🗨️'}
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
               </button>
             </div>
           </div>
@@ -139,7 +140,7 @@ const Register = ({ onLogin }) => {
                   onChange={handleChange}
                 />
                 <div className="role-content">
-                  <span className="role-icon">👤</span>
+                  <span className="role-icon"><FaUser /></span>
                   <div>
                     <div className="role-title">Patient</div>
                     <div className="role-desc">Book appointments & manage health</div>
@@ -156,7 +157,7 @@ const Register = ({ onLogin }) => {
                   onChange={handleChange}
                 />
                 <div className="role-content">
-                  <span className="role-icon">👨⚕️</span>
+                  <span className="role-icon"><FaUserMd /></span>
                   <div>
                     <div className="role-title">Doctor</div>
                     <div className="role-desc">Provide medical consultations</div>
@@ -173,7 +174,7 @@ const Register = ({ onLogin }) => {
                   onChange={handleChange}
                 />
                 <div className="role-content">
-                  <span className="role-icon">🏥</span>
+                  <span className="role-icon"><FaHospital /></span>
                   <div>
                     <div className="role-title">Hospital</div>
                     <div className="role-desc">Manage hospital operations</div>

@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Loader } from 'lucide-react';
+import { FaAmbulance, FaCalendarAlt, FaHospital, FaHeart, FaBrain, FaBone, FaBaby, FaEye, FaTooth, FaUserMd, FaFemale, FaStethoscope, FaXRay } from 'react-icons/fa';
+import { MdSpa, MdPsychology } from 'react-icons/md';
+import { GiKidneys, GiLungs } from 'react-icons/gi';
 import SearchBar from '../components/SearchBar';
 import DoctorCard from '../components/DoctorCard';
 import api from '../services/api';
@@ -123,21 +126,21 @@ const Home = () => {
           <h2 className="text-center mb-8">Quick Actions</h2>
           <div className="grid grid-3">
             <div className="action-card">
-              <div className="action-icon emergency">🚨</div>
+              <div className="action-icon emergency"><FaAmbulance /></div>
               <h3>Emergency Care</h3>
               <p>Get immediate medical attention with our 24/7 emergency services</p>
               <button className="btn btn-primary">Call Ambulance</button>
             </div>
             
             <div className="action-card">
-              <div className="action-icon">📅</div>
+              <div className="action-icon"><FaCalendarAlt /></div>
               <h3>Book Appointment</h3>
               <p>Schedule consultations with top doctors at your preferred time</p>
               <button className="btn btn-primary">Book Now</button>
             </div>
             
             <div className="action-card">
-              <div className="action-icon">🏥</div>
+              <div className="action-icon"><FaHospital /></div>
               <h3>Find Hospitals</h3>
               <p>Locate nearby hospitals with advanced medical facilities</p>
               <button className="btn btn-primary">Find Hospitals</button>
@@ -183,14 +186,14 @@ const Home = () => {
           <h2 className="text-center mb-8">Popular Specialties</h2>
           <div className="grid grid-4">
             {[
-              { name: 'Cardiology', icon: '❤️', count: '150+ Doctors' },
-              { name: 'Neurology', icon: '🧠', count: '120+ Doctors' },
-              { name: 'Orthopedics', icon: '🦴', count: '200+ Doctors' },
-              { name: 'Pediatrics', icon: '👶', count: '180+ Doctors' },
-              { name: 'Dermatology', icon: '🧴', count: '90+ Doctors' },
-              { name: 'Gynecology', icon: '👩‍⚕️', count: '110+ Doctors' },
-              { name: 'Dentistry', icon: '🦷', count: '160+ Doctors' },
-              { name: 'Ophthalmology', icon: '👁️', count: '80+ Doctors' }
+              { name: 'Cardiology', icon: <FaHeart />, count: '150+ Doctors' },
+              { name: 'Neurology', icon: <MdPsychology />, count: '120+ Doctors' },
+              { name: 'Orthopedics', icon: <FaBone />, count: '200+ Doctors' },
+              { name: 'Pediatrics', icon: <FaBaby />, count: '180+ Doctors' },
+              { name: 'Dermatology', icon: <MdSpa />, count: '90+ Doctors' },
+              { name: 'Gynecology', icon: <FaFemale />, count: '110+ Doctors' },
+              { name: 'Dentistry', icon: <FaTooth />, count: '160+ Doctors' },
+              { name: 'Ophthalmology', icon: <FaEye />, count: '80+ Doctors' }
             ].map((specialty, index) => (
               <div key={index} className="specialty-card">
                 <div className="specialty-icon">{specialty.icon}</div>

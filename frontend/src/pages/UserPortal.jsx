@@ -34,7 +34,23 @@ const UserPortal = () => {
 
       if (appointmentsRes.ok) {
         const appointmentsData = await appointmentsRes.json();
-        setAppointments(appointmentsData);
+        // Transform API data to match frontend format
+        const transformedAppointments = appointmentsData.map(apt => {
+          const appointmentDate = new Date(apt.appointmentDate);
+          return {
+            id: apt.id,
+            doctorName: apt.doctor.user.name,
+            specialty: apt.doctor.speciality,
+            date: appointmentDate.toLocaleDateString(),
+            time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            hospital: apt.doctor.hospital?.name || 'Hospital',
+            location: apt.doctor.hospital?.city || 'Location',
+            fee: apt.doctor.fees,
+            status: apt.status.toLowerCase(),
+            reason: apt.reason
+          };
+        });
+        setAppointments(transformedAppointments);
       } else {
         throw new Error('Failed to fetch appointments');
       }
@@ -63,7 +79,7 @@ const UserPortal = () => {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${token}`
         },
-        body: JSON.stringify({ status: 'cancelled' })
+        body: JSON.stringify({ status: 'CANCELLED' })
       });
 
       if (response.ok) {
@@ -184,7 +200,7 @@ const UserPortal = () => {
                   <span className={`status ${appointment.status}`}>
                     {appointment.status}
                   </span>
-                  {appointment.status === 'confirmed' && (
+                  {appointment.status === 'pending' && (
                     <button 
                       onClick={() => cancelAppointment(appointment.id)}
                       className="btn-cancel"

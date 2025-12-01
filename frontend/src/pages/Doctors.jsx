@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Filter, Star, MapPin, Clock, DollarSign, User } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import AppointmentBooking from '../components/AppointmentBooking';
@@ -16,93 +17,61 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [searchParams] = useSearchParams();
 
-  // Mock doctors data
-  const mockDoctors = [
-    {
-      id: 1,
-      name: "Dr. Sarah Johnson",
-      specialty: "Cardiologist",
-      experience: "15+ years",
-      rating: 4.9,
-      reviews: 127,
-      fee: 800,
-      hospital: "Apollo Hospital",
-      location: "Mumbai",
-      image: "👩⚕️",
-      available: true
-    },
-    {
-      id: 2,
-      name: "Dr. Michael Chen",
-      specialty: "Neurologist",
-      experience: "12+ years",
-      rating: 4.8,
-      reviews: 98,
-      fee: 1200,
-      hospital: "Max Healthcare",
-      location: "Delhi",
-      image: "👨⚕️",
-      available: true
-    },
-    {
-      id: 3,
-      name: "Dr. Emily Davis",
-      specialty: "Pediatrician",
-      experience: "10+ years",
-      rating: 4.9,
-      reviews: 156,
-      fee: 600,
-      hospital: "Fortis Hospital",
-      location: "Bangalore",
-      image: "👩⚕️",
-      available: false
-    },
-    {
-      id: 4,
-      name: "Dr. Rajesh Kumar",
-      specialty: "Orthopedic",
-      experience: "18+ years",
-      rating: 4.7,
-      reviews: 203,
-      fee: 1000,
-      hospital: "AIIMS",
-      location: "Delhi",
-      image: "👨⚕️",
-      available: true
-    },
-    {
-      id: 5,
-      name: "Dr. Priya Sharma",
-      specialty: "Dermatologist",
-      experience: "8+ years",
-      rating: 4.6,
-      reviews: 89,
-      fee: 700,
-      hospital: "Manipal Hospital",
-      location: "Mumbai",
-      image: "👩⚕️",
-      available: true
-    },
-    {
-      id: 6,
-      name: "Dr. Amit Patel",
-      specialty: "Cardiologist",
-      experience: "20+ years",
-      rating: 4.8,
-      reviews: 245,
-      fee: 1500,
-      hospital: "Kokilaben Hospital",
-      location: "Mumbai",
-      image: "👨⚕️",
-      available: true
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Fetch doctors from API
+  const fetchDoctors = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('http://localhost:3001/api/doctors');
+      if (!response.ok) {
+        throw new Error('Failed to fetch doctors');
+      }
+      const doctorsData = await response.json();
+      
+      // Transform API data to match frontend format
+      const transformedDoctors = doctorsData.map(doctor => ({
+        id: doctor.id,
+        name: doctor.user.name,
+        specialty: doctor.speciality,
+        experience: `${doctor.experience}+ years`,
+        rating: doctor.reviews.length > 0 
+          ? (doctor.reviews.reduce((sum, review) => sum + review.rating, 0) / doctor.reviews.length).toFixed(1)
+          : 4.5, // Default rating
+        reviews: doctor.reviews.length,
+        fee: doctor.fees,
+        hospital: doctor.hospital.name,
+        location: doctor.hospital.city,
+        image: "👨⚕️", // Default image
+        available: true, // Assume all doctors are available
+        qualification: doctor.qualification
+      }));
+      
+      setDoctors(transformedDoctors);
+      setFilteredDoctors(transformedDoctors);
+      setError(null);
+    } catch (error) {
+      console.error('Error fetching doctors:', error);
+      setError('Failed to load doctors. Please try again later.');
+      toast.error('Failed to load doctors');
+    } finally {
+      setLoading(false);
     }
-  ];
+  };
 
   useEffect(() => {
-    setDoctors(mockDoctors);
-    setFilteredDoctors(mockDoctors);
+    fetchDoctors();
   }, []);
+
+  useEffect(() => {
+    const specialtyParam = searchParams.get('specialty');
+    if (specialtyParam) {
+      setFilters(prev => ({ ...prev, specialty: specialtyParam }));
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     let filtered = doctors.filter(doctor => {
@@ -181,6 +150,14 @@ const Doctors = () => {
                   <option value="Pediatrician">Pediatrician</option>
                   <option value="Orthopedic">Orthopedic</option>
                   <option value="Dermatologist">Dermatologist</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Neurology">Neurology</option>
+                  <option value="Orthopedics">Orthopedics</option>
+                  <option value="Gastroenterology">Gastroenterology</option>
+                  <option value="Dermatology">Dermatology</option>
+                  <option value="Ophthalmology">Ophthalmology</option>
+                  <option value="ENT">ENT</option>
+                  <option value="Pulmonology">Pulmonology</option>
                 </select>
               </div>
               
@@ -220,49 +197,63 @@ const Doctors = () => {
                 </select>
               </div>
               
-              <div className="doctors-grid">
-                {filteredDoctors.map(doctor => (
-                  <div key={doctor.id} className="doctor-card">
-                    <div className="doctor-avatar">
-                      <User size={40} />
-                    </div>
-                    <div className="doctor-info">
-                      <h4>{doctor.name}</h4>
-                      <p className="specialty">{doctor.specialty}</p>
-                      <p className="experience">{doctor.experience} experience</p>
-                      
-                      <div className="doctor-details">
-                        <div className="detail-item">
-                          <Star size={16} className="rating-icon" />
-                          <span>{doctor.rating} ({doctor.reviews} reviews)</span>
-                        </div>
-                        <div className="detail-item">
-                          <MapPin size={16} />
-                          <span>{doctor.hospital}, {doctor.location}</span>
-                        </div>
-                        <div className="detail-item">
-                          <DollarSign size={16} />
-                          <span>₹{doctor.fee}</span>
-                        </div>
-                        <div className="detail-item">
-                          <Clock size={16} />
-                          <span className={`availability ${doctor.available ? 'available' : 'unavailable'}`}>
-                            {doctor.available ? 'Available Today' : 'Not Available'}
-                          </span>
-                        </div>
+              {loading ? (
+                <div className="loading-state">
+                  <p>Loading doctors...</p>
+                </div>
+              ) : error ? (
+                <div className="error-state">
+                  <p>{error}</p>
+                  <button onClick={fetchDoctors} className="retry-btn">Retry</button>
+                </div>
+              ) : (
+                <div className="doctors-grid">
+                  {filteredDoctors.map(doctor => (
+                    <div key={doctor.id} className="doctor-card">
+                      <div className="doctor-avatar">
+                        <User size={40} />
                       </div>
-                      
-                      <button 
-                        className={`book-btn ${!doctor.available ? 'disabled' : ''}`}
-                        onClick={() => bookAppointment(doctor)}
-                        disabled={!doctor.available}
-                      >
-                        {doctor.available ? 'Book Appointment' : 'Not Available'}
-                      </button>
+                      <div className="doctor-info">
+                        <h4>{doctor.name}</h4>
+                        <p className="specialty">{doctor.specialty}</p>
+                        <p className="experience">{doctor.experience} experience</p>
+                        {doctor.qualification && (
+                          <p className="qualification">{doctor.qualification}</p>
+                        )}
+                        
+                        <div className="doctor-details">
+                          <div className="detail-item">
+                            <Star size={16} className="rating-icon" />
+                            <span>{doctor.rating} ({doctor.reviews} reviews)</span>
+                          </div>
+                          <div className="detail-item">
+                            <MapPin size={16} />
+                            <span>{doctor.hospital}, {doctor.location}</span>
+                          </div>
+                          <div className="detail-item">
+                            <DollarSign size={16} />
+                            <span>₹{doctor.fee}</span>
+                          </div>
+                          <div className="detail-item">
+                            <Clock size={16} />
+                            <span className={`availability ${doctor.available ? 'available' : 'unavailable'}`}>
+                              {doctor.available ? 'Available Today' : 'Not Available'}
+                            </span>
+                          </div>
+                        </div>
+                        
+                        <button 
+                          className={`book-btn ${!doctor.available ? 'disabled' : ''}`}
+                          onClick={() => bookAppointment(doctor)}
+                          disabled={!doctor.available}
+                        >
+                          {doctor.available ? 'Book Appointment' : 'Not Available'}
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
+              )}
               
               {filteredDoctors.length === 0 && (
                 <div className="no-results">

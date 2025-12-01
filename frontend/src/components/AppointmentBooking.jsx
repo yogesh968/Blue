@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Calendar, Clock, User, CreditCard, CheckCircle } from 'lucide-react';
 import toast from 'react-hot-toast';
+import api from '../services/api';
 import './AppointmentBooking.css';
 
 const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
@@ -13,7 +14,8 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
       name: '',
       age: '',
       phone: '',
-      email: ''
+      email: '',
+      gender: ''
     },
     paymentMethod: 'CARD'
   });
@@ -59,14 +61,66 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
 
   const handleBooking = async () => {
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const token = localStorage.getItem('token');
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      
+      if (!token) {
+        toast.error('Please login to book appointment');
+        return;
+      }
+
+      // First, try to get existing patient profile
+      let patientId = null;
+      try {
+        const profileResponse = await api.getPatientProfile(token);
+        if (profileResponse.ok) {
+          const profileData = await profileResponse.json();
+          patientId = profileData.id;
+        }
+      } catch (error) {
+        console.log('No existing patient profile found');
+      }
+
+      // If no patient profile exists, create one
+      if (!patientId) {
+        const patientResponse = await api.createPatientProfile({
+          gender: bookingData.patientInfo.gender || 'OTHER',
+          dob: null,
+          medicalHistory: {}
+        }, token);
+        
+        if (!patientResponse.ok) {
+          const errorData = await patientResponse.json();
+          throw new Error(errorData.error || 'Failed to create patient profile');
+        }
+        
+        const patientData = await patientResponse.json();
+        patientId = patientData.id;
+      }
+
+      // Create appointment
+      const appointmentData = {
+        patientId: patientId,
+        doctorId: doctor.id,
+        appointmentDate: `${bookingData.date}T${bookingData.time}:00.000Z`,
+        reason: bookingData.reason
+      };
+
+      const response = await api.createAppointment(appointmentData, token);
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to book appointment');
+      }
+      
+      const appointment = await response.json();
       
       toast.success('Appointment booked successfully!');
-      onSuccess && onSuccess(bookingData);
+      onSuccess && onSuccess({ ...bookingData, appointmentId: appointment.id });
       setStep(5); // Success step
     } catch (error) {
-      toast.error('Failed to book appointment');
+      console.error('Booking error:', error);
+      toast.error(error.message || 'Failed to book appointment');
     }
   };
 
@@ -170,6 +224,23 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
               </div>
               <div className="form-row">
                 <div className="form-group">
+                  <label>Gender</label>
+                  <select
+                    value={bookingData.patientInfo.gender}
+                    onChange={(e) => handleInputChange('patientInfo.gender', e.target.value)}
+                  >
+                    <option value="">Select Gender</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  {/* Empty div for spacing */}
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
                   <label>Phone Number *</label>
                   <input
                     type="tel"
@@ -254,9 +325,10 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
               <p>Your appointment has been confirmed</p>
               <div className="appointment-details">
                 <p><strong>Doctor:</strong> {doctor.name}</p>
-                <p><strong>Date:</strong> {bookingData.date}</p>
+                <p><strong>Date:</strong> {new Date(bookingData.date).toLocaleDateString()}</p>
                 <p><strong>Time:</strong> {bookingData.time}</p>
                 <p><strong>Patient:</strong> {bookingData.patientInfo.name}</p>
+                <p><strong>Reason:</strong> {bookingData.reason}</p>
               </div>
               <button className="btn-primary" onClick={onClose}>
                 Done
@@ -271,9 +343,8 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="appointment-booking-modal">
-      <div className="modal-overlay" onClick={onClose}></div>
-      <div className="modal-content">
+    <div className="appointment-booking-modal" onClick={(e) => e.target === e.currentTarget && onClose()}>
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <div className="modal-header">
           <h2>Book Appointment</h2>
           <button className="close-btn" onClick={onClose}>×</button>
