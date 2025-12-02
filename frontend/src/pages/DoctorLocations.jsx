@@ -49,7 +49,8 @@ const DoctorLocations = () => {
 
   const fetchLocations = async () => {
     try {
-      const response = await api.getDoctorLocations(user.id, token);
+      const doctorId = localStorage.getItem('doctorId') || user.id;
+      const response = await api.getDoctorLocations(doctorId, token);
       if (response.ok) {
         const data = await response.json();
         setLocations(data);
@@ -63,8 +64,15 @@ const DoctorLocations = () => {
   };
 
   const handleAddLocation = async () => {
+    if (!newLocation.name || !newLocation.address || !newLocation.city) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+    
     try {
-      const response = await api.addDoctorLocation(user.id, newLocation, token);
+      const doctorId = localStorage.getItem('doctorId') || user.id;
+      console.log('Adding location for doctor ID:', doctorId);
+      const response = await api.addDoctorLocation(doctorId, newLocation, token);
       if (response.ok) {
         const data = await response.json();
         setLocations(prev => [...prev, data]);
@@ -72,7 +80,9 @@ const DoctorLocations = () => {
         setOpenDialog(false);
         toast.success('Location added successfully!');
       } else {
-        toast.error('Failed to add location');
+        const errorData = await response.json();
+        console.error('API Error:', errorData);
+        toast.error(errorData.error || 'Failed to add location');
       }
     } catch (error) {
       console.error('Error adding location:', error);

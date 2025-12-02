@@ -5,6 +5,7 @@ const router = express.Router();
 
 router.post('/', authenticateToken, createAppointment);
 router.get('/', authenticateToken, getAppointments);
+router.get('/doctor/:doctorId', authenticateToken, getAppointments);
 router.put('/:id/status', authenticateToken, updateAppointmentStatus);
 
 module.exports = router;

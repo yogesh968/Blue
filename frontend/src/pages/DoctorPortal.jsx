@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -21,6 +21,7 @@ import {
   InputLabel,
   Select,
   MenuItem,
+  Divider,
 } from '@mui/material';
 import {
   Dashboard,
@@ -33,14 +34,19 @@ import {
   Add,
   Edit,
   Delete,
+  CheckCircle,
+  Cancel,
+  Person,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
+import DoctorSchedule from './DoctorSchedule';
 
 const DoctorPortal = () => {
   const location = useLocation();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const navigate = useNavigate();
+  const [activeTab, setActiveTab] = useState(0);
   const [appointments, setAppointments] = useState([]);
   const [locations, setLocations] = useState([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
@@ -69,7 +75,6 @@ const DoctorPortal = () => {
     'BDS', 'BDS, MDS', 'BAMS', 'BHMS', 'BUMS', 'BPT', 'MBBS, FRCS'
   ];
 
-
   const [newLocation, setNewLocation] = useState({
     name: '',
     address: '',
@@ -86,8 +91,6 @@ const DoctorPortal = () => {
       sunday: { start: '09:00', end: '13:00', available: false }
     }
   });
-
-
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
@@ -131,12 +134,30 @@ const DoctorPortal = () => {
       
       // Fetch appointments
       try {
-        const appointmentsRes = await api.getDoctorAppointments(doctorId, '', token);
-        if (appointmentsRes.ok) {
-          const appointmentsData = await appointmentsRes.json();
+        const response = await fetch(`http://localhost:3001/api/appointments/doctor/${doctorId}`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+        
+        if (response.ok) {
+          const appointmentsData = await response.json();
           setAppointments(appointmentsData);
         } else {
-          setAppointments([]);
+          // Fallback to general appointments endpoint
+          const fallbackResponse = await fetch('http://localhost:3001/api/appointments', {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json'
+            }
+          });
+          if (fallbackResponse.ok) {
+            const appointmentsData = await fallbackResponse.json();
+            setAppointments(appointmentsData);
+          } else {
+            setAppointments([]);
+          }
         }
       } catch (error) {
         console.error('Appointments error:', error);
@@ -163,115 +184,8 @@ const DoctorPortal = () => {
     }
   };
 
-  const initializeSchedule = async () => {
-    try {
-      const doctorId = localStorage.getItem('doctorId');
-      if (doctorId) {
-        const token = localStorage.getItem('token');
-        const response = await api.getDoctorSchedule(doctorId, token);
-        
-        if (response.ok) {
-          const scheduleData = await response.json();
-          setWeeklySchedule(scheduleData);
-        } else {
-          // Fallback to localStorage or default
-          const savedSchedule = localStorage.getItem('doctorSchedule');
-          if (savedSchedule) {
-            setWeeklySchedule(JSON.parse(savedSchedule));
-          } else {
-            setWeeklySchedule(getDefaultSchedule());
-          }
-        }
-      } else {
-        setWeeklySchedule(getDefaultSchedule());
-      }
-    } catch (error) {
-      const savedSchedule = localStorage.getItem('doctorSchedule');
-      if (savedSchedule) {
-        setWeeklySchedule(JSON.parse(savedSchedule));
-      } else {
-        setWeeklySchedule(getDefaultSchedule());
-      }
-    }
-  };
-
-  const getDefaultSchedule = () => ({
-    monday: { startTime: '09:00', endTime: '17:00', available: true },
-    tuesday: { startTime: '09:00', endTime: '17:00', available: true },
-    wednesday: { startTime: '09:00', endTime: '17:00', available: true },
-    thursday: { startTime: '09:00', endTime: '17:00', available: true },
-    friday: { startTime: '09:00', endTime: '17:00', available: true },
-    saturday: { startTime: '09:00', endTime: '13:00', available: true },
-    sunday: { startTime: '09:00', endTime: '13:00', available: false }
-  });
-
-  const updateSchedule = (day, field, value) => {
-    setWeeklySchedule(prev => ({
-      ...prev,
-      [day]: { ...prev[day], [field]: value }
-    }));
-  };
-
-  const saveSchedule = async () => {
-    try {
-      const doctorId = localStorage.getItem('doctorId');
-      const token = localStorage.getItem('token');
-      const response = await api.updateDoctorSchedule(doctorId, weeklySchedule, token);
-      
-      if (response.ok) {
-        localStorage.setItem('doctorSchedule', JSON.stringify(weeklySchedule));
-        toast.success('Schedule updated successfully!');
-        setShowScheduleModal(false);
-      } else {
-        throw new Error('Failed to update schedule');
-      }
-    } catch (error) {
-      toast.error('Failed to update schedule');
-    }
-  };
-
-  useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash && ['appointments', 'locations', 'schedule'].includes(hash)) {
-      setActiveTab(hash);
-    } else if (!hash) {
-      setActiveTab('dashboard');
-    }
-  }, [location.hash]);
-
-  const handleAddLocation = async (e) => {
-    e.preventDefault();
-    try {
-      const doctorId = localStorage.getItem('doctorId');
-      const token = localStorage.getItem('token');
-      const response = await api.addDoctorLocation(doctorId, newLocation, token);
-      
-      if (response.ok) {
-        toast.success('Location added successfully!');
-        fetchDoctorData(parseInt(doctorId)); // Refresh data
-        setShowAddLocation(false);
-        setNewLocation({
-          name: '',
-          address: '',
-          city: '',
-          phone: '',
-          fees: '',
-          timings: {
-            monday: { start: '09:00', end: '17:00', available: true },
-            tuesday: { start: '09:00', end: '17:00', available: true },
-            wednesday: { start: '09:00', end: '17:00', available: true },
-            thursday: { start: '09:00', end: '17:00', available: true },
-            friday: { start: '09:00', end: '17:00', available: true },
-            saturday: { start: '09:00', end: '13:00', available: true },
-            sunday: { start: '09:00', end: '13:00', available: false }
-          }
-        });
-      } else {
-        throw new Error('Failed to add location');
-      }
-    } catch (error) {
-      toast.error('Failed to add location');
-    }
+  const handleTabChange = (event, newValue) => {
+    setActiveTab(newValue);
   };
 
   const updateAppointmentStatus = async (id, status) => {
@@ -296,47 +210,6 @@ const DoctorPortal = () => {
       }
     } catch (error) {
       toast.error('Failed to update appointment');
-    }
-  };
-
-  const handleEditLocation = (location) => {
-    setEditingLocation(location);
-    setShowEditLocation(true);
-  };
-
-  const handleUpdateLocation = async (e) => {
-    e.preventDefault();
-    try {
-      const token = localStorage.getItem('token');
-      const response = await api.updateDoctorLocation(editingLocation.id, editingLocation, token);
-      
-      if (response.ok) {
-        toast.success('Location updated successfully!');
-        const doctorId = localStorage.getItem('doctorId');
-        fetchDoctorData(parseInt(doctorId));
-        setShowEditLocation(false);
-        setEditingLocation(null);
-      } else {
-        throw new Error('Failed to update location');
-      }
-    } catch (error) {
-      toast.error('Failed to update location');
-    }
-  };
-
-  const deleteLocation = async (id) => {
-    try {
-      const token = localStorage.getItem('token');
-      const response = await api.deleteDoctorLocation(id, token);
-      
-      if (response.ok) {
-        setLocations(locations.filter(loc => loc.id !== id));
-        toast.success('Location removed successfully!');
-      } else {
-        throw new Error('Failed to delete location');
-      }
-    } catch (error) {
-      toast.error('Failed to delete location');
     }
   };
 
@@ -381,14 +254,7 @@ const DoctorPortal = () => {
                 ...profileData
               };
               
-              const response = await fetch('http://localhost:3001/api/doctors/profile', {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${token}`
-                },
-                body: JSON.stringify(profileDataWithStatus)
-              });
+              const response = await api.createDoctorProfile(profileDataWithStatus, token);
               
               if (response.ok) {
                 const doctor = await response.json();
@@ -495,6 +361,175 @@ const DoctorPortal = () => {
     );
   }
 
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 0:
+        return (
+          <>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              {[
+                {
+                  icon: <People sx={{ fontSize: 40, color: 'primary.main' }} />,
+                  title: "Total Appointments",
+                  value: appointments.length,
+                  color: 'primary.main',
+                },
+                {
+                  icon: <Schedule sx={{ fontSize: 40, color: 'secondary.main' }} />,
+                  title: 'Total Patients',
+                  value: stats.totalPatients,
+                  color: 'secondary.main',
+                },
+                {
+                  icon: <AttachMoney sx={{ fontSize: 40, color: 'success.main' }} />,
+                  title: "Today's Earnings",
+                  value: `₹${stats.totalEarnings}`,
+                  color: 'success.main',
+                },
+                {
+                  icon: <LocationOn sx={{ fontSize: 40, color: 'warning.main' }} />,
+                  title: 'Active Locations',
+                  value: locations.length,
+                  color: 'warning.main',
+                },
+              ].map((stat, index) => (
+                <Grid item xs={12} sm={6} md={3} key={index}>
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: index * 0.1 }}
+                  >
+                    <Card
+                      sx={{
+                        height: '100%',
+                        background: 'rgba(255, 255, 255, 0.9)',
+                        backdropFilter: 'blur(20px)',
+                        '&:hover': {
+                          transform: 'translateY(-4px)',
+                          boxShadow: `0px 8px 30px rgba(77, 182, 226, 0.15)`,
+                        },
+                      }}
+                    >
+                      <CardContent sx={{ p: 3 }}>
+                        <Box display="flex" alignItems="center" mb={2}>
+                          <Avatar
+                            sx={{
+                              backgroundColor: `${stat.color}20`,
+                              mr: 2,
+                              width: 60,
+                              height: 60,
+                            }}
+                          >
+                            {stat.icon}
+                          </Avatar>
+                        </Box>
+                        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+                          {stat.value}
+                        </Typography>
+                        <Typography variant="h6" color="text.secondary">
+                          {stat.title}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                </Grid>
+              ))}
+            </Grid>
+            <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
+              Dashboard Overview
+            </Typography>
+          </>
+        );
+      case 1:
+        return (
+          <>
+            <Typography variant="h5" sx={{ mb: 3, fontWeight: 600 }}>
+              All Appointments ({appointments.length})
+            </Typography>
+            <Grid container spacing={3}>
+              {appointments.map(appointment => (
+                <Grid item xs={12} md={6} key={appointment.id}>
+                  <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 3 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+                        <Avatar sx={{ mr: 2, bgcolor: 'primary.main' }}>
+                          <Person />
+                        </Avatar>
+                        <Box>
+                          <Typography variant="h6" component="h3">
+                            {appointment.patient?.user?.name || 'Patient Name'}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            {appointment.reason || 'General Consultation'}
+                          </Typography>
+                        </Box>
+                        <Box sx={{ ml: 'auto' }}>
+                          <Chip 
+                            label={appointment.status || 'PENDING'}
+                            color={appointment.status === 'CONFIRMED' ? 'success' : appointment.status === 'CANCELLED' ? 'error' : 'warning'}
+                            variant="outlined"
+                          />
+                        </Box>
+                      </Box>
+                      
+                      <Divider sx={{ my: 2 }} />
+                      
+                      <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
+                        <Schedule sx={{ mr: 1, color: 'text.secondary' }} />
+                        <Typography variant="body2">
+                          {new Date(appointment.appointmentDate).toLocaleString()}
+                        </Typography>
+                      </Box>
+                      
+                      <Typography variant="body2" sx={{ mb: 2, fontWeight: 600 }}>
+                        Fees: ₹{appointment.fees || 500}
+                      </Typography>
+                      
+                      {appointment.status === 'PENDING' && (
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Button
+                            variant="contained"
+                            color="success"
+                            startIcon={<CheckCircle />}
+                            onClick={() => updateAppointmentStatus(appointment.id, 'CONFIRMED')}
+                            size="small"
+                          >
+                            Confirm
+                          </Button>
+                          <Button
+                            variant="outlined"
+                            color="error"
+                            startIcon={<Cancel />}
+                            onClick={() => updateAppointmentStatus(appointment.id, 'CANCELLED')}
+                            size="small"
+                          >
+                            Cancel
+                          </Button>
+                        </Box>
+                      )}
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+              {appointments.length === 0 && (
+                <Grid item xs={12}>
+                  <Card sx={{ p: 4, textAlign: 'center' }}>
+                    <Typography variant="h6" color="text.secondary">
+                      No appointments found
+                    </Typography>
+                  </Card>
+                </Grid>
+              )}
+            </Grid>
+          </>
+        );
+      case 2:
+        return <DoctorSchedule />;
+      default:
+        return null;
+    }
+  };
+
   return (
     <Box sx={{ minHeight: '100vh', backgroundColor: 'background.default' }}>
       <Toaster position="top-right" />
@@ -520,81 +555,15 @@ const DoctorPortal = () => {
           </Typography>
         </motion.div>
 
+        <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={activeTab} onChange={handleTabChange}>
+            <Tab icon={<Dashboard />} label="Dashboard" />
+            <Tab icon={<Schedule />} label="Appointments" />
+            <Tab icon={<AccessTime />} label="Schedule" />
+          </Tabs>
+        </Box>
 
-
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          {[
-            {
-              icon: <People sx={{ fontSize: 40, color: 'primary.main' }} />,
-              title: "Today's Appointments",
-              value: stats.todayPatients,
-              color: 'primary.main',
-            },
-            {
-              icon: <Schedule sx={{ fontSize: 40, color: 'secondary.main' }} />,
-              title: 'Total Patients',
-              value: stats.totalPatients,
-              color: 'secondary.main',
-            },
-            {
-              icon: <AttachMoney sx={{ fontSize: 40, color: 'success.main' }} />,
-              title: "Today's Earnings",
-              value: `₹${stats.totalEarnings}`,
-              color: 'success.main',
-            },
-            {
-              icon: <LocationOn sx={{ fontSize: 40, color: 'warning.main' }} />,
-              title: 'Active Locations',
-              value: locations.length,
-              color: 'warning.main',
-            },
-          ].map((stat, index) => (
-            <Grid item xs={12} sm={6} md={3} key={index}>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-              >
-                <Card
-                  sx={{
-                    height: '100%',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(20px)',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: `0px 8px 30px rgba(77, 182, 226, 0.15)`,
-                    },
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box display="flex" alignItems="center" mb={2}>
-                      <Avatar
-                        sx={{
-                          backgroundColor: `${stat.color}20`,
-                          mr: 2,
-                          width: 60,
-                          height: 60,
-                        }}
-                      >
-                        {stat.icon}
-                      </Avatar>
-                    </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
-                      {stat.value}
-                    </Typography>
-                    <Typography variant="h6" color="text.secondary">
-                      {stat.title}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-
-        <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
-          Dashboard Overview
-        </Typography>
+        {renderTabContent()}
       </Container>
     </Box>
   );

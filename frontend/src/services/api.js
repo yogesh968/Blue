@@ -1,5 +1,14 @@
 const API_BASE_URL = 'http://localhost:3001/api';
 
+// Add error handling wrapper
+const handleResponse = async (response) => {
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`HTTP ${response.status}: ${error}`);
+  }
+  return response;
+};
+
 const api = {
   // Auth endpoints
   register: (userData) => 
@@ -61,6 +70,9 @@ const api = {
   getDoctorLocations: (doctorId, token) =>
     fetch(`${API_BASE_URL}/doctor/${doctorId}/locations`, {
       headers: { 'Authorization': `Bearer ${token}` }
+    }).then(handleResponse).catch(err => {
+      console.error('API Error:', err);
+      return { ok: false, json: () => Promise.resolve([]) };
     }),
 
   addDoctorLocation: (doctorId, locationData, token) =>
@@ -227,6 +239,19 @@ const api = {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ status })
+    }),
+
+  createDoctorProfile: (profileData, token) =>
+    fetch(`${API_BASE_URL}/doctors/profile`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify(profileData)
+    }).then(handleResponse).catch(err => {
+      console.error('Profile creation error:', err);
+      throw err;
     })
 };
 

@@ -3,7 +3,8 @@ const express = require('express');
 const cors = require('cors');
 const session = require('express-session');
 const passport = require('./config/passport');
-const { prisma } = require('./db/config.js');
+const { PrismaClient } = require('./generated/prisma');
+const prisma = new PrismaClient();
 
 const app = express();
 const PORT = process.env.PORT || 3001;

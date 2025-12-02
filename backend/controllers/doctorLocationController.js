@@ -39,6 +39,15 @@ const addDoctorLocation = async (req, res) => {
       return res.status(400).json({ error: 'Name, address, and city are required' });
     }
 
+    // Check if doctor exists
+    const doctor = await prisma.doctor.findUnique({
+      where: { id: parseInt(doctorId) }
+    });
+    
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor not found' });
+    }
+
     const location = await prisma.doctorLocation.create({
       data: {
         doctorId: parseInt(doctorId),

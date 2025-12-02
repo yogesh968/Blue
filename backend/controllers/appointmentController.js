@@ -41,9 +41,14 @@ const createAppointment = async (req, res) => {
 const getAppointments = async (req, res) => {
   try {
     const { userId, role } = req.user;
+    const { doctorId } = req.params;
     
     let where = {};
-    if (role === 'PATIENT') {
+    
+    // If doctorId is provided in params, use it directly
+    if (doctorId) {
+      where.doctorId = parseInt(doctorId);
+    } else if (role === 'PATIENT') {
       const patient = await prisma.patient.findUnique({ where: { userId } });
       if (!patient) {
         return res.json([]);

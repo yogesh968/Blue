@@ -1,4 +1,5 @@
-const { prisma } = require('../db/config');
+const { PrismaClient } = require('../generated/prisma');
+const prisma = new PrismaClient();
 
 const getDoctors = async (req, res) => {
   try {
