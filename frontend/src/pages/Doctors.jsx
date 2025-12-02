@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Filter, Star, MapPin, Clock, DollarSign, User } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import AppointmentBooking from '../components/AppointmentBooking';
@@ -17,7 +17,9 @@ const Doctors = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedDoctor, setSelectedDoctor] = useState(null);
   const [showBooking, setShowBooking] = useState(false);
+  const [user, setUser] = useState(null);
   const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,7 +28,7 @@ const Doctors = () => {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/doctors');
+      const response = await fetch('http://localhost:3002/api/doctors');
       if (!response.ok) {
         throw new Error('Failed to fetch doctors');
       }
@@ -38,13 +40,11 @@ const Doctors = () => {
         name: doctor.user.name,
         specialty: doctor.speciality,
         experience: `${doctor.experience}+ years`,
-        rating: doctor.reviews.length > 0 
-          ? (doctor.reviews.reduce((sum, review) => sum + review.rating, 0) / doctor.reviews.length).toFixed(1)
-          : 4.5, // Default rating
-        reviews: doctor.reviews.length,
+        rating: 4.5, // Default rating since reviews might not be populated
+        reviews: 0, // Default reviews
         fee: doctor.fees,
-        hospital: doctor.hospital.name,
-        location: doctor.hospital.city,
+        hospital: doctor.hospital?.name || 'General Hospital',
+        location: doctor.hospital?.city || 'Mumbai',
         image: "👨⚕️", // Default image
         available: true, // Assume all doctors are available
         qualification: doctor.qualification
@@ -64,6 +64,21 @@ const Doctors = () => {
 
   useEffect(() => {
     fetchDoctors();
+    // Check if user is logged in
+    const token = localStorage.getItem('token');
+    const userData = localStorage.getItem('user');
+    if (token && userData) {
+      setUser(JSON.parse(userData));
+      
+      // Check if there's a pending appointment after login
+      const pendingAppointment = localStorage.getItem('pendingAppointment');
+      if (pendingAppointment) {
+        const doctor = JSON.parse(pendingAppointment);
+        setSelectedDoctor(doctor);
+        setShowBooking(true);
+        localStorage.removeItem('pendingAppointment');
+      }
+    }
   }, []);
 
   useEffect(() => {
@@ -91,6 +106,13 @@ const Doctors = () => {
   }, [doctors, filters, searchQuery]);
 
   const bookAppointment = (doctor) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      // Store selected doctor for after login
+      localStorage.setItem('pendingAppointment', JSON.stringify(doctor));
+      navigate('/login');
+      return;
+    }
     setSelectedDoctor(doctor);
     setShowBooking(true);
   };

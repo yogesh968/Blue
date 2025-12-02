@@ -25,6 +25,7 @@
     position: relative;
     z-index: 1001;
     box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+    pointer-events: all;
   }
   
   .modal-header {
@@ -106,89 +107,286 @@
     gap: 1.5rem;
   }
   
+  .date-input {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    pointer-events: auto !important;
+    background: white;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .date-input:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    z-index: 20;
+  }
+  
+  .date-input::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 4px;
+    position: relative;
+    z-index: 30;
+  }
+  
+  .date-selection {
+    position: relative;
+    z-index: 5;
+  }
+  
+  .time-selection {
+    position: relative;
+    z-index: 5;
+  }
+  
+  .no-slots {
+    padding: 2rem;
+    text-align: center;
+    background: #fef2f2;
+    border-radius: 8px;
+    color: #dc2626;
+    margin-top: 1rem;
+  }
+  
+  .date-prompt {
+    padding: 2rem;
+    text-align: center;
+    background: #f0f9ff;
+    border-radius: 8px;
+    color: #0369a1;
+    margin-top: 1rem;
+  }
+  
+  .time-placeholder {
+    padding: 1.5rem;
+    text-align: center;
+    background: #f8fafc;
+    border: 2px dashed #cbd5e1;
+    border-radius: 8px;
+    color: #64748b;
+    margin-top: 1rem;
+  }
+  
+  .loading-slots {
+    padding: 1.5rem;
+    text-align: center;
+    background: #fef3c7;
+    border-radius: 8px;
+    color: #92400e;
+    margin-top: 1rem;
+  }
+  
+  .retry-btn {
+    margin-top: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #3b82f6;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.875rem;
+  }
+  
+  .retry-btn:hover {
+    background: #2563eb;
+  }
+  
   .time-slots {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    position: relative;
+    z-index: 10;
   }
   
   .time-slot {
-    padding: 0.5rem;
+    padding: 0.75rem 0.5rem;
     border: 1px solid #d1d5db;
-    border-radius: 6px;
+    border-radius: 8px;
     background: white;
     cursor: pointer;
     text-align: center;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 15;
   }
   
   .time-slot:hover {
     border-color: #3b82f6;
+    background: #eff6ff;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
   .time-slot.selected {
     background: #3b82f6;
     color: white;
     border-color: #3b82f6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);
+  }
+  
+  .time-slot:active {
+    transform: translateY(0);
+  }
+  
+  .reason-selection {
+    position: relative;
+    z-index: 5;
   }
   
   .reason-selection textarea {
     width: 100%;
     padding: 0.75rem;
     border: 1px solid #d1d5db;
-    border-radius: 6px;
+    border-radius: 8px;
     resize: vertical;
     margin-top: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    min-height: 100px;
+    pointer-events: auto !important;
+    cursor: text;
+    position: relative;
+    z-index: 10;
+  }
+  
+  .reason-selection textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  .common-reasons {
+    margin-top: 1.5rem;
+    position: relative;
+    z-index: 5;
+  }
+  
+  .common-reasons p {
+    margin-bottom: 0.75rem;
+    font-weight: 500;
+    color: #374151;
   }
   
   .reason-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
   }
   
   .reason-tag {
-    padding: 0.25rem 0.75rem;
-    background: #f3f4f6;
-    border: 1px solid #d1d5db;
-    border-radius: 20px;
+    padding: 0.5rem 1rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 25px;
     cursor: pointer;
     font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    pointer-events: auto !important;
+    position: relative;
+    z-index: 10;
+    user-select: none;
   }
   
   .reason-tag:hover {
-    background: #e5e7eb;
+    background: #e2e8f0;
+    border-color: #3b82f6;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .reason-tag:active {
+    transform: translateY(0);
   }
   
   .patient-form {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 5;
   }
   
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
+    position: relative;
+    z-index: 5;
   }
   
   .form-group {
     display: flex;
     flex-direction: column;
+    position: relative;
+    z-index: 5;
   }
   
   .form-group label {
     margin-bottom: 0.5rem;
     font-weight: 500;
     color: #374151;
+    font-size: 0.875rem;
   }
   
   .form-group input, .form-group select, .form-group textarea {
     padding: 0.75rem;
     border: 1px solid #d1d5db;
-    border-radius: 6px;
+    border-radius: 8px;
     font-size: 1rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    pointer-events: auto !important;
+    cursor: text;
+    background: white;
+    position: relative;
+    z-index: 10;
+    font-family: inherit;
+  }
+  
+  .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+    outline: none;
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    z-index: 20;
+  }
+  
+  .form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e");
+    background-position: right 0.5rem center;
+    background-repeat: no-repeat;
+    background-size: 1.5em 1.5em;
+    padding-right: 2.5rem;
+  }
+  
+  .form-group input[type="number"] {
+    cursor: text;
+  }
+  
+  .form-group input[type="tel"] {
+    cursor: text;
+  }
+  
+  .form-group input[type="email"] {
+    cursor: text;
   }
   
   .booking-summary {
@@ -252,10 +450,14 @@
   
   .btn-primary, .btn-secondary {
     padding: 0.75rem 1.5rem;
-    border-radius: 6px;
+    border-radius: 8px;
     font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s ease;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
   }
   
   .btn-primary {
@@ -281,13 +483,29 @@
   @media (max-width: 640px) {
     .form-row {
       grid-template-columns: 1fr;
+      gap: 1rem;
     }
     
     .time-slots {
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0.5rem;
+    }
+    
+    .time-slot {
+      padding: 0.5rem;
+      font-size: 0.875rem;
     }
     
     .payment-options {
       flex-direction: column;
+    }
+    
+    .modal-content {
+      width: 95%;
+      margin: 1rem;
+    }
+    
+    .patient-form {
+      gap: 1rem;
     }
   }

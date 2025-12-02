@@ -20,10 +20,49 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
     paymentMethod: 'CARD'
   });
 
-  const availableSlots = [
-    '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
-    '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
-  ];
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
+  
+  // Fetch available slots from backend
+  const fetchAvailableSlots = async (date) => {
+    if (!date) return;
+    
+    setLoadingSlots(true);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await fetch(`http://localhost:3002/api/doctors/${doctor.id}/availability?date=${date}`, {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        setAvailableSlots(data.availableSlots || []);
+      } else {
+        // Fallback to default slots
+        const defaultSlots = [
+          '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+          '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+        ];
+        setAvailableSlots(defaultSlots);
+      }
+    } catch (error) {
+      console.error('Error fetching slots:', error);
+      // Fallback to default slots
+      const defaultSlots = [
+        '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
+        '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
+      ];
+      setAvailableSlots(defaultSlots);
+    } finally {
+      setLoadingSlots(false);
+    }
+  };
+  
+  const handleDateChange = (date) => {
+    handleInputChange('date', date);
+    handleInputChange('time', ''); // Reset time selection
+    fetchAvailableSlots(date);
+  };
 
   const handleInputChange = (field, value) => {
     if (field.includes('.')) {
@@ -115,6 +154,22 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
       
       const appointment = await response.json();
       
+      // Create payment record
+      const paymentData = {
+        appointmentId: appointment.id,
+        amount: doctor.fee,
+        paymentMethod: bookingData.paymentMethod,
+        paymentStatus: 'PAID', // Simulate successful payment
+        transactionId: `TXN${Date.now()}`
+      };
+      
+      try {
+        await api.createPayment(paymentData, token);
+      } catch (paymentError) {
+        console.warn('Payment record creation failed:', paymentError);
+        // Continue even if payment record fails
+      }
+      
       toast.success('Appointment booked successfully!');
       onSuccess && onSuccess({ ...bookingData, appointmentId: appointment.id });
       setStep(5); // Success step
@@ -135,27 +190,53 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
             </div>
             <div className="date-time-selection">
               <div className="date-selection">
-                <label>Select Date</label>
+                <label>Select Date *</label>
                 <input
                   type="date"
                   value={bookingData.date}
-                  onChange={(e) => handleInputChange('date', e.target.value)}
+                  onChange={(e) => handleDateChange(e.target.value)}
                   min={new Date().toISOString().split('T')[0]}
+                  max={new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                  className="date-input"
+                  required
                 />
               </div>
+              
               <div className="time-selection">
-                <label>Available Time Slots</label>
-                <div className="time-slots">
-                  {availableSlots.map(slot => (
-                    <button
-                      key={slot}
-                      className={`time-slot ${bookingData.time === slot ? 'selected' : ''}`}
-                      onClick={() => handleInputChange('time', slot)}
+                <label>Select Time Slot *</label>
+                {!bookingData.date ? (
+                  <div className="time-placeholder">
+                    <p>Please select a date first</p>
+                  </div>
+                ) : loadingSlots ? (
+                  <div className="loading-slots">
+                    <p>Loading available slots...</p>
+                  </div>
+                ) : availableSlots.length > 0 ? (
+                  <div className="time-slots">
+                    {availableSlots.map(slot => (
+                      <button
+                        key={slot}
+                        type="button"
+                        className={`time-slot ${bookingData.time === slot ? 'selected' : ''}`}
+                        onClick={() => handleInputChange('time', slot)}
+                      >
+                        {slot}
+                      </button>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="no-slots">
+                    <p>No available slots for this date</p>
+                    <button 
+                      type="button" 
+                      className="retry-btn"
+                      onClick={() => fetchAvailableSlots(bookingData.date)}
                     >
-                      {slot}
+                      Retry
                     </button>
-                  ))}
-                </div>
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -343,8 +424,12 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="appointment-booking-modal" onClick={(e) => e.target === e.currentTarget && onClose()}>
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className="appointment-booking-modal" onClick={(e) => {
+      if (e.target.classList.contains('appointment-booking-modal')) {
+        onClose();
+      }
+    }}>
+      <div className="modal-content">
         <div className="modal-header">
           <h2>Book Appointment</h2>
           <button className="close-btn" onClick={onClose}>×</button>

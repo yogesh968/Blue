@@ -9,17 +9,18 @@ router.post('/', authenticateToken, async (req, res) => {
 
     const payment = await prisma.payment.create({
       data: {
-        appointmentId: parseInt(appointmentId),
+        appointmentId,
         amount: parseFloat(amount),
         paymentMethod,
         paymentStatus: 'PAID',
-        transactionId: `TXN_${Date.now()}`
+        transactionId: req.body.transactionId || `TXN_${Date.now()}`
       }
     });
 
     res.status(201).json(payment);
   } catch (error) {
-    res.status(500).json({ error: 'Payment failed' });
+    console.error('Payment error:', error);
+    res.status(500).json({ error: 'Payment failed', details: error.message });
   }
 });
 

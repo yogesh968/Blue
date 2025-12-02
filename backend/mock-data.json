@@ -1,0 +1,140 @@
+{
+  "hospitals": [
+    {
+      "name": "City General Hospital",
+      "city": "Mumbai",
+      "address": "123 Main Street, Andheri West",
+      "phone": "+91-9876543210"
+    },
+    {
+      "name": "Apollo Medical Center",
+      "city": "Delhi",
+      "address": "456 Health Avenue, CP",
+      "phone": "+91-9876543211"
+    },
+    {
+      "name": "Max Healthcare",
+      "city": "Bangalore",
+      "address": "789 Care Road, Koramangala",
+      "phone": "+91-9876543212"
+    }
+  ],
+  "users": [
+    {
+      "name": "Dr. Rajesh Kumar",
+      "email": "rajesh.kumar@hospital.com",
+      "password": "password123",
+      "phone": "+91-9876543213",
+      "role": "DOCTOR"
+    },
+    {
+      "name": "Dr. Priya Sharma",
+      "email": "priya.sharma@hospital.com",
+      "password": "password123",
+      "phone": "+91-9876543214",
+      "role": "DOCTOR"
+    },
+    {
+      "name": "Dr. Amit Patel",
+      "email": "amit.patel@hospital.com",
+      "password": "password123",
+      "phone": "+91-9876543215",
+      "role": "DOCTOR"
+    },
+    {
+      "name": "John Doe",
+      "email": "john.doe@email.com",
+      "password": "password123",
+      "phone": "+91-9876543216",
+      "role": "PATIENT"
+    },
+    {
+      "name": "Jane Smith",
+      "email": "jane.smith@email.com",
+      "password": "password123",
+      "phone": "+91-9876543217",
+      "role": "PATIENT"
+    },
+    {
+      "name": "Mike Johnson",
+      "email": "mike.johnson@email.com",
+      "password": "password123",
+      "phone": "+91-9876543218",
+      "role": "PATIENT"
+    }
+  ],
+  "doctors": [
+    {
+      "speciality": "Cardiology",
+      "experience": 10,
+      "fees": 1500,
+      "qualification": "MBBS, MD Cardiology"
+    },
+    {
+      "speciality": "Dermatology",
+      "experience": 8,
+      "fees": 1200,
+      "qualification": "MBBS, MD Dermatology"
+    },
+    {
+      "speciality": "Orthopedics",
+      "experience": 12,
+      "fees": 1800,
+      "qualification": "MBBS, MS Orthopedics"
+    }
+  ],
+  "patients": [
+    {
+      "gender": "Male",
+      "dob": "1990-05-15",
+      "medicalHistory": {
+        "allergies": ["Peanuts"],
+        "conditions": []
+      }
+    },
+    {
+      "gender": "Female",
+      "dob": "1985-08-22",
+      "medicalHistory": {
+        "allergies": [],
+        "conditions": ["Hypertension"]
+      }
+    },
+    {
+      "gender": "Male",
+      "dob": "1992-12-10",
+      "medicalHistory": {
+        "allergies": ["Dust"],
+        "conditions": ["Asthma"]
+      }
+    }
+  ],
+  "appointments": [
+    {
+      "appointmentDate": "2024-01-15T10:00:00Z",
+      "durationMinutes": 30,
+      "reason": "Regular checkup",
+      "status": "CONFIRMED"
+    },
+    {
+      "appointmentDate": "2024-01-16T14:00:00Z",
+      "durationMinutes": 45,
+      "reason": "Skin consultation",
+      "status": "PENDING"
+    }
+  ],
+  "ambulances": [
+    {
+      "vehicleNumber": "MH01AB1234",
+      "type": "BASIC",
+      "isAvailable": true,
+      "location": "Andheri West"
+    },
+    {
+      "vehicleNumber": "DL02CD5678",
+      "type": "ICU",
+      "isAvailable": true,
+      "location": "CP"
+    }
+  ]
+}

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash, FaUser, FaUserMd, FaHospital } from 'react-icons/fa';
 import api from '../services/api';
 import GoogleLoginButton from '../components/GoogleLoginButton';
@@ -16,6 +16,7 @@ const Register = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -37,6 +38,14 @@ const Register = ({ onLogin }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         onLogin(data.user);
+        
+        // Check if there's a pending appointment
+        const pendingAppointment = localStorage.getItem('pendingAppointment');
+        if (pendingAppointment) {
+          navigate('/doctors');
+        } else {
+          navigate('/');
+        }
       } else {
         setError(data.error || 'Registration failed');
       }

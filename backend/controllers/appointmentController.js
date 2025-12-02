@@ -7,8 +7,8 @@ const createAppointment = async (req, res) => {
 
     const appointment = await prisma.appointment.create({
       data: {
-        patientId: parseInt(patientId),
-        doctorId: parseInt(doctorId),
+        patientId,
+        doctorId,
         appointmentDate: new Date(appointmentDate),
         reason,
         status: 'PENDING'
@@ -19,12 +19,10 @@ const createAppointment = async (req, res) => {
       }
     });
 
-    // Send notification
-    await sendAppointmentNotification(appointment.id, 'CONFIRMED');
-
     res.status(201).json(appointment);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create appointment' });
+    console.error('Error creating appointment:', error);
+    res.status(500).json({ error: 'Failed to create appointment', details: error.message });
   }
 };
 
@@ -76,7 +74,7 @@ const updateAppointmentStatus = async (req, res) => {
     const { status } = req.body;
 
     const appointment = await prisma.appointment.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: { status },
       include: {
         doctor: { include: { user: { select: { name: true } } } },
