@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 import './Emergency.css';
 
 const Emergency = () => {
+  const navigate = useNavigate();
   const [location, setLocation] = useState('');
   const [emergencyType, setEmergencyType] = useState('');
   const [patientInfo, setPatientInfo] = useState({
@@ -9,6 +12,7 @@ const Emergency = () => {
     age: '',
     condition: ''
   });
+  const [isRequestingAmbulance, setIsRequestingAmbulance] = useState(false);
 
   const emergencyServices = [
     {
@@ -68,8 +72,36 @@ const Emergency = () => {
     window.open(`tel:${phone}`, '_self');
   };
 
-  const handleAmbulanceRequest = () => {
-    alert('Ambulance request sent! ETA: 8-12 minutes');
+  const handleAmbulanceRequest = async () => {
+    if (!location || !emergencyType || !patientInfo.name) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    setIsRequestingAmbulance(true);
+    
+    try {
+      // Simulate API call
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      toast.success('🚑 Ambulance dispatched! ETA: 8-12 minutes');
+      toast.success('📞 Emergency contact will call you shortly');
+      
+      // Reset form
+      setLocation('');
+      setEmergencyType('');
+      setPatientInfo({ name: '', age: '', condition: '' });
+      
+    } catch (error) {
+      toast.error('Failed to request ambulance. Please call 108 directly.');
+    } finally {
+      setIsRequestingAmbulance(false);
+    }
+  };
+
+  const handleHospitalDirections = (hospitalName) => {
+    const query = encodeURIComponent(`${hospitalName} hospital near me`);
+    window.open(`https://maps.google.com/search/${query}`, '_blank');
   };
 
   return (
@@ -174,9 +206,10 @@ const Emergency = () => {
 
                 <button 
                   onClick={handleAmbulanceRequest}
+                  disabled={isRequestingAmbulance}
                   className="btn btn-primary btn-large"
                 >
-                  🚑 Request Ambulance
+                  {isRequestingAmbulance ? '⏳ Requesting...' : '🚑 Request Ambulance'}
                 </button>
               </div>
             </div>
@@ -204,7 +237,10 @@ const Emergency = () => {
                       >
                         📞 Call
                       </button>
-                      <button className="btn btn-primary">
+                      <button 
+                        onClick={() => handleHospitalDirections(hospital.name)}
+                        className="btn btn-primary"
+                      >
                         🗺️ Directions
                       </button>
                     </div>

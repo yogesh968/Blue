@@ -218,7 +218,12 @@ const Services = () => {
                   <div className="service-icon">{service.icon}</div>
                   <h4>{service.name}</h4>
                   <p>{service.description}</p>
-                  <button className="btn btn-primary">Learn More</button>
+                  <button 
+                    className="btn btn-primary"
+                    onClick={() => navigate('/doctors')}
+                  >
+                    Find Doctors
+                  </button>
                 </div>
               ))}
             </div>

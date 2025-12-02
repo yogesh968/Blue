@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Container,
@@ -32,6 +33,7 @@ import { motion } from 'framer-motion';
 import api from '../services/api';
 
 const Home = () => {
+  const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
   const [location, setLocation] = useState('');
   const [featuredDoctors, setFeaturedDoctors] = useState([]);
@@ -116,6 +118,33 @@ const Home = () => {
 
   // Fallback to mock data if API fails
   const displayDoctors = featuredDoctors.length > 0 ? featuredDoctors : (error ? mockFeaturedDoctors : []);
+
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (searchQuery) params.append('search', searchQuery);
+    if (location) params.append('location', location);
+    navigate(`/doctors?${params.toString()}`);
+  };
+
+  const handleSpecialtyClick = (specialty) => {
+    navigate(`/doctors?specialty=${specialty}`);
+  };
+
+  const handleQuickAction = (action) => {
+    switch (action) {
+      case 'emergency':
+        navigate('/emergency');
+        break;
+      case 'appointment':
+        navigate('/doctors');
+        break;
+      case 'hospitals':
+        navigate('/hospitals');
+        break;
+      default:
+        break;
+    }
+  };
 
   return (
     <Box>
@@ -225,6 +254,7 @@ const Home = () => {
                 <Button
                   variant="contained"
                   size="large"
+                  onClick={handleSearch}
                   sx={{
                     background: 'linear-gradient(135deg, #F6C453 0%, #FF914D 100%)',
                     color: '#1A2A33',
@@ -296,6 +326,7 @@ const Home = () => {
               description: 'Get immediate medical attention with our 24/7 emergency services',
               buttonText: 'Call Ambulance',
               color: '#FF914D',
+              action: 'emergency'
             },
             {
               icon: <CalendarToday sx={{ fontSize: 48, color: '#4DB6E2' }} />,
@@ -303,6 +334,7 @@ const Home = () => {
               description: 'Schedule consultations with top doctors at your preferred time',
               buttonText: 'Book Now',
               color: '#4DB6E2',
+              action: 'appointment'
             },
             {
               icon: <LocalHospital sx={{ fontSize: 48, color: '#F6C453' }} />,
@@ -310,6 +342,7 @@ const Home = () => {
               description: 'Locate nearby hospitals with advanced medical facilities',
               buttonText: 'Find Hospitals',
               color: '#F6C453',
+              action: 'hospitals'
             },
           ].map((action, index) => (
             <Grid item xs={12} md={4} key={index}>
@@ -344,6 +377,7 @@ const Home = () => {
                     <Button
                       variant="contained"
                       endIcon={<ArrowForward />}
+                      onClick={() => handleQuickAction(action.action)}
                       sx={{
                         background: `linear-gradient(135deg, ${action.color} 0%, ${action.color}CC 100%)`,
                         color: action.color === '#F6C453' ? '#1A2A33' : 'white',
@@ -468,7 +502,12 @@ const Home = () => {
                         </Box>
                         
                         <Box display="flex" gap={1}>
-                          <Button variant="outlined" size="small" fullWidth>
+                          <Button 
+                            variant="outlined" 
+                            size="small" 
+                            fullWidth
+                            onClick={() => navigate(`/doctors/${doctor.id}`)}
+                          >
                             View Profile
                           </Button>
                           <Button
@@ -477,6 +516,7 @@ const Home = () => {
                             fullWidth
                             endIcon={<ArrowForward />}
                             disabled={!doctor.available}
+                            onClick={() => navigate('/doctors')}
                           >
                             Book Now
                           </Button>
@@ -490,7 +530,11 @@ const Home = () => {
           )}
           
           <Box textAlign="center" mt={4}>
-            <Button variant="outlined" size="large">
+            <Button 
+              variant="outlined" 
+              size="large"
+              onClick={() => navigate('/doctors')}
+            >
               View All Doctors
             </Button>
           </Box>
@@ -531,6 +575,7 @@ const Home = () => {
                 viewport={{ once: true }}
               >
                 <Card
+                  onClick={() => handleSpecialtyClick(specialty.name)}
                   sx={{
                     textAlign: 'center',
                     p: 3,
@@ -627,6 +672,7 @@ const Home = () => {
               <Button
                 variant="contained"
                 size="large"
+                onClick={() => navigate('/doctors')}
                 sx={{
                   background: 'linear-gradient(135deg, #F6C453 0%, #FF914D 100%)',
                   color: '#1A2A33',
@@ -642,6 +688,7 @@ const Home = () => {
               <Button
                 variant="outlined"
                 size="large"
+                onClick={() => navigate('/doctors')}
                 sx={{
                   borderColor: 'rgba(255, 255, 255, 0.5)',
                   color: 'white',
