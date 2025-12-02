@@ -160,12 +160,12 @@ const api = {
 
   // Doctor Schedule endpoints
   getDoctorSchedule: (doctorId, token) =>
-    fetch(`${API_BASE_URL}/doctor/${doctorId}/schedule`, {
+    fetch(`${API_BASE_URL}/doctors/${doctorId}/schedule`, {
       headers: { 'Authorization': `Bearer ${token}` }
     }),
 
   updateDoctorSchedule: (doctorId, scheduleData, token) =>
-    fetch(`${API_BASE_URL}/doctor/${doctorId}/schedule`, {
+    fetch(`${API_BASE_URL}/doctors/${doctorId}/schedule`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -208,6 +208,15 @@ const api = {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify({ status })
+    }),
+
+  incrementLocationPatientCount: (locationId, token) =>
+    fetch(`${API_BASE_URL}/locations/${locationId}/increment-patient`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      }
     })
 };
 

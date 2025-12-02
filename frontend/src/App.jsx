@@ -64,7 +64,7 @@ function App() {
           <Navbar user={user} onLogout={handleLogout} />
           <main>
           <Routes>
-            <Route path="/" element={!user ? <Home /> : <Navigate to={getRoleBasedRedirect()} />} />
+            <Route path="/" element={<Home />} />
             <Route 
               path="/login" 
               element={user ? <Navigate to={getRoleBasedRedirect()} /> : <Login onLogin={handleLogin} />} 
@@ -82,7 +82,7 @@ function App() {
               element={user ? <Navigate to={getRoleBasedRedirect()} /> : <AuthSuccess onLogin={handleLogin} />} 
             />
             
-            {/* Public routes */}
+            {/* Public routes - accessible to everyone */}
             <Route path="/doctors" element={<Doctors />} />
             <Route path="/hospitals" element={<Hospitals />} />
             <Route path="/services" element={<Services />} />

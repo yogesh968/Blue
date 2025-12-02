@@ -6,6 +6,7 @@ import GoogleLoginButton from '../components/GoogleLoginButton';
 import './Auth.css';
 
 const Login = ({ onLogin }) => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -13,7 +14,6 @@ const Login = ({ onLogin }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({
@@ -34,14 +34,35 @@ const Login = ({ onLogin }) => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('userRole', data.user.role);
+        
+        // Store role-specific IDs
+        if (data.user.role === 'DOCTOR' && data.doctor) {
+          localStorage.setItem('doctorId', data.doctor.id);
+        } else if (data.user.role === 'PATIENT' && data.patient) {
+          localStorage.setItem('patientId', data.patient.id);
+        } else if (data.user.role === 'HOSPITAL' && data.hospital) {
+          localStorage.setItem('hospitalId', data.hospital.id);
+        }
+        
         onLogin(data.user);
         
-        // Check if there's a pending appointment
+        // Check if there's a pending appointment first
         const pendingAppointment = localStorage.getItem('pendingAppointment');
         if (pendingAppointment) {
           navigate('/doctors');
         } else {
-          navigate('/');
+          // Redirect based on role
+          if (data.user.role === 'DOCTOR') {
+            navigate('/doctor-portal');
+          } else if (data.user.role === 'PATIENT') {
+            navigate('/user-portal');
+          } else if (data.user.role === 'HOSPITAL') {
+            navigate('/hospital-portal');
+          } else {
+            navigate('/user-portal');
+          }
         }
       } else {
         setError(data.error || 'Login failed');

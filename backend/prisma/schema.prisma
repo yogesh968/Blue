@@ -154,8 +154,8 @@ model Review {
 }
 
 model DoctorLocation {
-  id        String   @id @default(auto()) @map("_id") @db.ObjectId
-  doctorId  String   @db.ObjectId
+  id        Int      @id @default(autoincrement())
+  doctorId  Int
   name      String
   address   String
   city      String
@@ -163,7 +163,7 @@ model DoctorLocation {
   isActive  Boolean  @default(true)
   createdAt DateTime @default(now())
 
-  doctor    Doctor   @relation(fields: [doctorId], references: [id])
+  doctor        Doctor   @relation(fields: [doctorId], references: [id])
 }
 
 enum BedType {

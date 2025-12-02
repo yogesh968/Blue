@@ -170,6 +170,15 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
         // Continue even if payment record fails
       }
       
+      // Increment patient count for doctor's location if locationId exists
+      if (doctor.locationId) {
+        try {
+          await api.incrementLocationPatientCount(doctor.locationId, token);
+        } catch (error) {
+          console.log('Could not update patient count:', error);
+        }
+      }
+      
       toast.success('Appointment booked successfully!');
       onSuccess && onSuccess({ ...bookingData, appointmentId: appointment.id });
       setStep(5); // Success step
