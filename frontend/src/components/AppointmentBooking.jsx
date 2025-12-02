@@ -30,7 +30,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
     setLoadingSlots(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3002/api/doctors/${doctor.id}/availability?date=${date}`, {
+      const response = await fetch(`http://localhost:3001/api/doctors/${doctor.id}/availability?date=${date}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
       

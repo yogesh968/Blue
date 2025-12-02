@@ -1,7 +1,7 @@
 const express = require('express');
 const { getDoctors, getDoctorById, getDoctorAvailability, createDoctorProfile, updateDoctorProfile } = require('../controllers/doctorController');
 const { authenticateToken } = require('../middleware/auth');
-const { PrismaClient } = require('../generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const router = express.Router();
 

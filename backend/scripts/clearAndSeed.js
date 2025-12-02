@@ -3,7 +3,29 @@ const bcrypt = require('bcryptjs');
 
 const prisma = new PrismaClient();
 
-async function main() {
+async function clearDatabase() {
+  console.log('🧹 Clearing existing data...');
+  
+  // Delete in correct order to avoid foreign key constraints
+  await prisma.payment.deleteMany();
+  await prisma.appointment.deleteMany();
+  await prisma.review.deleteMany();
+  await prisma.doctorTiming.deleteMany();
+  await prisma.doctorLocation.deleteMany();
+  await prisma.doctorSchedule.deleteMany();
+  await prisma.doctorInvitation.deleteMany();
+  await prisma.ambulanceBooking.deleteMany();
+  await prisma.bedBooking.deleteMany();
+  await prisma.ambulance.deleteMany();
+  await prisma.doctor.deleteMany();
+  await prisma.patient.deleteMany();
+  await prisma.user.deleteMany();
+  await prisma.hospital.deleteMany();
+  
+  console.log('✅ Database cleared');
+}
+
+async function seedDatabase() {
   console.log('🌱 Starting database seeding...');
 
   // Create hospitals
@@ -164,11 +186,16 @@ async function main() {
   console.log('🎉 Database seeding completed successfully!');
 }
 
-main()
-  .catch((e) => {
-    console.error('❌ Error during seeding:', e);
+async function main() {
+  try {
+    await clearDatabase();
+    await seedDatabase();
+  } catch (error) {
+    console.error('❌ Error during seeding:', error);
     process.exit(1);
-  })
-  .finally(async () => {
+  } finally {
     await prisma.$disconnect();
-  });
+  }
+}
+
+main();
