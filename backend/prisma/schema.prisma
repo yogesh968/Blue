@@ -154,14 +154,15 @@ model Review {
 }
 
 model DoctorLocation {
-  id        Int      @id @default(autoincrement())
-  doctorId  Int
-  name      String
-  address   String
-  city      String
-  phone     String?
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId      String   @db.ObjectId
+  name          String
+  address       String
+  city          String
+  phone         String?
+  isActive      Boolean  @default(true)
+  totalPatients Int      @default(0)
+  createdAt     DateTime @default(now())
 
   doctor        Doctor   @relation(fields: [doctorId], references: [id])
 }
