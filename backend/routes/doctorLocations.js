@@ -5,7 +5,8 @@ const {
   addDoctorLocation,
   updateDoctorLocation,
   deleteDoctorLocation,
-  getDoctorAppointments
+  getDoctorAppointments,
+  incrementLocationPatientCount
 } = require('../controllers/doctorLocationController');
 const { authenticateToken } = require('../middleware/auth');
 
@@ -17,6 +18,9 @@ router.post('/doctor/:doctorId/locations', authenticateToken, addDoctorLocation)
 
 // Update doctor location
 router.put('/locations/:locationId', authenticateToken, updateDoctorLocation);
+
+// Increment patient count
+router.put('/locations/:locationId/increment-patient', authenticateToken, incrementLocationPatientCount);
 
 // Delete doctor location
 router.delete('/locations/:locationId', authenticateToken, deleteDoctorLocation);

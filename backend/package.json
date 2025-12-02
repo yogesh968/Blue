@@ -23,6 +23,7 @@
     "passport-local": "^1.0.0"
   },
   "devDependencies": {
+    "axios": "^1.13.2",
     "chai": "^4.5.0",
     "chai-http": "^4.4.0",
     "mocha": "^10.8.2",

@@ -1,82 +1,80 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Search, Filter, Star, MapPin, Bed, Truck, Phone } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
+import api from '../services/api';
 import './Hospitals.css';
 
 const Hospitals = () => {
+  const navigate = useNavigate();
   const [hospitals, setHospitals] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
-
-  const mockHospitals = [
-    {
-      id: 1,
-      name: "Apollo Hospital",
-      location: "Mumbai",
-      address: "Bandra West, Mumbai, Maharashtra",
-      rating: 4.8,
-      reviews: 1250,
-      specialties: ["Cardiology", "Neurology", "Oncology", "Orthopedics"],
-      beds: 450,
-      availableBeds: 23,
-      emergency: true,
-      ambulance: true,
-      image: "🏥"
-    },
-    {
-      id: 2,
-      name: "Max Healthcare",
-      location: "Delhi",
-      address: "Saket, New Delhi",
-      rating: 4.7,
-      reviews: 980,
-      specialties: ["Cardiology", "Gastroenterology", "Nephrology"],
-      beds: 350,
-      availableBeds: 15,
-      emergency: true,
-      ambulance: true,
-      image: "🏥"
-    },
-    {
-      id: 3,
-      name: "Fortis Hospital",
-      location: "Bangalore",
-      address: "Bannerghatta Road, Bangalore",
-      rating: 4.6,
-      reviews: 756,
-      specialties: ["Pediatrics", "Gynecology", "Dermatology"],
-      beds: 280,
-      availableBeds: 8,
-      emergency: true,
-      ambulance: false,
-      image: "🏥"
-    },
-    {
-      id: 4,
-      name: "AIIMS",
-      location: "Delhi",
-      address: "Ansari Nagar, New Delhi",
-      rating: 4.9,
-      reviews: 2100,
-      specialties: ["All Specialties"],
-      beds: 2500,
-      availableBeds: 45,
-      emergency: true,
-      ambulance: true,
-      image: "🏥"
-    }
-  ];
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    setHospitals(mockHospitals);
+    fetchHospitals();
   }, []);
 
+  const fetchHospitals = async () => {
+    try {
+      const response = await api.getHospitals();
+      if (response.ok) {
+        const data = await response.json();
+        const formattedHospitals = data.map(h => ({
+          id: h.id,
+          name: h.name,
+          location: h.city,
+          address: h.address,
+          rating: 4.5 + Math.random() * 0.5,
+          reviews: Math.floor(Math.random() * 1000) + 500,
+          specialties: h.doctors?.map(d => d.speciality) || [],
+          beds: 300,
+          availableBeds: Math.floor(Math.random() * 50) + 10,
+          emergency: true,
+          ambulance: true,
+          phone: h.phone
+        }));
+        setHospitals(formattedHospitals);
+      }
+    } catch (error) {
+      toast.error('Failed to load hospitals');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleBookBed = (hospital) => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      toast.error('Please login to book a bed');
+      navigate('/login');
+      return;
+    }
+    
+    // Navigate to user portal with booking info
+    toast.success(`Redirecting to book bed at ${hospital.name}`);
+    navigate('/user-portal#beds', { state: { hospitalId: hospital.id, hospitalName: hospital.name } });
+  };
+
   const filteredHospitals = hospitals.filter(hospital => {
-    const matchesSearch = hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         hospital.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase()));
+    const matchesSearch = !searchQuery || 
+      hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      hospital.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (hospital.specialties && hospital.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
     const matchesLocation = !locationFilter || hospital.location === locationFilter;
     return matchesSearch && matchesLocation;
   });
+
+  if (loading) {
+    return (
+      <div className="hospitals-page">
+        <div className="loading-container">
+          <p>Loading hospitals...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="hospitals-page">
@@ -172,13 +170,19 @@ const Hospitals = () => {
                 <div className="hospital-actions">
                   <button 
                     className="btn-secondary"
-                    onClick={() => toast.success(`Calling ${hospital.name}`)}
+                    onClick={() => {
+                      if (hospital.phone) {
+                        window.location.href = `tel:${hospital.phone}`;
+                      } else {
+                        toast.success(`Call ${hospital.name}`);
+                      }
+                    }}
                   >
                     <Phone size={16} /> Call Hospital
                   </button>
                   <button 
                     className="btn-primary"
-                    onClick={() => toast.success(`Booking bed at ${hospital.name}`)}
+                    onClick={() => handleBookBed(hospital)}
                   >
                     <Bed size={16} /> Book Bed
                   </button>
