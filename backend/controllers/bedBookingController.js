@@ -2,16 +2,29 @@ const { prisma } = require('../db/config');
 
 const createBedBooking = async (req, res) => {
   try {
-    const { hospitalId, bedType, checkIn, patientId, amount } = req.body;
+    let { hospitalId, bedType, admissionDate, patientId, totalAmount } = req.body;
+    
+    // If patientId not provided, get from authenticated user
+    if (!patientId && req.user) {
+      const patient = await prisma.patient.findUnique({ where: { userId: req.user.userId } });
+      if (patient) {
+        patientId = patient.id;
+      }
+    }
+    
+    // Validate required fields
+    if (!patientId || !hospitalId || !bedType || !admissionDate) {
+      return res.status(400).json({ error: 'PatientId, hospitalId, bedType, and admissionDate are required' });
+    }
 
     const booking = await prisma.bedBooking.create({
       data: {
         patientId: parseInt(patientId),
         hospitalId: parseInt(hospitalId),
         bedType,
-        checkIn: new Date(checkIn),
-        amount: parseFloat(amount),
-        status: 'ACTIVE'
+        admissionDate: new Date(admissionDate),
+        totalAmount: totalAmount ? parseFloat(totalAmount) : null,
+        status: 'PENDING'
       },
       include: {
         hospital: { select: { name: true, address: true } },
@@ -21,6 +34,7 @@ const createBedBooking = async (req, res) => {
 
     res.status(201).json(booking);
   } catch (error) {
+    console.error('Error creating bed booking:', error);
     res.status(500).json({ error: 'Failed to create bed booking' });
   }
 };

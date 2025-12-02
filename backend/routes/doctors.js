@@ -1,15 +1,29 @@
 const express = require('express');
-const { getDoctors, getDoctorById, getDoctorAvailability, createDoctorProfile, updateDoctorProfile } = require('../controllers/doctorController');
+const { 
+  getDoctors, 
+  getDoctorById, 
+  getDoctorAvailability, 
+  createDoctorProfile, 
+  updateDoctorProfile,
+  getDoctorInvitations,
+  respondToInvitation,
+  getCurrentDoctorProfile
+} = require('../controllers/doctorController');
 const { authenticateToken } = require('../middleware/auth');
 const { PrismaClient } = require('../generated/prisma');
 const prisma = new PrismaClient();
 const router = express.Router();
 
 router.get('/', getDoctors);
+router.get('/profile/me', authenticateToken, getCurrentDoctorProfile);
 router.get('/:id', getDoctorById);
 router.get('/:id/availability', getDoctorAvailability);
 router.post('/profile', authenticateToken, createDoctorProfile);
 router.put('/:id', authenticateToken, updateDoctorProfile);
+
+// Doctor invitations
+router.get('/invitations/pending', authenticateToken, getDoctorInvitations);
+router.put('/invitations/:invitationId/respond', authenticateToken, respondToInvitation);
 
 // Get doctor appointments
 router.get('/:doctorId/appointments', authenticateToken, async (req, res) => {

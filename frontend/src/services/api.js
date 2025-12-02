@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:3002/api';
+const API_BASE_URL = 'http://localhost:3001/api';
 
 const api = {
   // Auth endpoints
@@ -217,6 +217,16 @@ const api = {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       }
+    }),
+
+  updateAppointmentStatus: (appointmentId, status, token) =>
+    fetch(`${API_BASE_URL}/appointments/${appointmentId}/status`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
     })
 };
 

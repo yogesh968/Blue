@@ -54,9 +54,9 @@ const Navbar = ({ user, onLogout }) => {
     if (user && user.role?.toLowerCase() === 'doctor') {
       return [
         { text: 'Dashboard', path: '/doctor-portal' },
-        { text: 'Appointments', path: '/doctor-portal', hash: 'appointments' },
-        { text: 'My Locations', path: '/doctor-portal', hash: 'locations' },
-        { text: 'Schedule', path: '/doctor-portal', hash: 'schedule' },
+        { text: 'Appointments', path: '/doctor-portal/appointments' },
+        { text: 'My Locations', path: '/doctor-portal/locations' },
+        { text: 'Schedule', path: '/doctor-portal/schedule' },
       ];
     } else if (user && user.role?.toLowerCase() === 'hospital') {
       return [
@@ -92,7 +92,7 @@ const Navbar = ({ user, onLogout }) => {
             button
             key={item.text}
             component={Link}
-            to={item.tab ? `${item.path}?tab=${item.tab}` : item.hash ? `${item.path}#${item.hash}` : item.path}
+            to={item.path}
             onClick={handleDrawerToggle}
             sx={{
               color: item.text === 'Emergency' ? 'error.main' : 'text.primary',
@@ -155,7 +155,7 @@ const Navbar = ({ user, onLogout }) => {
                 <Button
                   key={item.text}
                   component={Link}
-                  to={item.tab ? `${item.path}?tab=${item.tab}` : item.hash ? `${item.path}#${item.hash}` : item.path}
+                  to={item.path}
                   sx={{
                     mx: 1,
                     color: item.text === 'Emergency' ? 'error.main' : 'text.primary',

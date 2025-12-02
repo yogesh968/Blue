@@ -2,14 +2,47 @@ const { prisma } = require('../db/config');
 
 const getDoctors = async (req, res) => {
   try {
+    const { speciality, city, hospitalId } = req.query;
+    
+    let where = {};
+    if (speciality) where.speciality = { contains: speciality };
+    if (hospitalId) where.hospitalId = parseInt(hospitalId);
+    if (city && !hospitalId) {
+      where.hospital = { city: { contains: city } };
+    }
+
     const doctors = await prisma.doctor.findMany({
+      where,
       include: {
         user: { select: { name: true, email: true, phone: true } },
-        hospital: true
-      }
+        hospital: { select: { name: true, city: true, address: true } },
+        reviews: {
+          select: { rating: true },
+          take: 10
+        },
+        _count: {
+          select: { appointments: true, reviews: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
     });
 
-    res.json(doctors);
+    // Calculate average rating for each doctor
+    const doctorsWithRating = doctors.map(doctor => {
+      const avgRating = doctor.reviews.length > 0 
+        ? doctor.reviews.reduce((sum, review) => sum + review.rating, 0) / doctor.reviews.length
+        : 0;
+      
+      return {
+        ...doctor,
+        averageRating: Math.round(avgRating * 10) / 10,
+        totalAppointments: doctor._count.appointments,
+        totalReviews: doctor._count.reviews,
+        isAvailable: true // You can add logic for availability
+      };
+    });
+
+    res.json(doctorsWithRating);
   } catch (error) {
     console.error('Error fetching doctors:', error);
     res.status(500).json({ error: 'Failed to fetch doctors', details: error.message });
@@ -21,7 +54,7 @@ const getDoctorById = async (req, res) => {
     const { id } = req.params;
     
     const doctor = await prisma.doctor.findUnique({
-      where: { id },
+      where: { id: parseInt(id) },
       include: {
         user: { select: { name: true, email: true, phone: true } },
         hospital: true,
@@ -36,6 +69,7 @@ const getDoctorById = async (req, res) => {
 
     res.json(doctor);
   } catch (error) {
+    console.error('Error fetching doctor:', error);
     res.status(500).json({ error: 'Failed to fetch doctor' });
   }
 };
@@ -47,13 +81,17 @@ const createDoctorProfile = async (req, res) => {
 
     const existingDoctor = await prisma.doctor.findUnique({ where: { userId } });
     if (existingDoctor) {
-      return res.status(400).json({ error: 'Doctor profile already exists' });
+      return res.json(existingDoctor); // Return existing profile
+    }
+
+    if (!speciality || !experience || !fees || !qualification) {
+      return res.status(400).json({ error: 'Speciality, experience, fees, and qualification are required' });
     }
 
     const doctor = await prisma.doctor.create({
       data: {
         userId,
-        hospitalId,
+        hospitalId: hospitalId ? parseInt(hospitalId) : null,
         speciality,
         experience: parseInt(experience),
         fees: parseInt(fees),
@@ -67,6 +105,7 @@ const createDoctorProfile = async (req, res) => {
 
     res.status(201).json(doctor);
   } catch (error) {
+    console.error('Error creating doctor profile:', error);
     res.status(500).json({ error: 'Failed to create doctor profile' });
   }
 };
@@ -139,4 +178,114 @@ const getDoctorAvailability = async (req, res) => {
   }
 };
 
-module.exports = { getDoctors, getDoctorById, getDoctorAvailability, createDoctorProfile, updateDoctorProfile };
+// Get doctor invitations
+const getDoctorInvitations = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    
+    const doctor = await prisma.doctor.findUnique({ where: { userId } });
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor profile not found' });
+    }
+
+    const invitations = await prisma.doctorInvitation.findMany({
+      where: {
+        doctorId: doctor.id,
+        status: 'PENDING'
+      },
+      include: {
+        hospital: { select: { name: true, city: true, address: true, phone: true } }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json(invitations);
+  } catch (error) {
+    console.error('Error fetching invitations:', error);
+    res.status(500).json({ error: 'Failed to fetch invitations' });
+  }
+};
+
+// Respond to hospital invitation
+const respondToInvitation = async (req, res) => {
+  try {
+    const { invitationId } = req.params;
+    const { status } = req.body; // 'ACCEPTED' or 'REJECTED'
+    const { userId } = req.user;
+    
+    const doctor = await prisma.doctor.findUnique({ where: { userId } });
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor profile not found' });
+    }
+
+    const invitation = await prisma.doctorInvitation.findFirst({
+      where: {
+        id: parseInt(invitationId),
+        doctorId: doctor.id,
+        status: 'PENDING'
+      },
+      include: { hospital: true }
+    });
+
+    if (!invitation) {
+      return res.status(404).json({ error: 'Invitation not found' });
+    }
+
+    // Update invitation status
+    const updatedInvitation = await prisma.doctorInvitation.update({
+      where: { id: parseInt(invitationId) },
+      data: { status }
+    });
+
+    // If accepted, update doctor's hospital
+    if (status === 'ACCEPTED') {
+      await prisma.doctor.update({
+        where: { id: doctor.id },
+        data: { hospitalId: invitation.hospitalId }
+      });
+    }
+
+    res.json({
+      message: `Invitation ${status.toLowerCase()} successfully`,
+      invitation: updatedInvitation
+    });
+  } catch (error) {
+    console.error('Error responding to invitation:', error);
+    res.status(500).json({ error: 'Failed to respond to invitation' });
+  }
+};
+
+// Get current doctor profile
+const getCurrentDoctorProfile = async (req, res) => {
+  try {
+    const { userId } = req.user;
+    
+    const doctor = await prisma.doctor.findUnique({
+      where: { userId },
+      include: {
+        user: { select: { name: true, email: true, phone: true } },
+        hospital: true
+      }
+    });
+
+    if (!doctor) {
+      return res.status(404).json({ error: 'Doctor profile not found' });
+    }
+
+    res.json(doctor);
+  } catch (error) {
+    console.error('Error fetching doctor profile:', error);
+    res.status(500).json({ error: 'Failed to fetch doctor profile' });
+  }
+};
+
+module.exports = { 
+  getDoctors, 
+  getDoctorById, 
+  getDoctorAvailability, 
+  createDoctorProfile, 
+  updateDoctorProfile,
+  getDoctorInvitations,
+  respondToInvitation,
+  getCurrentDoctorProfile
+};

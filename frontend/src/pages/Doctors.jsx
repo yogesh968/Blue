@@ -28,7 +28,7 @@ const Doctors = () => {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3002/api/doctors');
+      const response = await fetch('http://localhost:3001/api/doctors');
       if (!response.ok) {
         throw new Error('Failed to fetch doctors');
       }
@@ -37,16 +37,16 @@ const Doctors = () => {
       // Transform API data to match frontend format
       const transformedDoctors = doctorsData.map(doctor => ({
         id: doctor.id,
-        name: doctor.user.name,
+        name: doctor.user?.name || 'Unknown Doctor',
         specialty: doctor.speciality,
         experience: `${doctor.experience}+ years`,
-        rating: 4.5, // Default rating since reviews might not be populated
-        reviews: 0, // Default reviews
+        rating: doctor.averageRating || 4.5,
+        reviews: doctor.totalReviews || 0,
         fee: doctor.fees,
         hospital: doctor.hospital?.name || 'General Hospital',
         location: doctor.hospital?.city || 'Mumbai',
         image: "👨⚕️", // Default image
-        available: true, // Assume all doctors are available
+        available: doctor.isAvailable !== false,
         qualification: doctor.qualification
       }));
       

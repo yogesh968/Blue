@@ -15,6 +15,9 @@ import Services from './pages/Services';
 import Emergency from './pages/Emergency';
 import UserPortal from './pages/UserPortal';
 import DoctorPortal from './pages/DoctorPortal';
+import DoctorAppointments from './pages/DoctorAppointments';
+import DoctorLocations from './pages/DoctorLocations';
+import DoctorSchedule from './pages/DoctorSchedule';
 import HospitalPortal from './pages/HospitalPortal';
 import RoleSelection from './pages/RoleSelection';
 import AuthSuccess from './pages/AuthSuccess';
@@ -38,6 +41,17 @@ function App() {
   const handleLogout = () => {
     localStorage.removeItem('user');
     localStorage.removeItem('token');
+    localStorage.removeItem('userId');
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('doctorId');
+    localStorage.removeItem('patientId');
+    localStorage.removeItem('hospitalId');
+    
+    // Clear all cookies
+    document.cookie.split(";").forEach(function(c) { 
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+    
     setUser(null);
   };
 
@@ -102,6 +116,30 @@ function App() {
               element={
                 <ProtectedRoute user={user} allowedRoles={['doctor']}>
                   <DoctorPortal />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/doctor-portal/appointments" 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['doctor']}>
+                  <DoctorAppointments />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/doctor-portal/locations" 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['doctor']}>
+                  <DoctorLocations />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/doctor-portal/schedule" 
+              element={
+                <ProtectedRoute user={user} allowedRoles={['doctor']}>
+                  <DoctorSchedule />
                 </ProtectedRoute>
               } 
             />

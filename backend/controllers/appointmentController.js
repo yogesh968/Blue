@@ -3,12 +3,24 @@ const { sendAppointmentNotification } = require('./notificationController');
 
 const createAppointment = async (req, res) => {
   try {
-    const { patientId, doctorId, appointmentDate, reason } = req.body;
+    let { patientId, doctorId, appointmentDate, reason } = req.body;
+    
+    // If patientId not provided, get from authenticated user
+    if (!patientId && req.user) {
+      const patient = await prisma.patient.findUnique({ where: { userId: req.user.userId } });
+      if (patient) {
+        patientId = patient.id;
+      }
+    }
+    
+    if (!patientId || !doctorId || !appointmentDate || !reason) {
+      return res.status(400).json({ error: 'PatientId, doctorId, appointmentDate, and reason are required' });
+    }
 
     const appointment = await prisma.appointment.create({
       data: {
-        patientId,
-        doctorId,
+        patientId: parseInt(patientId),
+        doctorId: parseInt(doctorId),
         appointmentDate: new Date(appointmentDate),
         reason,
         status: 'PENDING'

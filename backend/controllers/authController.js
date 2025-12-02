@@ -10,6 +10,10 @@ const register = async (req, res) => {
   try {
     const { name, email, password, phone, role } = req.body;
     
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ error: 'Name, email, password, and role are required' });
+    }
+    
     const existingUser = await prisma.user.findUnique({ where: { email } });
     if (existingUser) {
       return res.status(400).json({ error: 'User already exists' });
@@ -29,13 +33,18 @@ const register = async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.role }
     });
   } catch (error) {
-    res.status(500).json({ error: 'Registration failed' });
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Registration failed', details: error.message });
   }
 };
 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    if (!email || !password) {
+      return res.status(400).json({ error: 'Email and password are required' });
+    }
     
     const user = await prisma.user.findUnique({ 
       where: { email },
@@ -48,7 +57,6 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
 
-    // Check if user has password (not Google OAuth user)
     if (!user.password) {
       return res.status(401).json({ error: 'Please sign in with Google' });
     }
@@ -66,17 +74,18 @@ const login = async (req, res) => {
       user: { id: user.id, name: user.name, email: user.email, role: user.role }
     };
 
-    // Add doctor/patient ID if applicable
+    // Add profile IDs if they exist
     if (user.doctor) {
-      response.doctor = { id: user.doctor.id };
+      response.doctorId = user.doctor.id;
     }
     if (user.patient) {
-      response.patient = { id: user.patient.id };
+      response.patientId = user.patient.id;
     }
     
     res.json(response);
   } catch (error) {
-    res.status(500).json({ error: 'Login failed' });
+    console.error('Login error:', error);
+    res.status(500).json({ error: 'Login failed', details: error.message });
   }
 };
 

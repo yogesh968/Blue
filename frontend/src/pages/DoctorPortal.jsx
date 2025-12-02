@@ -17,6 +17,10 @@ import {
   DialogContent,
   DialogActions,
   TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
 } from '@mui/material';
 import {
   Dashboard,
@@ -46,6 +50,24 @@ const DoctorPortal = () => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [doctorProfile, setDoctorProfile] = useState(null);
+  const [profileData, setProfileData] = useState({
+    speciality: '',
+    experience: '',
+    fees: '',
+    qualification: ''
+  });
+
+  const specialities = [
+    'General Medicine', 'Cardiology', 'Dermatology', 'Neurology', 'Orthopedics',
+    'Pediatrics', 'Psychiatry', 'Gynecology', 'ENT', 'Ophthalmology',
+    'Urology', 'Gastroenterology', 'Pulmonology', 'Endocrinology', 'Oncology'
+  ];
+
+  const qualifications = [
+    'MBBS', 'MBBS, MD', 'MBBS, MS', 'MBBS, DNB', 'MBBS, DM', 'MBBS, MCh',
+    'BDS', 'BDS, MDS', 'BAMS', 'BHMS', 'BUMS', 'BPT', 'MBBS, FRCS'
+  ];
 
 
   const [newLocation, setNewLocation] = useState({
@@ -69,16 +91,38 @@ const DoctorPortal = () => {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
-    const doctorId = localStorage.getItem('doctorId');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      if (doctorId) {
-        fetchDoctorData(parseInt(doctorId));
-      }
+      initializeDoctorData();
     }
-    initializeSchedule();
   }, []);
+
+  const initializeDoctorData = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      
+      // Try to get doctor profile
+      const profileRes = await fetch('http://localhost:3001/api/doctors/profile/me', {
+        headers: { 'Authorization': `Bearer ${token}` }
+      });
+      
+      if (profileRes.ok) {
+        const doctorProfileData = await profileRes.json();
+        setDoctorProfile(doctorProfileData);
+        localStorage.setItem('doctorId', doctorProfileData.id.toString());
+        fetchDoctorData(doctorProfileData.id);
+      } else {
+        // No profile found, clear localStorage and show profile creation
+        localStorage.removeItem('doctorId');
+        setLoading(false);
+      }
+    } catch (error) {
+      console.error('Error initializing doctor data:', error);
+      setLoading(false);
+    }
+  };
 
   const fetchDoctorData = async (doctorId) => {
     try {
@@ -305,11 +349,149 @@ const DoctorPortal = () => {
 
   const stats = getTotalStats();
 
+  // Check if doctor profile exists
+  const doctorId = localStorage.getItem('doctorId');
+  
   if (loading) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '50vh' }}>
         <Typography>Loading...</Typography>
       </Box>
+    );
+  }
+
+  // Show profile creation form if no doctor profile exists in database
+  if (!doctorProfile) {
+    return (
+      <Container maxWidth="md" sx={{ py: 4 }}>
+        <Card sx={{ p: 4 }}>
+          <Typography variant="h4" sx={{ mb: 2, textAlign: 'center' }}>
+            Complete Your Doctor Profile
+          </Typography>
+          <Typography variant="body1" sx={{ mb: 4, textAlign: 'center', color: 'text.secondary' }}>
+            Please complete your profile to access the doctor dashboard.
+          </Typography>
+          
+          <Box component="form" onSubmit={async (e) => {
+            e.preventDefault();
+            
+            try {
+              const token = localStorage.getItem('token');
+              const profileDataWithStatus = {
+                ...profileData
+              };
+              
+              const response = await fetch('http://localhost:3001/api/doctors/profile', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(profileDataWithStatus)
+              });
+              
+              if (response.ok) {
+                const doctor = await response.json();
+                localStorage.setItem('doctorId', doctor.id.toString());
+                toast.success('Profile created successfully! You are now visible to patients.');
+                
+                // Redirect to dashboard after 2 seconds
+                setTimeout(() => {
+                  window.location.href = '/doctor-portal';
+                }, 2000);
+              } else {
+                const errorData = await response.json();
+                toast.error(errorData.message || 'Failed to create profile');
+              }
+            } catch (error) {
+              console.error('Profile creation error:', error);
+              toast.error('Failed to create profile. Please try again.');
+            }
+          }}>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Medical Speciality</InputLabel>
+                  <Select
+                    value={profileData.speciality}
+                    onChange={(e) => setProfileData({...profileData, speciality: e.target.value})}
+                    label="Medical Speciality"
+                    displayEmpty
+                    renderValue={(selected) => {
+                      if (!selected) {
+                        return <em>Select your speciality</em>;
+                      }
+                      return selected;
+                    }}
+                  >
+                    {specialities.map((spec) => (
+                      <MenuItem key={spec} value={spec}>{spec}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth required>
+                  <InputLabel>Medical Qualification</InputLabel>
+                  <Select
+                    value={profileData.qualification}
+                    onChange={(e) => setProfileData({...profileData, qualification: e.target.value})}
+                    label="Medical Qualification"
+                    displayEmpty
+                    renderValue={(selected) => {
+                      if (!selected) {
+                        return <em>Select your qualification</em>;
+                      }
+                      return selected;
+                    }}
+                  >
+                    {qualifications.map((qual) => (
+                      <MenuItem key={qual} value={qual}>{qual}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Experience (years)"
+                  type="number"
+                  required
+                  value={profileData.experience}
+                  onChange={(e) => setProfileData({...profileData, experience: e.target.value})}
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+              
+              <Grid item xs={12} sm={6}>
+                <TextField
+                  fullWidth
+                  label="Consultation Fees (₹)"
+                  type="number"
+                  required
+                  value={profileData.fees}
+                  onChange={(e) => setProfileData({...profileData, fees: e.target.value})}
+                  inputProps={{ min: 0 }}
+                />
+              </Grid>
+              
+              <Grid item xs={12}>
+                <Button
+                  type="submit"
+                  variant="contained"
+                  size="large"
+                  fullWidth
+                  sx={{ mt: 2 }}
+                >
+                  Create Profile
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Card>
+      </Container>
     );
   }
 
@@ -336,9 +518,9 @@ const DoctorPortal = () => {
           >
             Doctor Dashboard
           </Typography>
-          
-
         </motion.div>
+
+
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
           {[
@@ -410,460 +592,9 @@ const DoctorPortal = () => {
           ))}
         </Grid>
 
-        {activeTab === 'dashboard' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
-              Dashboard Overview
-            </Typography>
-          </motion.div>
-        )}
-
-        {activeTab === 'appointments' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
-              Today's Appointments
-            </Typography>
-            <Grid container spacing={2}>
-              {appointments.map(appointment => (
-                <Grid item xs={12} key={appointment.id}>
-                  <Card sx={{ p: 2 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                      <Box>
-                        <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
-                          {appointment.patientName}
-                        </Typography>
-                        <Box display="flex" flexWrap="wrap" gap={2} sx={{ mb: 1 }}>
-                          <Typography variant="body2" color="text.secondary">
-                            <AccessTime sx={{ fontSize: 16, mr: 0.5 }} />
-                            {appointment.appointmentTime}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
-                            {appointment.location}
-                          </Typography>
-                          <Typography variant="body2" color="text.secondary">
-                            Age: {appointment.patientAge}
-                          </Typography>
-                        </Box>
-                        <Typography variant="body2" color="error.main" sx={{ mb: 0.5 }}>
-                          Symptoms: {appointment.symptoms}
-                        </Typography>
-                        <Typography variant="body2" color="success.main" sx={{ fontWeight: 600 }}>
-                          Fees: ₹{appointment.fees}
-                        </Typography>
-                      </Box>
-                      <Box display="flex" flexDirection="column" alignItems="flex-end" gap={1}>
-                        <Chip
-                          label={appointment.status}
-                          color={appointment.status === 'confirmed' ? 'success' : appointment.status === 'pending' ? 'warning' : 'error'}
-                          size="small"
-                        />
-                        {appointment.status === 'pending' && (
-                          <Box display="flex" gap={1}>
-                            <Button
-                              variant="contained"
-                              color="success"
-                              size="small"
-                              onClick={() => updateAppointmentStatus(appointment.id, 'confirmed')}
-                            >
-                              Confirm
-                            </Button>
-                            <Button
-                              variant="outlined"
-                              color="error"
-                              size="small"
-                              onClick={() => updateAppointmentStatus(appointment.id, 'cancelled')}
-                            >
-                              Cancel
-                            </Button>
-                          </Box>
-                        )}
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-              ))}
-            </Grid>
-          </motion.div>
-        )}
-
-        {activeTab === 'locations' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-          <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-            <Typography variant="h4" sx={{ fontWeight: 600 }}>
-              My Consultation Locations
-            </Typography>
-            <Button
-              variant="contained"
-              startIcon={<Add />}
-              onClick={() => setShowAddLocation(true)}
-            >
-              Add Location
-            </Button>
-          </Box>
-          
-          <Grid container spacing={3}>
-            {locations.map(location => (
-              <Grid item xs={12} md={6} lg={4} key={location.id}>
-                <Card
-                  sx={{
-                    height: '100%',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(20px)',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: '0px 8px 30px rgba(77, 182, 226, 0.15)',
-                    },
-                  }}
-                >
-                  <CardContent sx={{ p: 3 }}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-                      <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                        {location.name}
-                      </Typography>
-                      <Box display="flex" gap={1}>
-                        <Button 
-                          size="small" 
-                          startIcon={<Edit />}
-                          onClick={() => handleEditLocation(location)}
-                        >
-                          Edit
-                        </Button>
-                        <Button 
-                          size="small" 
-                          color="error" 
-                          startIcon={<Delete />}
-                          onClick={() => deleteLocation(location.id)}
-                        >
-                          Delete
-                        </Button>
-                      </Box>
-                    </Box>
-                    
-                    <Box sx={{ mb: 2 }}>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        <LocationOn sx={{ fontSize: 16, mr: 0.5 }} />
-                        {location.address}, {location.city}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        <AccessTime sx={{ fontSize: 16, mr: 0.5 }} />
-                        {location.timings}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        📞 {location.phone}
-                      </Typography>
-                      <Typography variant="body2" color="success.main" sx={{ fontWeight: 600 }}>
-                        <AttachMoney sx={{ fontSize: 16, mr: 0.5 }} />
-                        ₹{location.fees} per consultation
-                      </Typography>
-                    </Box>
-                    
-                    <Box display="flex" justifyContent="space-around" sx={{ pt: 2, borderTop: '1px solid', borderColor: 'divider' }}>
-                      <Box textAlign="center">
-                        <Typography variant="h5" color="primary.main" sx={{ fontWeight: 600 }}>
-                          {location.patientsToday}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Today
-                        </Typography>
-                      </Box>
-                      <Box textAlign="center">
-                        <Typography variant="h5" color="primary.main" sx={{ fontWeight: 600 }}>
-                          {location.totalPatients}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary">
-                          Total
-                        </Typography>
-                      </Box>
-                    </Box>
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))}
-          </Grid>
-
-          <Dialog
-            open={showAddLocation}
-            onClose={() => setShowAddLocation(false)}
-            maxWidth="sm"
-            fullWidth
-          >
-            <DialogTitle>
-              <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                Add New Location
-              </Typography>
-            </DialogTitle>
-            <form onSubmit={handleAddLocation}>
-              <DialogContent>
-                <Grid container spacing={2}>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Clinic/Hospital Name"
-                      value={newLocation.name}
-                      onChange={(e) => setNewLocation({...newLocation, name: e.target.value})}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Address"
-                      value={newLocation.address}
-                      onChange={(e) => setNewLocation({...newLocation, address: e.target.value})}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="City"
-                      value={newLocation.city}
-                      onChange={(e) => setNewLocation({...newLocation, city: e.target.value})}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={6}>
-                    <TextField
-                      fullWidth
-                      label="Phone"
-                      type="tel"
-                      value={newLocation.phone}
-                      onChange={(e) => setNewLocation({...newLocation, phone: e.target.value})}
-                      required
-                    />
-                  </Grid>
-                  <Grid item xs={12}>
-                    <TextField
-                      fullWidth
-                      label="Consultation Fees (₹)"
-                      type="number"
-                      value={newLocation.fees}
-                      onChange={(e) => setNewLocation({...newLocation, fees: e.target.value})}
-                      required
-                    />
-                  </Grid>
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setShowAddLocation(false)}>
-                  Cancel
-                </Button>
-                <Button type="submit" variant="contained">
-                  Add Location
-                </Button>
-              </DialogActions>
-            </form>
-          </Dialog>
-
-          <Dialog
-            open={showEditLocation}
-            onClose={() => {
-              setShowEditLocation(false);
-              setEditingLocation(null);
-            }}
-            maxWidth="sm"
-            fullWidth
-          >
-            <DialogTitle>
-              <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                Edit Location
-              </Typography>
-            </DialogTitle>
-            {editingLocation && (
-              <form onSubmit={handleUpdateLocation}>
-                <DialogContent>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Clinic/Hospital Name"
-                        value={editingLocation.name}
-                        onChange={(e) => setEditingLocation({...editingLocation, name: e.target.value})}
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={12}>
-                      <TextField
-                        fullWidth
-                        label="Address"
-                        value={editingLocation.address}
-                        onChange={(e) => setEditingLocation({...editingLocation, address: e.target.value})}
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="City"
-                        value={editingLocation.city}
-                        onChange={(e) => setEditingLocation({...editingLocation, city: e.target.value})}
-                        required
-                      />
-                    </Grid>
-                    <Grid item xs={6}>
-                      <TextField
-                        fullWidth
-                        label="Phone"
-                        type="tel"
-                        value={editingLocation.phone}
-                        onChange={(e) => setEditingLocation({...editingLocation, phone: e.target.value})}
-                        required
-                      />
-                    </Grid>
-                  </Grid>
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => {
-                    setShowEditLocation(false);
-                    setEditingLocation(null);
-                  }}>
-                    Cancel
-                  </Button>
-                  <Button type="submit" variant="contained">
-                    Update Location
-                  </Button>
-                </DialogActions>
-              </form>
-            )}
-          </Dialog>
-          </motion.div>
-        )}
-
-        {activeTab === 'schedule' && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.5 }}
-          >
-            <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-              <Typography variant="h4" sx={{ fontWeight: 600 }}>
-                Schedule Management
-              </Typography>
-              <Button
-                variant="contained"
-                startIcon={<Edit />}
-                onClick={() => setShowScheduleModal(true)}
-              >
-                Update Schedule
-              </Button>
-            </Box>
-            
-            <Card>
-              <CardContent sx={{ p: 3 }}>
-                <Typography variant="h6" sx={{ mb: 2 }}>
-                  Weekly Schedule
-                </Typography>
-                <Grid container spacing={2}>
-                  {Object.entries(weeklySchedule).map(([day, schedule]) => (
-                    <Grid item xs={12} sm={6} md={4} key={day}>
-                      <Card variant="outlined">
-                        <CardContent sx={{ p: 2 }}>
-                          <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1, textTransform: 'capitalize' }}>
-                            {day}
-                          </Typography>
-                          {schedule.available ? (
-                            <>
-                              <Typography variant="body2" color="text.secondary">
-                                {schedule.startTime} - {schedule.endTime}
-                              </Typography>
-                              <Chip label="Available" color="success" size="small" sx={{ mt: 1 }} />
-                            </>
-                          ) : (
-                            <Chip label="Not Available" color="error" size="small" />
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-                
-                <Box sx={{ mt: 3, p: 2, backgroundColor: 'warning.light', borderRadius: 1 }}>
-                  <Typography variant="body2" color="warning.contrastText">
-                    ⚠️ Note: You must honor confirmed appointments even if you change your schedule.
-                  </Typography>
-                </Box>
-              </CardContent>
-            </Card>
-
-            {/* Schedule Update Modal */}
-            <Dialog
-              open={showScheduleModal}
-              onClose={() => setShowScheduleModal(false)}
-              maxWidth="md"
-              fullWidth
-            >
-              <DialogTitle>
-                <Typography variant="h5" sx={{ fontWeight: 600 }}>
-                  Update Schedule
-                </Typography>
-              </DialogTitle>
-              <DialogContent>
-                <Grid container spacing={3} sx={{ mt: 1 }}>
-                  {Object.entries(weeklySchedule).map(([day, schedule]) => (
-                    <Grid item xs={12} key={day}>
-                      <Card variant="outlined">
-                        <CardContent sx={{ p: 2 }}>
-                          <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-                            <Typography variant="h6" sx={{ textTransform: 'capitalize' }}>
-                              {day}
-                            </Typography>
-                            <Button
-                              variant={schedule.available ? 'contained' : 'outlined'}
-                              color={schedule.available ? 'success' : 'error'}
-                              size="small"
-                              onClick={() => updateSchedule(day, 'available', !schedule.available)}
-                            >
-                              {schedule.available ? 'Available' : 'Not Available'}
-                            </Button>
-                          </Box>
-                          {schedule.available && (
-                            <Box display="flex" gap={2}>
-                              <TextField
-                                label="Start Time"
-                                type="time"
-                                value={schedule.startTime}
-                                onChange={(e) => updateSchedule(day, 'startTime', e.target.value)}
-                                size="small"
-                              />
-                              <TextField
-                                label="End Time"
-                                type="time"
-                                value={schedule.endTime}
-                                onChange={(e) => updateSchedule(day, 'endTime', e.target.value)}
-                                size="small"
-                              />
-                            </Box>
-                          )}
-                        </CardContent>
-                      </Card>
-                    </Grid>
-                  ))}
-                </Grid>
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={() => setShowScheduleModal(false)}>
-                  Cancel
-                </Button>
-                <Button variant="contained" onClick={saveSchedule}>
-                  Save Schedule
-                </Button>
-              </DialogActions>
-            </Dialog>
-          </motion.div>
-        )}
+        <Typography variant="h4" sx={{ fontWeight: 600, mb: 3 }}>
+          Dashboard Overview
+        </Typography>
       </Container>
     </Box>
   );
