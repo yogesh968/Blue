@@ -1,0 +1,23 @@
+
+> healthcare-backend@1.0.0 start
+> node server.js
+
+🚀 HealthCare+ API server running on port 3001
+📍 Health check: http://localhost:3001/api/health
+🔐 Auth endpoints: http://localhost:3001/api/auth
+Notifications sent: [
+  {
+    userId: '692ec90b6af89d0257f280a7',
+    title: 'Appointment Cancelled',
+    message: 'Your appointment with Dr. Rajesh Kumar on 12/10/2025 at 3:00:00 PM has been cancelled.',
+    type: 'APPOINTMENT',
+    read: false
+  },
+  {
+    userId: '692ec7808f0d64c621e3ceb5',
+    title: 'Appointment Cancelled',
+    message: 'Appointment with yogesh kumar on 12/10/2025 at 3:00:00 PM has been cancelled.',
+    type: 'APPOINTMENT',
+    read: false
+  }
+]

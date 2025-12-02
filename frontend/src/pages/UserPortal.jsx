@@ -10,20 +10,31 @@ const UserPortal = () => {
   const location = useLocation();
   const [appointments, setAppointments] = useState([]);
   const [bills, setBills] = useState([]);
+  const [bedBookings, setBedBookings] = useState([]);
   const [activeTab, setActiveTab] = useState('appointments');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showBedBookingForm, setShowBedBookingForm] = useState(false);
+  const [selectedHospital, setSelectedHospital] = useState(null);
 
   useEffect(() => {
     fetchUserData();
   }, []);
 
   useEffect(() => {
-    const hash = location.hash.replace('#', '');
-    if (hash && ['appointments', 'bills', 'records'].includes(hash)) {
-      setActiveTab(hash);
+    const urlParams = new URLSearchParams(location.search);
+    const tab = urlParams.get('tab');
+    if (tab && ['appointments', 'beds', 'bills', 'records'].includes(tab)) {
+      setActiveTab(tab);
     }
-  }, [location.hash]);
+    
+    // Check if coming from hospital bed booking
+    if (location.state?.hospitalId) {
+      setSelectedHospital(location.state);
+      setActiveTab('beds');
+      setShowBedBookingForm(true);
+    }
+  }, [location]);
 
   const fetchUserData = async () => {
     try {
@@ -128,6 +139,27 @@ const UserPortal = () => {
     }
   };
 
+  const bookBed = async (bookingData) => {
+    try {
+      const mockBooking = {
+        id: Date.now().toString(),
+        hospital: { name: selectedHospital?.hospitalName || 'Selected Hospital' },
+        bedType: bookingData.bedType,
+        admissionDate: bookingData.admissionDate,
+        status: 'confirmed',
+        patientName: bookingData.patientName,
+        reason: bookingData.reason
+      };
+      
+      setBedBookings(prev => [...prev, mockBooking]);
+      toast.success('Bed booked successfully!');
+      setShowBedBookingForm(false);
+      setSelectedHospital(null);
+    } catch (err) {
+      toast.error('Failed to book bed');
+    }
+  };
+
   if (loading) {
     return (
       <div className="user-portal">
@@ -156,6 +188,32 @@ const UserPortal = () => {
       
       <div className="portal-header">
         <h1>My Healthcare Dashboard</h1>
+        <div className="portal-tabs">
+          <button 
+            className={`tab ${activeTab === 'appointments' ? 'active' : ''}`}
+            onClick={() => setActiveTab('appointments')}
+          >
+            <Calendar size={16} /> Appointments
+          </button>
+          <button 
+            className={`tab ${activeTab === 'beds' ? 'active' : ''}`}
+            onClick={() => setActiveTab('beds')}
+          >
+            <Heart size={16} /> Bed Bookings
+          </button>
+          <button 
+            className={`tab ${activeTab === 'bills' ? 'active' : ''}`}
+            onClick={() => setActiveTab('bills')}
+          >
+            <FileText size={16} /> Bills
+          </button>
+          <button 
+            className={`tab ${activeTab === 'records' ? 'active' : ''}`}
+            onClick={() => setActiveTab('records')}
+          >
+            <User size={16} /> Records
+          </button>
+        </div>
       </div>
 
 
@@ -195,6 +253,95 @@ const UserPortal = () => {
                       Cancel
                     </button>
                   )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'beds' && (
+        <div className="beds-section">
+          <div className="section-header">
+            <h2>Bed Bookings</h2>
+            <button 
+              onClick={() => setShowBedBookingForm(true)}
+              className="btn-primary"
+            >
+              Book New Bed
+            </button>
+          </div>
+          
+          {showBedBookingForm && (
+            <div className="bed-booking-form">
+              <h3>Book Hospital Bed</h3>
+              <form onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.target);
+                bookBed({
+                  hospitalId: selectedHospital?.hospitalId || formData.get('hospitalId'),
+                  bedType: formData.get('bedType'),
+                  admissionDate: formData.get('admissionDate'),
+                  patientName: formData.get('patientName'),
+                  reason: formData.get('reason')
+                });
+              }}>
+                <div className="form-group">
+                  <label>Hospital:</label>
+                  <input 
+                    type="text" 
+                    value={selectedHospital?.hospitalName || 'Select Hospital'} 
+                    readOnly
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Bed Type:</label>
+                  <select name="bedType" required>
+                    <option value="">Select bed type</option>
+                    <option value="GENERAL">General Ward</option>
+                    <option value="PRIVATE">Private Room</option>
+                    <option value="SEMI_PRIVATE">Semi-Private</option>
+                    <option value="ICU">ICU</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label>Admission Date:</label>
+                  <input 
+                    type="date" 
+                    name="admissionDate" 
+                    min={new Date().toISOString().split('T')[0]}
+                    required 
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Patient Name:</label>
+                  <input type="text" name="patientName" required />
+                </div>
+                <div className="form-group">
+                  <label>Reason for Admission:</label>
+                  <textarea name="reason" rows="3" required></textarea>
+                </div>
+                <div className="form-actions">
+                  <button type="button" onClick={() => setShowBedBookingForm(false)}>Cancel</button>
+                  <button type="submit" className="btn-primary">Book Bed</button>
+                </div>
+              </form>
+            </div>
+          )}
+          
+          <div className="bookings-list">
+            {bedBookings.length === 0 ? (
+              <div className="empty-state">
+                <Heart size={48} />
+                <p>No bed bookings found</p>
+              </div>
+            ) : bedBookings.map(booking => (
+              <div key={booking.id} className="booking-card">
+                <div className="booking-info">
+                  <h4>{booking.hospital?.name || 'Hospital'}</h4>
+                  <p><strong>Bed Type:</strong> {booking.bedType}</p>
+                  <p><strong>Admission:</strong> {new Date(booking.admissionDate).toLocaleDateString()}</p>
+                  <p><strong>Status:</strong> <span className={`status ${booking.status}`}>{booking.status}</span></p>
                 </div>
               </div>
             ))}

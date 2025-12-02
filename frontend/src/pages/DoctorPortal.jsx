@@ -323,21 +323,56 @@ const DoctorPortal = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <Typography
-            variant="h3"
-            sx={{
-              mb: 4,
-              fontWeight: 700,
-              background: 'linear-gradient(135deg, #4DB6E2 0%, #1A2A33 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-            }}
-          >
-            Doctor Dashboard
-          </Typography>
+          <Box display="flex" justifyContent="space-between" alignItems="center" mb={4}>
+            <Box>
+              <Typography
+                variant="h3"
+                sx={{
+                  fontWeight: 700,
+                  background: 'linear-gradient(135deg, #4DB6E2 0%, #1A2A33 100%)',
+                  backgroundClip: 'text',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                }}
+              >
+                Welcome, {user?.name || 'Doctor'}
+              </Typography>
+              <Typography variant="h6" color="text.secondary">
+                Manage your practice and appointments
+              </Typography>
+            </Box>
+          </Box>
           
-
+          <Tabs
+            value={activeTab}
+            onChange={(e, newValue) => setActiveTab(newValue)}
+            sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+          >
+            <Tab
+              label="Dashboard"
+              value="dashboard"
+              icon={<Dashboard />}
+              iconPosition="start"
+            />
+            <Tab
+              label="Appointments"
+              value="appointments"
+              icon={<Schedule />}
+              iconPosition="start"
+            />
+            <Tab
+              label="Locations"
+              value="locations"
+              icon={<LocationOn />}
+              iconPosition="start"
+            />
+            <Tab
+              label="Schedule"
+              value="schedule"
+              icon={<AccessTime />}
+              iconPosition="start"
+            />
+          </Tabs>
         </motion.div>
 
         <Grid container spacing={3} sx={{ mb: 4 }}>
