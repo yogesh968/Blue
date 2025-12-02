@@ -40,61 +40,14 @@ const DoctorPortal = () => {
   const [appointments, setAppointments] = useState([]);
   const [locations, setLocations] = useState([]);
   const [showAddLocation, setShowAddLocation] = useState(false);
+  const [showEditLocation, setShowEditLocation] = useState(false);
+  const [editingLocation, setEditingLocation] = useState(null);
   const [weeklySchedule, setWeeklySchedule] = useState({});
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
 
-  // Mock data for fallback
-  const mockAppointments = [
-    {
-      id: 1,
-      patientName: 'John Doe',
-      patientAge: 35,
-      appointmentTime: '10:00 AM',
-      date: '2024-01-15',
-      location: 'Apollo Hospital, Mumbai',
-      symptoms: 'Chest pain, shortness of breath',
-      status: 'confirmed',
-      fees: 800
-    },
-    {
-      id: 2,
-      patientName: 'Sarah Wilson',
-      patientAge: 28,
-      appointmentTime: '11:30 AM',
-      date: '2024-01-15',
-      location: 'City Clinic, Pune',
-      symptoms: 'Regular checkup',
-      status: 'pending',
-      fees: 600
-    }
-  ];
 
-  const mockLocations = [
-    {
-      id: 1,
-      name: 'Apollo Hospital',
-      address: '123 Main Street, Bandra',
-      city: 'Mumbai',
-      phone: '+91 9876543210',
-      fees: 800,
-      patientsToday: 12,
-      totalPatients: 156,
-      timings: 'Mon-Fri: 9AM-5PM, Sat: 9AM-1PM'
-    },
-    {
-      id: 2,
-      name: 'City Clinic',
-      address: '456 Park Avenue, Koregaon Park',
-      city: 'Pune',
-      phone: '+91 9876543211',
-      fees: 600,
-      patientsToday: 8,
-      totalPatients: 89,
-      timings: 'Mon-Sat: 10AM-6PM'
-    }
-  ];
   const [newLocation, setNewLocation] = useState({
     name: '',
     address: '',
@@ -116,10 +69,13 @@ const DoctorPortal = () => {
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
+    const doctorId = localStorage.getItem('doctorId');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      fetchDoctorData(parsedUser.id);
+      if (doctorId) {
+        fetchDoctorData(parseInt(doctorId));
+      }
     }
     initializeSchedule();
   }, []);
@@ -131,17 +87,16 @@ const DoctorPortal = () => {
       
       // Fetch appointments
       try {
-        const appointmentsRes = await api.getDoctorAppointments(doctorId, new Date().toISOString().split('T')[0], token);
+        const appointmentsRes = await api.getDoctorAppointments(doctorId, '', token);
         if (appointmentsRes.ok) {
           const appointmentsData = await appointmentsRes.json();
           setAppointments(appointmentsData);
         } else {
-          console.warn('Failed to fetch appointments, using mock data');
-          setAppointments(mockAppointments);
+          setAppointments([]);
         }
       } catch (error) {
-        console.warn('Appointments API not available, using mock data');
-        setAppointments(mockAppointments);
+        console.error('Appointments error:', error);
+        setAppointments([]);
       }
       
       // Fetch locations
@@ -151,12 +106,11 @@ const DoctorPortal = () => {
           const locationsData = await locationsRes.json();
           setLocations(locationsData);
         } else {
-          console.warn('Failed to fetch locations, using mock data');
-          setLocations(mockLocations);
+          setLocations([]);
         }
       } catch (error) {
-        console.warn('Locations API not available, using mock data');
-        setLocations(mockLocations);
+        console.error('Locations error:', error);
+        setLocations([]);
       }
     } catch (error) {
       toast.error('Failed to load doctor data');
@@ -167,9 +121,10 @@ const DoctorPortal = () => {
 
   const initializeSchedule = async () => {
     try {
-      if (user?.id) {
+      const doctorId = localStorage.getItem('doctorId');
+      if (doctorId) {
         const token = localStorage.getItem('token');
-        const response = await api.getDoctorSchedule(user.id, token);
+        const response = await api.getDoctorSchedule(doctorId, token);
         
         if (response.ok) {
           const scheduleData = await response.json();
@@ -215,8 +170,9 @@ const DoctorPortal = () => {
 
   const saveSchedule = async () => {
     try {
+      const doctorId = localStorage.getItem('doctorId');
       const token = localStorage.getItem('token');
-      const response = await api.updateDoctorSchedule(user.id, weeklySchedule, token);
+      const response = await api.updateDoctorSchedule(doctorId, weeklySchedule, token);
       
       if (response.ok) {
         localStorage.setItem('doctorSchedule', JSON.stringify(weeklySchedule));
@@ -242,12 +198,13 @@ const DoctorPortal = () => {
   const handleAddLocation = async (e) => {
     e.preventDefault();
     try {
+      const doctorId = localStorage.getItem('doctorId');
       const token = localStorage.getItem('token');
-      const response = await api.addDoctorLocation(user.id, newLocation, token);
+      const response = await api.addDoctorLocation(doctorId, newLocation, token);
       
       if (response.ok) {
         toast.success('Location added successfully!');
-        fetchDoctorData(user.id); // Refresh data
+        fetchDoctorData(parseInt(doctorId)); // Refresh data
         setShowAddLocation(false);
         setNewLocation({
           name: '',
@@ -295,6 +252,31 @@ const DoctorPortal = () => {
       }
     } catch (error) {
       toast.error('Failed to update appointment');
+    }
+  };
+
+  const handleEditLocation = (location) => {
+    setEditingLocation(location);
+    setShowEditLocation(true);
+  };
+
+  const handleUpdateLocation = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.updateDoctorLocation(editingLocation.id, editingLocation, token);
+      
+      if (response.ok) {
+        toast.success('Location updated successfully!');
+        const doctorId = localStorage.getItem('doctorId');
+        fetchDoctorData(parseInt(doctorId));
+        setShowEditLocation(false);
+        setEditingLocation(null);
+      } else {
+        throw new Error('Failed to update location');
+      }
+    } catch (error) {
+      toast.error('Failed to update location');
     }
   };
 
@@ -552,7 +534,11 @@ const DoctorPortal = () => {
                         {location.name}
                       </Typography>
                       <Box display="flex" gap={1}>
-                        <Button size="small" startIcon={<Edit />}>
+                        <Button 
+                          size="small" 
+                          startIcon={<Edit />}
+                          onClick={() => handleEditLocation(location)}
+                        >
                           Edit
                         </Button>
                         <Button 
@@ -680,6 +666,78 @@ const DoctorPortal = () => {
                 </Button>
               </DialogActions>
             </form>
+          </Dialog>
+
+          <Dialog
+            open={showEditLocation}
+            onClose={() => {
+              setShowEditLocation(false);
+              setEditingLocation(null);
+            }}
+            maxWidth="sm"
+            fullWidth
+          >
+            <DialogTitle>
+              <Typography variant="h5" sx={{ fontWeight: 600 }}>
+                Edit Location
+              </Typography>
+            </DialogTitle>
+            {editingLocation && (
+              <form onSubmit={handleUpdateLocation}>
+                <DialogContent>
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Clinic/Hospital Name"
+                        value={editingLocation.name}
+                        onChange={(e) => setEditingLocation({...editingLocation, name: e.target.value})}
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={12}>
+                      <TextField
+                        fullWidth
+                        label="Address"
+                        value={editingLocation.address}
+                        onChange={(e) => setEditingLocation({...editingLocation, address: e.target.value})}
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="City"
+                        value={editingLocation.city}
+                        onChange={(e) => setEditingLocation({...editingLocation, city: e.target.value})}
+                        required
+                      />
+                    </Grid>
+                    <Grid item xs={6}>
+                      <TextField
+                        fullWidth
+                        label="Phone"
+                        type="tel"
+                        value={editingLocation.phone}
+                        onChange={(e) => setEditingLocation({...editingLocation, phone: e.target.value})}
+                        required
+                      />
+                    </Grid>
+                  </Grid>
+                </DialogContent>
+                <DialogActions>
+                  <Button onClick={() => {
+                    setShowEditLocation(false);
+                    setEditingLocation(null);
+                  }}>
+                    Cancel
+                  </Button>
+                  <Button type="submit" variant="contained">
+                    Update Location
+                  </Button>
+                </DialogActions>
+              </form>
+            )}
           </Dialog>
           </motion.div>
         )}

@@ -56,8 +56,8 @@ router.get('/hospital/:hospitalId/bed-bookings', authenticateToken, async (req, 
       bedType: booking.bedType,
       checkIn: booking.admissionDate.toISOString().split('T')[0],
       status: booking.status,
-      amount: booking.charges.bedCharge,
-      room: booking.roomNumber || 'N/A'
+      amount: booking.totalAmount || 0,
+      room: 'N/A'
     }));
     
     res.json(formattedBookings);

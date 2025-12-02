@@ -10,24 +10,13 @@ const getDoctorLocations = async (req, res) => {
       where: {
         doctorId: parseInt(doctorId),
         isActive: true
-      },
-      include: {
-        timings: true,
-        appointments: {
-          where: {
-            appointmentDate: {
-              gte: new Date(new Date().setHours(0, 0, 0, 0)),
-              lt: new Date(new Date().setHours(23, 59, 59, 999))
-            }
-          }
-        }
       }
     });
 
     const locationsWithStats = locations.map(location => ({
       ...location,
-      patientsToday: location.appointments.length,
-      totalPatients: location.appointments.length // This would be calculated differently in real app
+      patientsToday: 0,
+      totalPatients: location.totalPatients || 0
     }));
 
     res.json(locationsWithStats);
@@ -41,7 +30,7 @@ const getDoctorLocations = async (req, res) => {
 const addDoctorLocation = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    const { name, address, city, phone, fees, timings } = req.body;
+    const { name, address, city, phone } = req.body;
 
     const location = await prisma.doctorLocation.create({
       data: {
@@ -49,30 +38,9 @@ const addDoctorLocation = async (req, res) => {
         name,
         address,
         city,
-        phone,
-        fees: parseInt(fees)
+        phone
       }
     });
-
-    // Add timings for the location
-    if (timings) {
-      const timingPromises = Object.entries(timings)
-        .filter(([day, timing]) => timing.available)
-        .map(([day, timing]) => {
-          const dayEnum = day.toUpperCase();
-          return prisma.doctorTiming.create({
-            data: {
-              doctorId: parseInt(doctorId),
-              locationId: location.id,
-              dayOfWeek: dayEnum,
-              startTime: timing.start,
-              endTime: timing.end
-            }
-          });
-        });
-      
-      await Promise.all(timingPromises);
-    }
 
     res.status(201).json(location);
   } catch (error) {
@@ -85,7 +53,7 @@ const addDoctorLocation = async (req, res) => {
 const updateDoctorLocation = async (req, res) => {
   try {
     const { locationId } = req.params;
-    const { name, address, city, phone, fees } = req.body;
+    const { name, address, city, phone } = req.body;
 
     const location = await prisma.doctorLocation.update({
       where: { id: parseInt(locationId) },
@@ -93,8 +61,7 @@ const updateDoctorLocation = async (req, res) => {
         name,
         address,
         city,
-        phone,
-        fees: parseInt(fees)
+        phone
       }
     });
 
@@ -102,6 +69,25 @@ const updateDoctorLocation = async (req, res) => {
   } catch (error) {
     console.error('Error updating doctor location:', error);
     res.status(500).json({ error: 'Failed to update location' });
+  }
+};
+
+// Increment patient count for location
+const incrementLocationPatientCount = async (req, res) => {
+  try {
+    const { locationId } = req.params;
+
+    const location = await prisma.doctorLocation.update({
+      where: { id: parseInt(locationId) },
+      data: {
+        totalPatients: { increment: 1 }
+      }
+    });
+
+    res.json(location);
+  } catch (error) {
+    console.error('Error incrementing patient count:', error);
+    res.status(500).json({ error: 'Failed to increment patient count' });
   }
 };
 
@@ -148,7 +134,11 @@ const getDoctorAppointments = async (req, res) => {
             user: true
           }
         },
-        location: true
+        doctor: {
+          include: {
+            hospital: true
+          }
+        }
       },
       orderBy: {
         appointmentDate: 'asc'
@@ -158,17 +148,17 @@ const getDoctorAppointments = async (req, res) => {
     const formattedAppointments = appointments.map(apt => ({
       id: apt.id,
       patientName: apt.patient.user.name,
-      patientAge: apt.patient.user.age || 'N/A',
+      patientAge: 'N/A',
       appointmentTime: apt.appointmentDate.toLocaleTimeString('en-US', {
         hour: 'numeric',
         minute: '2-digit',
         hour12: true
       }),
       date: apt.appointmentDate.toISOString().split('T')[0],
-      location: apt.location ? `${apt.location.name}, ${apt.location.city}` : 'Not specified',
+      location: apt.doctor.hospital ? `${apt.doctor.hospital.name}, ${apt.doctor.hospital.city}` : 'Not specified',
       symptoms: apt.reason,
       status: apt.status.toLowerCase(),
-      fees: apt.location ? apt.location.fees : 0
+      fees: apt.doctor.fees
     }));
 
     res.json(formattedAppointments);
@@ -183,5 +173,6 @@ module.exports = {
   addDoctorLocation,
   updateDoctorLocation,
   deleteDoctorLocation,
-  getDoctorAppointments
+  getDoctorAppointments,
+  incrementLocationPatientCount
 };

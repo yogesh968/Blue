@@ -69,120 +69,15 @@ const HospitalPortal = () => {
     revenue: 125000
   });
 
-  const mockBedBookings = [
-    {
-      id: 1,
-      patientName: 'John Doe',
-      bedType: 'ICU',
-      checkIn: '2024-01-15',
-      status: 'ACTIVE',
-      amount: 5000,
-      room: 'ICU-101'
-    },
-    {
-      id: 2,
-      patientName: 'Sarah Wilson',
-      bedType: 'GENERAL',
-      checkIn: '2024-01-14',
-      status: 'ACTIVE',
-      amount: 2000,
-      room: 'GEN-205'
-    }
-  ];
 
-  const mockAvailableDoctors = [
-    {
-      id: 4,
-      name: 'Dr. Sarah Johnson',
-      specialization: 'Pediatrics',
-      experience: '10 years',
-      qualification: 'MBBS, MD Pediatrics',
-      email: 'sarah.johnson@email.com',
-      status: 'AVAILABLE'
-    },
-    {
-      id: 5,
-      name: 'Dr. Michael Chen',
-      specialization: 'Dermatology',
-      experience: '7 years',
-      qualification: 'MBBS, MD Dermatology',
-      email: 'michael.chen@email.com',
-      status: 'AVAILABLE'
-    }
-  ];
-
-  const mockAmbulanceBookings = [
-    {
-      id: 1,
-      patientName: 'Mike Johnson',
-      pickupLocation: 'Downtown Area',
-      destination: 'Apollo Hospital',
-      status: 'IN_TRANSIT',
-      ambulanceNo: 'AMB-001',
-      driverName: 'Raj Kumar'
-    },
-    {
-      id: 2,
-      patientName: 'Lisa Brown',
-      pickupLocation: 'Airport Road',
-      destination: 'Apollo Hospital',
-      status: 'COMPLETED',
-      ambulanceNo: 'AMB-003',
-      driverName: 'Amit Singh'
-    }
-  ];
-
-  const mockHospitalDoctors = [
-    {
-      id: 1,
-      name: 'Dr. Rajesh Kumar',
-      specialization: 'Cardiology',
-      designation: 'Senior Consultant',
-      experience: '15 years',
-      qualification: 'MBBS, MD Cardiology',
-      phone: '+91 98765 43210',
-      email: 'rajesh.kumar@hospital.com',
-      status: 'ACTIVE',
-      joinDate: '2018-03-15'
-    },
-    {
-      id: 2,
-      name: 'Dr. Priya Sharma',
-      specialization: 'Neurology',
-      designation: 'Consultant',
-      experience: '8 years',
-      qualification: 'MBBS, DM Neurology',
-      phone: '+91 98765 43211',
-      email: 'priya.sharma@hospital.com',
-      status: 'ACTIVE',
-      joinDate: '2020-07-20'
-    },
-    {
-      id: 3,
-      name: 'Dr. Amit Patel',
-      specialization: 'Orthopedics',
-      designation: 'Associate Consultant',
-      experience: '12 years',
-      qualification: 'MBBS, MS Orthopedics',
-      phone: '+91 98765 43212',
-      email: 'amit.patel@hospital.com',
-      status: 'ON_LEAVE',
-      joinDate: '2019-01-10'
-    }
-  ];
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
     if (userData) {
       const parsedUser = JSON.parse(userData);
       setUser(parsedUser);
-      fetchHospitalData(parsedUser.id);
+      fetchHospitalData(1); // Use hospital ID 1 for now
     } else {
-      // Fallback to mock data for testing
-      setBedBookings(mockBedBookings);
-      setAmbulanceBookings(mockAmbulanceBookings);
-      setHospitalDoctors(mockHospitalDoctors);
-      setAvailableDoctors(mockAvailableDoctors);
       setLoading(false);
     }
   }, []);
@@ -192,11 +87,53 @@ const HospitalPortal = () => {
       setLoading(true);
       const token = localStorage.getItem('token');
       
-      // For now, use mock data but structure for API integration
-      setBedBookings(mockBedBookings);
-      setAmbulanceBookings(mockAmbulanceBookings);
-      setHospitalDoctors(mockHospitalDoctors);
-      setAvailableDoctors(mockAvailableDoctors);
+      // Fetch bed bookings
+      try {
+        const bedRes = await api.getHospitalBedBookings(hospitalId, token);
+        if (bedRes.ok) {
+          const bedData = await bedRes.json();
+          setBedBookings(bedData);
+        }
+      } catch (err) {
+        console.error('Bed bookings error:', err);
+        setBedBookings([]);
+      }
+
+      // Fetch ambulance bookings
+      try {
+        const ambRes = await api.getHospitalAmbulanceBookings(hospitalId, token);
+        if (ambRes.ok) {
+          const ambData = await ambRes.json();
+          setAmbulanceBookings(ambData);
+        }
+      } catch (err) {
+        console.error('Ambulance bookings error:', err);
+        setAmbulanceBookings([]);
+      }
+
+      // Fetch hospital doctors
+      try {
+        const docRes = await api.getHospitalDoctors(hospitalId, token);
+        if (docRes.ok) {
+          const docData = await docRes.json();
+          setHospitalDoctors(docData);
+        }
+      } catch (err) {
+        console.error('Hospital doctors error:', err);
+        setHospitalDoctors([]);
+      }
+
+      // Fetch all doctors for invitation
+      try {
+        const allDocRes = await api.getDoctors();
+        if (allDocRes.ok) {
+          const allDocData = await allDocRes.json();
+          setAvailableDoctors(allDocData);
+        }
+      } catch (err) {
+        console.error('Available doctors error:', err);
+        setAvailableDoctors([]);
+      }
       
     } catch (error) {
       toast.error('Failed to load hospital data');

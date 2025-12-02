@@ -60,13 +60,15 @@ const Navbar = ({ user, onLogout }) => {
       ];
     } else if (user && user.role?.toLowerCase() === 'hospital') {
       return [
+        { text: 'Home', path: '/' },
         { text: 'Emergency', path: '/emergency' },
       ];
     } else if (user && (user.role?.toLowerCase() === 'user' || user.role?.toLowerCase() === 'patient')) {
       return [
-        { text: 'My Appointments', path: '/user-portal', hash: 'appointments' },
-        { text: 'My Bills', path: '/user-portal', hash: 'bills' },
-        { text: 'Medical Records', path: '/user-portal', hash: 'records' },
+        { text: 'Home', path: '/' },
+        { text: 'Doctors', path: '/doctors' },
+        { text: 'Hospitals', path: '/hospitals' },
+        { text: 'My Dashboard', path: '/user-portal' },
         { text: 'Emergency', path: '/emergency' },
       ];
     } else {
