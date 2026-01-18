@@ -1,11 +1,13 @@
-const { prisma } = require('../db/config');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const createBedBooking = async (req, res) => {
   try {
-    let { hospitalId, bedType, admissionDate, patientId, totalAmount } = req.body;
+    let { hospitalId, bedType, admissionDate, patientName, reason } = req.body;
     
-    // If patientId not provided, get from authenticated user
-    if (!patientId && req.user) {
+    // Get patient from authenticated user
+    let patientId;
+    if (req.user) {
       const patient = await prisma.patient.findUnique({ where: { userId: req.user.userId } });
       if (patient) {
         patientId = patient.id;
@@ -14,20 +16,19 @@ const createBedBooking = async (req, res) => {
     
     // Validate required fields
     if (!patientId || !hospitalId || !bedType || !admissionDate) {
-      return res.status(400).json({ error: 'PatientId, hospitalId, bedType, and admissionDate are required' });
+      return res.status(400).json({ error: 'Patient, hospital, bed type, and admission date are required' });
     }
 
     const booking = await prisma.bedBooking.create({
       data: {
-        patientId: parseInt(patientId),
-        hospitalId: parseInt(hospitalId),
+        patientId,
+        hospitalId,
         bedType,
         admissionDate: new Date(admissionDate),
-        totalAmount: totalAmount ? parseFloat(totalAmount) : null,
         status: 'PENDING'
       },
       include: {
-        hospital: { select: { name: true, address: true } },
+        hospital: { select: { name: true, address: true, city: true } },
         patient: { include: { user: { select: { name: true, phone: true } } } }
       }
     });
@@ -46,9 +47,11 @@ const getBedBookings = async (req, res) => {
     let where = {};
     if (role === 'PATIENT') {
       const patient = await prisma.patient.findUnique({ where: { userId } });
-      where.patientId = patient?.id;
+      if (patient) {
+        where.patientId = patient.id;
+      }
     } else if (role === 'HOSPITAL') {
-      where.hospitalId = parseInt(req.query.hospitalId);
+      where.hospitalId = req.query.hospitalId;
     }
 
     const bookings = await prisma.bedBooking.findMany({
@@ -62,6 +65,7 @@ const getBedBookings = async (req, res) => {
 
     res.json(bookings);
   } catch (error) {
+    console.error('Error fetching bed bookings:', error);
     res.status(500).json({ error: 'Failed to fetch bed bookings' });
   }
 };
@@ -69,13 +73,13 @@ const getBedBookings = async (req, res) => {
 const updateBedBooking = async (req, res) => {
   try {
     const { id } = req.params;
-    const { status, checkOut } = req.body;
+    const { status, dischargeDate } = req.body;
 
     const updateData = { status };
-    if (checkOut) updateData.checkOut = new Date(checkOut);
+    if (dischargeDate) updateData.dischargeDate = new Date(dischargeDate);
 
     const booking = await prisma.bedBooking.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: updateData,
       include: {
         hospital: { select: { name: true } },
@@ -85,6 +89,7 @@ const updateBedBooking = async (req, res) => {
 
     res.json(booking);
   } catch (error) {
+    console.error('Error updating bed booking:', error);
     res.status(500).json({ error: 'Failed to update bed booking' });
   }
 };
@@ -94,26 +99,29 @@ const getAvailableBeds = async (req, res) => {
     const { hospitalId } = req.params;
     
     const hospital = await prisma.hospital.findUnique({
-      where: { id: parseInt(hospitalId) },
-      select: { beds: true, name: true }
+      where: { id: hospitalId },
+      select: { name: true }
     });
 
     const activeBeds = await prisma.bedBooking.count({
       where: { 
-        hospitalId: parseInt(hospitalId),
-        status: 'ACTIVE'
+        hospitalId,
+        status: { in: ['PENDING', 'CONFIRMED', 'CHECKED_IN'] }
       }
     });
 
-    const availableBeds = hospital.beds - activeBeds;
+    // Mock bed availability data
+    const totalBeds = 100;
+    const availableBeds = totalBeds - activeBeds;
 
     res.json({
-      totalBeds: hospital.beds,
+      totalBeds,
       occupiedBeds: activeBeds,
       availableBeds: Math.max(0, availableBeds),
-      hospitalName: hospital.name
+      hospitalName: hospital?.name || 'Hospital'
     });
   } catch (error) {
+    console.error('Error fetching bed availability:', error);
     res.status(500).json({ error: 'Failed to fetch bed availability' });
   }
 };

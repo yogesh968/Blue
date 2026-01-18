@@ -188,7 +188,7 @@
   }
   
   .btn-confirm:hover {
-    background: #229954;
+    background: #27ae60;
   }
   
   .btn-cancel {
@@ -203,7 +203,7 @@
   }
   
   .btn-cancel:hover {
-    background: #c0392b;
+    background: #e74c3c;
   }
   
   /* Locations Section */
@@ -241,7 +241,7 @@
   }
   
   .btn-primary:hover {
-    background: #2980b9;
+    background: #3498db;
   }
   
   .locations-grid {

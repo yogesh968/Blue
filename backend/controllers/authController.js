@@ -1,6 +1,7 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { prisma } = require('../db/config');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const generateToken = (userId, role) => {
   return jwt.sign({ userId, role }, process.env.JWT_SECRET, { expiresIn: '7d' });

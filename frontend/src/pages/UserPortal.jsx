@@ -17,9 +17,25 @@ const UserPortal = () => {
   const [showBedBookingForm, setShowBedBookingForm] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState(null);
 
+  const [hospitals, setHospitals] = useState([]);
+  const [showHospitalSelector, setShowHospitalSelector] = useState(false);
+
   useEffect(() => {
     fetchUserData();
+    fetchHospitals();
   }, []);
+
+  const fetchHospitals = async () => {
+    try {
+      const response = await api.getHospitals();
+      if (response.ok) {
+        const hospitalsData = await response.json();
+        setHospitals(hospitalsData);
+      }
+    } catch (error) {
+      console.error('Failed to fetch hospitals:', error);
+    }
+  };
 
   useEffect(() => {
     const urlParams = new URLSearchParams(location.search);
@@ -47,7 +63,7 @@ const UserPortal = () => {
         return;
       }
 
-      const [appointmentsRes, billsRes] = await Promise.all([
+      const [appointmentsRes, bedBookingsRes] = await Promise.all([
         api.getAppointments(token),
         api.getBedBookings(token)
       ]);
@@ -75,12 +91,12 @@ const UserPortal = () => {
         throw new Error('Failed to fetch appointments');
       }
 
-      if (billsRes.ok) {
-        const billsData = await billsRes.json();
-        setBills(billsData);
+      if (bedBookingsRes.ok) {
+        const bedBookingsData = await bedBookingsRes.json();
+        setBedBookings(bedBookingsData);
       } else {
-        console.warn('Failed to fetch bills');
-        setBills([]);
+        console.warn('Failed to fetch bed bookings');
+        setBedBookings([]);
       }
     } catch (err) {
       setError(err.message);
@@ -141,22 +157,29 @@ const UserPortal = () => {
 
   const bookBed = async (bookingData) => {
     try {
-      const mockBooking = {
-        id: Date.now().toString(),
-        hospital: { name: selectedHospital?.hospitalName || 'Selected Hospital' },
+      const token = localStorage.getItem('token');
+      const response = await api.createBedBooking({
+        hospitalId: bookingData.hospitalId,
         bedType: bookingData.bedType,
         admissionDate: bookingData.admissionDate,
-        status: 'confirmed',
         patientName: bookingData.patientName,
         reason: bookingData.reason
-      };
+      }, token);
       
-      setBedBookings(prev => [...prev, mockBooking]);
-      toast.success('Bed booked successfully!');
-      setShowBedBookingForm(false);
-      setSelectedHospital(null);
+      if (response.ok) {
+        const newBooking = await response.json();
+        setBedBookings(prev => [...prev, newBooking]);
+        toast.success('Bed booked successfully!');
+        setShowBedBookingForm(false);
+        setSelectedHospital(null);
+        fetchUserData(); // Refresh data
+      } else {
+        const error = await response.json();
+        throw new Error(error.error || 'Failed to book bed');
+      }
     } catch (err) {
-      toast.error('Failed to book bed');
+      console.error('Bed booking error:', err);
+      toast.error(err.message || 'Failed to book bed');
     }
   };
 
@@ -191,25 +214,50 @@ const UserPortal = () => {
         <div className="portal-tabs">
           <button 
             className={`tab ${activeTab === 'appointments' ? 'active' : ''}`}
-            onClick={() => setActiveTab('appointments')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveTab('appointments');
+              setShowBedBookingForm(false);
+              setSelectedHospital(null);
+              setShowHospitalSelector(false);
+            }}
           >
             <Calendar size={16} /> Appointments
           </button>
           <button 
             className={`tab ${activeTab === 'beds' ? 'active' : ''}`}
-            onClick={() => setActiveTab('beds')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveTab('beds');
+            }}
           >
             <Heart size={16} /> Bed Bookings
           </button>
           <button 
             className={`tab ${activeTab === 'bills' ? 'active' : ''}`}
-            onClick={() => setActiveTab('bills')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveTab('bills');
+              setShowBedBookingForm(false);
+              setSelectedHospital(null);
+              setShowHospitalSelector(false);
+            }}
           >
             <FileText size={16} /> Bills
           </button>
           <button 
             className={`tab ${activeTab === 'records' ? 'active' : ''}`}
-            onClick={() => setActiveTab('records')}
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setActiveTab('records');
+              setShowBedBookingForm(false);
+              setSelectedHospital(null);
+              setShowHospitalSelector(false);
+            }}
           >
             <User size={16} /> Records
           </button>
@@ -278,8 +326,15 @@ const UserPortal = () => {
               <form onSubmit={(e) => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
+                const hospitalId = selectedHospital?.hospitalId || formData.get('hospitalId');
+                
+                if (!hospitalId) {
+                  toast.error('Please select a hospital');
+                  return;
+                }
+                
                 bookBed({
-                  hospitalId: selectedHospital?.hospitalId || formData.get('hospitalId'),
+                  hospitalId,
                   bedType: formData.get('bedType'),
                   admissionDate: formData.get('admissionDate'),
                   patientName: formData.get('patientName'),
@@ -287,15 +342,64 @@ const UserPortal = () => {
                 });
               }}>
                 <div className="form-group">
-                  <label>Hospital:</label>
-                  <input 
-                    type="text" 
-                    value={selectedHospital?.hospitalName || 'Select Hospital'} 
-                    readOnly
-                  />
+                  <label>Hospital *</label>
+                  {selectedHospital ? (
+                    <div className="selected-hospital">
+                      <input 
+                        type="text" 
+                        value={selectedHospital.hospitalName} 
+                        readOnly
+                        className="readonly-input"
+                      />
+                      <button 
+                        type="button" 
+                        onClick={() => {
+                          setSelectedHospital(null);
+                          setShowHospitalSelector(true);
+                        }}
+                        className="btn-change"
+                      >
+                        Change
+                      </button>
+                    </div>
+                  ) : (
+                    <div>
+                      <button 
+                        type="button" 
+                        onClick={() => setShowHospitalSelector(true)}
+                        className="btn-select-hospital"
+                      >
+                        Select Hospital
+                      </button>
+                      {showHospitalSelector && (
+                        <div className="hospital-selector">
+                          <h4>Choose Hospital:</h4>
+                          <div className="hospital-list">
+                            {hospitals.map(hospital => (
+                              <div 
+                                key={hospital.id} 
+                                className="hospital-option"
+                                onClick={() => {
+                                  setSelectedHospital({
+                                    hospitalId: hospital.id,
+                                    hospitalName: hospital.name
+                                  });
+                                  setShowHospitalSelector(false);
+                                }}
+                              >
+                                <h5>{hospital.name}</h5>
+                                <p>{hospital.address}</p>
+                                <p>{hospital.city}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="form-group">
-                  <label>Bed Type:</label>
+                  <label>Bed Type *</label>
                   <select name="bedType" required>
                     <option value="">Select bed type</option>
                     <option value="GENERAL">General Ward</option>
@@ -305,7 +409,7 @@ const UserPortal = () => {
                   </select>
                 </div>
                 <div className="form-group">
-                  <label>Admission Date:</label>
+                  <label>Admission Date *</label>
                   <input 
                     type="date" 
                     name="admissionDate" 
@@ -314,15 +418,30 @@ const UserPortal = () => {
                   />
                 </div>
                 <div className="form-group">
-                  <label>Patient Name:</label>
-                  <input type="text" name="patientName" required />
+                  <label>Patient Name *</label>
+                  <input type="text" name="patientName" required placeholder="Enter patient name" />
                 </div>
                 <div className="form-group">
-                  <label>Reason for Admission:</label>
-                  <textarea name="reason" rows="3" required></textarea>
+                  <label>Reason for Admission *</label>
+                  <textarea 
+                    name="reason" 
+                    rows="3" 
+                    required 
+                    placeholder="Describe the reason for admission"
+                  ></textarea>
                 </div>
                 <div className="form-actions">
-                  <button type="button" onClick={() => setShowBedBookingForm(false)}>Cancel</button>
+                  <button 
+                    type="button" 
+                    onClick={() => {
+                      setShowBedBookingForm(false);
+                      setSelectedHospital(null);
+                      setShowHospitalSelector(false);
+                    }}
+                    className="btn-cancel"
+                  >
+                    Cancel
+                  </button>
                   <button type="submit" className="btn-primary">Book Bed</button>
                 </div>
               </form>

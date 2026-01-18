@@ -72,7 +72,7 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <Router>
+      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <div className="App">
           <Toaster position="top-right" />
           <Navbar user={user} onLogout={handleLogout} />

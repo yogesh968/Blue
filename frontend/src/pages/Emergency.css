@@ -1,76 +1,88 @@
 .emergency-page {
   min-height: calc(100vh - 80px);
-  background: linear-gradient(180deg, #fef2f2 0%, #ffffff 100%);
+  background: linear-gradient(180deg, #fffaf9 0%, #ffffff 100%);
   padding-top: 0;
+  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+  color: #0f172a;
 }
 
 .emergency-header {
-  background: linear-gradient(135deg, #991b1b 0%, #dc2626 100%);
-  color: white;
-  padding: 4rem 0;
-  box-shadow: 0 4px 20px rgba(220, 38, 38, 0.25);
+  background: #ffffff;
+  color: #0f172a;
+  padding: 2rem 0;
+  box-shadow: 0 6px 22px rgba(3,10,18,0.06);
   position: relative;
 }
 
 .emergency-header::after {
   content: '';
   position: absolute;
-  bottom: -2px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #ef4444, transparent);
+  bottom: -6px;
+  left: 4%;
+  right: 4%;
+  height: 6px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, transparent, rgba(15,23,42,0.04), transparent);
 }
 
 .emergency-alert {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
+  gap: 1.25rem;
   position: relative;
   z-index: 1;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 .alert-icon {
-  font-size: 4rem;
-  animation: pulse 2s infinite;
-  background: rgba(255, 255, 255, 0.15);
-  padding: 1rem;
+  font-size: 3.25rem;
+  animation: pulse 1.6s infinite;
+  background: rgba(255, 255, 255, 0.12);
+  padding: 0.9rem;
   border-radius: 50%;
-  backdrop-filter: blur(10px);
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.22);
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .emergency-header h1 {
-  color: white;
-  font-size: 2.75rem;
-  margin-bottom: 0.75rem;
+  color: #0f172a;
+  font-size: 2rem;
+  margin-bottom: 0.25rem;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.2px;
 }
 
 .emergency-header p {
-  color: rgba(255, 255, 255, 0.95);
-  font-size: 1.125rem;
-  font-weight: 400;
+  color: #475569;
+  font-size: 0.98rem;
+  font-weight: 500;
 }
 
 .emergency-content {
-  padding: 2rem 0;
+  padding: 2.5rem 0;
 }
 
 .emergency-grid {
   display: grid;
-  gap: 2rem;
-  margin-bottom: 3rem;
+  grid-template-columns: 1fr minmax(360px, 560px) 1fr;
+  gap: 2.25rem;
+  margin-bottom: 3.5rem;
+  align-items: start;
 }
 
 .emergency-section {
   background: white;
-  border-radius: 16px;
-  padding: 2.5rem;
-  border: 1px solid rgba(229, 231, 235, 0.6);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-  transition: all 0.3s ease;
+  border-radius: 14px;
+  padding: 2.25rem;
+  border: 1px solid rgba(229, 231, 235, 0.75);
+  box-shadow: 0 8px 28px rgba(15, 23, 42, 0.06);
+  transition: all 0.22s ease;
 }
 
 .emergency-section:hover {
@@ -78,9 +90,9 @@
 }
 
 .emergency-section h2 {
-  color: var(--color-gray-900);
-  margin-bottom: 1.5rem;
-  font-size: 1.5rem;
+  color: #0f172a;
+  margin-bottom: 1rem;
+  font-size: 1.25rem;
 }
 
 .emergency-services {
@@ -91,14 +103,15 @@
 .service-card {
   display: flex;
   align-items: center;
-  gap: 1.5rem;
-  padding: 1.75rem;
-  border: 1px solid #f3f4f6;
-  border-radius: 12px;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  background: linear-gradient(135deg, #ffffff 0%, #fefefe 100%);
+  gap: 1.25rem;
+  padding: 1.5rem;
+  border: 1px solid #fbfbfb;
+  border-radius: 14px;
+  transition: all 0.22s ease;
+  background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
   position: relative;
-  overflow: hidden;
+  /* allow action buttons and hover effects to remain visible */
+  overflow: visible;
 }
 
 .service-card::before {
@@ -108,9 +121,9 @@
   top: 0;
   bottom: 0;
   width: 4px;
-  background: linear-gradient(180deg, #dc2626, #ef4444);
+  background: linear-gradient(180deg, #ef4444, #dc2626);
   transform: scaleY(0);
-  transition: transform 0.3s ease;
+  transition: transform 0.2s ease;
 }
 
 .service-card:hover::before {
@@ -124,59 +137,55 @@
   background: linear-gradient(135deg, #ffffff 0%, #fef2f2 100%);
 }
 
+/* ensure the action button does not shrink and stays aligned to the right */
+.service-card .btn {
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.service-info h3 {
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  font-size: 1.12rem;
+  font-weight: 700;
+}
+.service-info p {
+  color: #475569;
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+.service-phone {
+  font-weight: 700;
+  color: #b91c1c;
+  font-size: 1.05rem;
+  letter-spacing: 0.2px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Courier New', monospace;
+}
+
 .service-icon {
-  font-size: 2.5rem;
-  background: linear-gradient(135deg, #fee2e2 0%, #fef2f2 100%);
-  width: 64px;
-  height: 64px;
+  font-size: 1.9rem;
+  background: linear-gradient(135deg, #fff1f0 0%, #fff7f7 100%);
+  width: 68px;
+  height: 68px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: 12px;
   flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.15);
-  transition: all 0.3s ease;
-}
-
-.service-card:hover .service-icon {
-  transform: scale(1.05);
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.25);
-}
-
-.service-info {
-  flex: 1;
-}
-
-.service-info h3 {
-  color: var(--color-gray-900);
-  margin-bottom: 0.25rem;
-}
-
-.service-info p {
-  color: var(--color-gray-600);
-  font-size: 0.875rem;
-  margin-bottom: 0.5rem;
-}
-
-.service-phone {
-  font-weight: 700;
-  color: #dc2626;
-  font-size: 1.25rem;
-  letter-spacing: 0.5px;
-  font-family: 'Courier New', monospace;
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.06);
 }
 
 .btn-emergency {
-  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  background: linear-gradient(135deg, #ef4444 0%, #b91c1c 100%);
   color: white;
   border: none;
-  padding: 1rem 2rem;
-  border-radius: 8px;
-  font-weight: 600;
+  padding: 0.9rem 1.6rem;
+  border-radius: 10px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease;
-  font-size: 0.9375rem;
-  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+  transition: all 0.18s ease;
+  font-size: 1rem;
+  box-shadow: 0 8px 20px rgba(239, 68, 68, 0.16);
   position: relative;
   overflow: hidden;
 }
@@ -208,6 +217,61 @@
   gap: 1rem;
 }
 
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #60a5fa;
+  box-shadow: 0 8px 30px rgba(96,165,250,0.08);
+}
+
+/* Reusable buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #2563eb 0%, #60a5fa 100%);
+  color: white;
+  box-shadow: 0 8px 24px rgba(37,99,235,0.12);
+}
+
+.btn-secondary {
+  background: #fff;
+  border: 1px solid #e6eefc;
+  color: #0f172a;
+}
+
+.btn-large {
+  padding: 0.9rem 1.2rem;
+  font-size: 1rem;
+}
+
+/* Floating quick action */
+.fab-ambulance {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  z-index: 999;
+  background: linear-gradient(135deg,#ef4444 0%,#b91c1c 100%);
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.9rem 1.1rem;
+  box-shadow: 0 14px 40px rgba(239,68,68,0.18);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  border: none;
+}
+
+.fab-ambulance:hover { transform: translateY(-4px); }
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -222,9 +286,9 @@
 
 .form-group input,
 .form-group select {
-  padding: 0.75rem;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.5rem;
+  padding: 0.95rem 1rem;
+  border: 1px solid #e6e9ef;
+  border-radius: 0.6rem;
   font-size: 1rem;
 }
 
@@ -245,8 +309,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.75rem;
+  border: 1px solid #f1f5f9;
+  border-radius: 0.9rem;
   transition: all 0.2s ease;
 }
 
@@ -256,8 +320,10 @@
 }
 
 .hospital-info h4 {
-  color: var(--color-gray-900);
-  margin-bottom: 0.5rem;
+  color: #0f172a;
+  margin-bottom: 0.25rem;
+  font-size: 1.04rem;
+  font-weight: 700;
 }
 
 .hospital-details {
@@ -280,11 +346,16 @@
   gap: 0.5rem;
 }
 
+/* keep hospital action buttons visible on small cards */
+.hospital-actions .btn {
+  flex-shrink: 0;
+}
+
 .emergency-tips {
-  background: var(--color-white);
+  background: #ffffff;
   border-radius: 1rem;
   padding: 2rem;
-  border: 1px solid var(--color-gray-200);
+  border: 1px solid #eef2ff;
 }
 
 .emergency-tips h2 {

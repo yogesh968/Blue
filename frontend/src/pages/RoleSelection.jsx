@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { User, Stethoscope, Building2 } from 'lucide-react';
-import toast, { Toaster } from 'react-hot-toast';
+import { FaUser, FaUserMd, FaHospital } from 'react-icons/fa';
 import './RoleSelection.css';
 
 const RoleSelection = ({ onLogin }) => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const [selectedRole, setSelectedRole] = useState('');
+  const [selectedRole, setSelectedRole] = useState('PATIENT');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const token = searchParams.get('token');
 
   useEffect(() => {
@@ -17,44 +17,18 @@ const RoleSelection = ({ onLogin }) => {
     }
   }, [token, navigate]);
 
-  const roles = [
-    {
-      id: 'PATIENT',
-      title: 'Patient',
-      description: 'Book appointments, manage health records, and access medical services',
-      icon: <User size={48} />,
-      color: '#3b82f6'
-    },
-    {
-      id: 'DOCTOR',
-      title: 'Doctor',
-      description: 'Manage appointments, patient records, and provide medical consultations',
-      icon: <Stethoscope size={48} />,
-      color: '#10b981'
-    },
-    {
-      id: 'HOSPITAL',
-      title: 'Hospital',
-      description: 'Manage hospital operations, bed bookings, and ambulance services',
-      icon: <Building2 size={48} />,
-      color: '#f59e0b'
-    }
-  ];
-
-  const handleRoleSelection = async () => {
-    if (!selectedRole) {
-      toast.error('Please select a role');
-      return;
-    }
-
+  const handleSubmit = async (e) => {
+    e.preventDefault();
     setLoading(true);
+    setError('');
+
     try {
-      const response = await fetch('http://localhost:3001/api/auth/complete-registration', {
+      const response = await fetch('http://localhost:3001/api/auth/google/complete', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
+          'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ token, role: selectedRole }),
+        body: JSON.stringify({ token, role: selectedRole })
       });
 
       const data = await response.json();
@@ -62,62 +36,111 @@ const RoleSelection = ({ onLogin }) => {
       if (response.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
-        onLogin && onLogin(data.user);
-        toast.success('Registration completed successfully!');
-        navigate('/');
+        localStorage.setItem('userId', data.user.id);
+        localStorage.setItem('userRole', data.user.role);
+        
+        onLogin(data.user);
+        
+        // Redirect based on role
+        if (data.user.role === 'DOCTOR') {
+          navigate('/doctor-portal');
+        } else if (data.user.role === 'PATIENT') {
+          navigate('/user-portal');
+        } else if (data.user.role === 'HOSPITAL') {
+          navigate('/hospital-portal');
+        } else {
+          navigate('/');
+        }
       } else {
-        toast.error(data.error || 'Registration failed');
+        setError(data.error || 'Registration failed');
       }
-    } catch (error) {
-      toast.error('Registration failed. Please try again.');
+    } catch (err) {
+      setError('Network error. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
+  if (!token) {
+    return null;
+  }
+
   return (
     <div className="role-selection-page">
-      <Toaster position="top-right" />
-      
       <div className="role-selection-container">
         <div className="role-selection-header">
-          <h1>Choose Your Role</h1>
-          <p>Select how you'll be using our healthcare platform</p>
+          <h1>Select Your Role</h1>
+          <p>Choose how you want to use HealthCare+</p>
         </div>
 
-        <div className="roles-grid">
-          {roles.map(role => (
-            <div
-              key={role.id}
-              className={`role-card ${selectedRole === role.id ? 'selected' : ''}`}
-              onClick={() => setSelectedRole(role.id)}
-              style={{ '--role-color': role.color }}
-            >
-              <div className="role-icon" style={{ color: role.color }}>
-                {role.icon}
-              </div>
-              <h3>{role.title}</h3>
-              <p>{role.description}</p>
-              <div className="role-selector">
-                <input
-                  type="radio"
-                  name="role"
-                  value={role.id}
-                  checked={selectedRole === role.id}
-                  onChange={() => setSelectedRole(role.id)}
-                />
-              </div>
+        <form onSubmit={handleSubmit} className="role-selection-form">
+          {error && (
+            <div className="error-message">
+              {error}
             </div>
-          ))}
-        </div>
+          )}
 
-        <button
-          className="continue-btn"
-          onClick={handleRoleSelection}
-          disabled={!selectedRole || loading}
-        >
-          {loading ? 'Setting up your account...' : 'Continue'}
-        </button>
+          <div className="role-options">
+            <label className={`role-option ${selectedRole === 'PATIENT' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="role"
+                value="PATIENT"
+                checked={selectedRole === 'PATIENT'}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              />
+              <div className="role-content">
+                <span className="role-icon"><FaUser /></span>
+                <div>
+                  <div className="role-title">Patient</div>
+                  <div className="role-desc">Book appointments & manage health records</div>
+                </div>
+              </div>
+            </label>
+
+            <label className={`role-option ${selectedRole === 'DOCTOR' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="role"
+                value="DOCTOR"
+                checked={selectedRole === 'DOCTOR'}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              />
+              <div className="role-content">
+                <span className="role-icon"><FaUserMd /></span>
+                <div>
+                  <div className="role-title">Doctor</div>
+                  <div className="role-desc">Provide medical consultations & manage appointments</div>
+                </div>
+              </div>
+            </label>
+
+            <label className={`role-option ${selectedRole === 'HOSPITAL' ? 'selected' : ''}`}>
+              <input
+                type="radio"
+                name="role"
+                value="HOSPITAL"
+                checked={selectedRole === 'HOSPITAL'}
+                onChange={(e) => setSelectedRole(e.target.value)}
+              />
+              <div className="role-content">
+                <span className="role-icon"><FaHospital /></span>
+                <div>
+                  <div className="role-title">Hospital</div>
+                  <div className="role-desc">Manage hospital operations & staff</div>
+                </div>
+              </div>
+            </label>
+          </div>
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn btn-primary btn-large"
+          >
+            {loading ? 'Creating Account...' : 'Continue'}
+          </button>
+        </form>
       </div>
     </div>
   );

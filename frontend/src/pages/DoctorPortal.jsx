@@ -275,7 +275,7 @@ const DoctorPortal = () => {
             }
           }}>
             <Grid container spacing={3}>
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth required>
                   <InputLabel>Medical Speciality</InputLabel>
                   <Select
@@ -297,7 +297,7 @@ const DoctorPortal = () => {
                 </FormControl>
               </Grid>
               
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <FormControl fullWidth required>
                   <InputLabel>Medical Qualification</InputLabel>
                   <Select
@@ -319,7 +319,7 @@ const DoctorPortal = () => {
                 </FormControl>
               </Grid>
               
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Experience (years)"
@@ -331,7 +331,7 @@ const DoctorPortal = () => {
                 />
               </Grid>
               
-              <Grid item xs={12} sm={6}>
+              <Grid size={{ xs: 12, sm: 6 }}>
                 <TextField
                   fullWidth
                   label="Consultation Fees (₹)"
@@ -343,7 +343,7 @@ const DoctorPortal = () => {
                 />
               </Grid>
               
-              <Grid item xs={12}>
+              <Grid size={{ xs: 12 }}>
                 <Button
                   type="submit"
                   variant="contained"
@@ -393,7 +393,7 @@ const DoctorPortal = () => {
                   color: 'warning.main',
                 },
               ].map((stat, index) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -448,7 +448,7 @@ const DoctorPortal = () => {
             </Typography>
             <Grid container spacing={3}>
               {appointments.map(appointment => (
-                <Grid item xs={12} md={6} key={appointment.id}>
+                <Grid size={{ xs: 12, md: 6 }} key={appointment.id}>
                   <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 3 }}>
                     <CardContent>
                       <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
@@ -512,7 +512,7 @@ const DoctorPortal = () => {
                 </Grid>
               ))}
               {appointments.length === 0 && (
-                <Grid item xs={12}>
+                <Grid size={{ xs: 12 }}>
                   <Card sx={{ p: 4, textAlign: 'center' }}>
                     <Typography variant="h6" color="text.secondary">
                       No appointments found

@@ -95,6 +95,7 @@ app.use('*', (req, res) => {
 });
 
 // Only start server if not in test mode
+// Only start server if not in test mode
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
     console.log(`🚀 HealthCare+ API server running on port ${PORT}`);

@@ -131,7 +131,7 @@ const DoctorLocations = () => {
       
       <Grid container spacing={3}>
         {locations.length === 0 ? (
-          <Grid item xs={12}>
+          <Grid size={{ xs: 12 }}>
             <Card sx={{ p: 4, textAlign: 'center' }}>
               <Typography variant="h6" color="text.secondary">
                 No locations added yet. Click "Add Location" to get started.
@@ -140,7 +140,7 @@ const DoctorLocations = () => {
           </Grid>
         ) : (
           locations.map(location => (
-          <Grid item xs={12} md={6} lg={4} key={location.id}>
+          <Grid size={{ xs: 12, md: 6, lg: 4 }} key={location.id}>
             <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 3 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>

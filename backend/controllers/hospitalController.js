@@ -1,4 +1,5 @@
-const { prisma } = require('../db/config');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const getHospitals = async (req, res) => {
   try {
@@ -27,6 +28,7 @@ const getHospitals = async (req, res) => {
 
     res.json(hospitals);
   } catch (error) {
+    console.error('Error fetching hospitals:', error);
     res.status(500).json({ error: 'Failed to fetch hospitals' });
   }
 };
@@ -36,7 +38,7 @@ const getHospitalById = async (req, res) => {
     const { id } = req.params;
     
     const hospital = await prisma.hospital.findUnique({
-      where: { id: parseInt(id) },
+      where: { id },
       include: {
         doctors: {
           include: {
@@ -53,6 +55,7 @@ const getHospitalById = async (req, res) => {
 
     res.json(hospital);
   } catch (error) {
+    console.error('Error fetching hospital:', error);
     res.status(500).json({ error: 'Failed to fetch hospital' });
   }
 };
@@ -67,6 +70,7 @@ const createHospitalProfile = async (req, res) => {
 
     res.status(201).json(hospital);
   } catch (error) {
+    console.error('Error creating hospital:', error);
     res.status(500).json({ error: 'Failed to create hospital profile' });
   }
 };
@@ -77,12 +81,13 @@ const updateHospital = async (req, res) => {
     const { name, city, address, phone } = req.body;
 
     const hospital = await prisma.hospital.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: { name, city, address, phone }
     });
 
     res.json(hospital);
   } catch (error) {
+    console.error('Error updating hospital:', error);
     res.status(500).json({ error: 'Failed to update hospital' });
   }
 };
@@ -96,12 +101,12 @@ const getAvailableDoctors = async (req, res) => {
     let where = {
       OR: [
         { hospitalId: null }, // Doctors not affiliated with any hospital
-        { hospitalId: { not: parseInt(hospitalId) } } // Doctors from other hospitals
+        { hospitalId: { not: hospitalId } } // Doctors from other hospitals
       ]
     };
     
     if (speciality) {
-      where.speciality = { contains: speciality };
+      where.speciality = { contains: speciality, mode: 'insensitive' };
     }
 
     const doctors = await prisma.doctor.findMany({
@@ -141,8 +146,8 @@ const inviteDoctor = async (req, res) => {
     // Check if invitation already exists
     const existingInvitation = await prisma.doctorInvitation.findFirst({
       where: {
-        hospitalId: parseInt(hospitalId),
-        doctorId: parseInt(doctorId),
+        hospitalId,
+        doctorId,
         status: 'PENDING'
       }
     });
@@ -153,8 +158,8 @@ const inviteDoctor = async (req, res) => {
 
     const invitation = await prisma.doctorInvitation.create({
       data: {
-        hospitalId: parseInt(hospitalId),
-        doctorId: parseInt(doctorId),
+        hospitalId,
+        doctorId,
         status: 'PENDING'
       },
       include: {

@@ -89,7 +89,6 @@ const Navbar = ({ user, onLogout }) => {
       <List>
         {menuItems.map((item) => (
           <ListItem
-            button
             key={item.text}
             component={Link}
             to={item.path}
@@ -104,10 +103,10 @@ const Navbar = ({ user, onLogout }) => {
         ))}
         {!user && (
           <>
-            <ListItem button component={Link} to="/login" onClick={handleDrawerToggle}>
+            <ListItem key="login" component={Link} to="/login" onClick={handleDrawerToggle}>
               <ListItemText primary="Login" />
             </ListItem>
-            <ListItem button component={Link} to="/register" onClick={handleDrawerToggle}>
+            <ListItem key="register" component={Link} to="/register" onClick={handleDrawerToggle}>
               <ListItemText primary="Sign Up" />
             </ListItem>
           </>
@@ -161,8 +160,8 @@ const Navbar = ({ user, onLogout }) => {
                     color: item.text === 'Emergency' ? 'error.main' : 'text.primary',
                     fontWeight: item.text === 'Emergency' ? 600 : 500,
                     '&:hover': {
-                      backgroundColor: item.text === 'Emergency' ? 'error.light' : 'primary.light',
-                      color: item.text === 'Emergency' ? 'white' : 'primary.contrastText',
+                      backgroundColor: item.text === 'Emergency' ? 'rgba(211, 47, 47, 0.08)' : 'rgba(77, 182, 226, 0.08)',
+                      color: item.text === 'Emergency' ? 'error.main' : 'text.primary',
                     },
                   }}
                 >

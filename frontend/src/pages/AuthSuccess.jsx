@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CheckCircle } from 'lucide-react';
 
 const AuthSuccess = ({ onLogin }) => {
   const [searchParams] = useSearchParams();
@@ -13,14 +12,32 @@ const AuthSuccess = ({ onLogin }) => {
     if (token && userParam) {
       try {
         const user = JSON.parse(decodeURIComponent(userParam));
+        
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
-        onLogin && onLogin(user);
+        localStorage.setItem('userId', user.id);
+        localStorage.setItem('userRole', user.role);
         
-        setTimeout(() => {
-          navigate('/');
-        }, 2000);
+        onLogin(user);
+        
+        // Check if there's a pending appointment first
+        const pendingAppointment = localStorage.getItem('pendingAppointment');
+        if (pendingAppointment) {
+          navigate('/doctors');
+        } else {
+          // Redirect based on role
+          if (user.role === 'DOCTOR') {
+            navigate('/doctor-portal');
+          } else if (user.role === 'PATIENT') {
+            navigate('/user-portal');
+          } else if (user.role === 'HOSPITAL') {
+            navigate('/hospital-portal');
+          } else {
+            navigate('/');
+          }
+        }
       } catch (error) {
+        console.error('Error parsing user data:', error);
         navigate('/login?error=auth_failed');
       }
     } else {
@@ -30,47 +47,10 @@ const AuthSuccess = ({ onLogin }) => {
 
   return (
     <div className="auth-success-page">
-      <div className="auth-success-container">
-        <CheckCircle size={64} className="success-icon" />
-        <h1>Login Successful!</h1>
-        <p>Redirecting you to the dashboard...</p>
+      <div className="loading-container">
+        <h2>Completing sign in...</h2>
+        <p>Please wait while we redirect you.</p>
       </div>
-      
-      <style jsx>{`
-        .auth-success-page {
-          min-height: 100vh;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        }
-        
-        .auth-success-container {
-          background: white;
-          border-radius: 12px;
-          padding: 3rem;
-          text-align: center;
-          box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .success-icon {
-          color: #10b981;
-          margin-bottom: 1rem;
-        }
-        
-        .auth-success-container h1 {
-          margin: 0 0 0.5rem 0;
-          color: #1f2937;
-          font-size: 1.875rem;
-          font-weight: 700;
-        }
-        
-        .auth-success-container p {
-          margin: 0;
-          color: #6b7280;
-          font-size: 1.125rem;
-        }
-      `}</style>
     </div>
   );
 };

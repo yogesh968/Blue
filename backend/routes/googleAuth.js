@@ -8,6 +8,6 @@ router.get('/google', passport.authenticate('google', { scope: ['profile', 'emai
 
 router.get('/google/callback', passport.authenticate('google', { failureRedirect: 'http://localhost:5173/login?error=auth_failed' }), googleCallback);
 
-router.post('/complete-registration', completeRegistration);
+router.post('/google/complete', completeRegistration);
 
 module.exports = router;

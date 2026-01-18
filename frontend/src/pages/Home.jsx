@@ -151,23 +151,14 @@ const Home = () => {
       {/* Hero Section */}
       <Box
         sx={{
-          background: 'linear-gradient(135deg, #4DB6E2 0%, #3A9BC1 50%, #1A2A33 100%)',
+          background: 'linear-gradient(180deg, #f8fafc 0%, #e6eef6 100%)',
           py: { xs: 8, md: 12 },
-          color: 'white',
+          color: 'text.primary',
           position: 'relative',
           overflow: 'hidden',
+          borderBottom: '1px solid rgba(15, 23, 42, 0.04)'
         }}
       >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 30% 70%, rgba(246, 196, 83, 0.2) 0%, transparent 50%)',
-          }}
-        />
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -181,25 +172,24 @@ const Home = () => {
                   fontSize: { xs: '2.5rem', md: '4rem' },
                   fontWeight: 700,
                   mb: 3,
-                  background: 'linear-gradient(135deg, #ffffff 0%, #F6C453 100%)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
+                  color: '#0f172a',
+                  lineHeight: 1.03,
                 }}
               >
-                Your Health, Our Priority
+                Your health, our priority
               </Typography>
               <Typography
                 variant="h5"
                 sx={{
                   mb: 4,
-                  opacity: 0.9,
-                  maxWidth: '600px',
+                  opacity: 0.85,
+                  maxWidth: '680px',
                   mx: 'auto',
-                  fontSize: { xs: '1.1rem', md: '1.3rem' },
+                  fontSize: { xs: '1.02rem', md: '1.18rem' },
+                  color: 'text.secondary'
                 }}
               >
-                Connect with top doctors, book appointments instantly, and manage your health with BlueVitals - your trusted healthcare companion.
+                Connect with carefully vetted doctors, book appointments instantly, and manage your health with BlueVitals — your local healthcare companion.
               </Typography>
               
               {/* Search Bar */}
@@ -227,8 +217,8 @@ const Home = () => {
                   }}
                   sx={{
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      backdropFilter: 'blur(10px)',
+                      backgroundColor: '#ffffff',
+                      boxShadow: '0 6px 18px rgba(15,23,42,0.06)',
                     },
                   }}
                 />
@@ -246,8 +236,8 @@ const Home = () => {
                   sx={{
                     minWidth: { sm: '200px' },
                     '& .MuiOutlinedInput-root': {
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                      backdropFilter: 'blur(10px)',
+                      backgroundColor: '#ffffff',
+                      boxShadow: '0 6px 18px rgba(15,23,42,0.06)',
                     },
                   }}
                 />
@@ -256,11 +246,11 @@ const Home = () => {
                   size="large"
                   onClick={handleSearch}
                   sx={{
-                    background: 'linear-gradient(135deg, #F6C453 0%, #FF914D 100%)',
-                    color: '#1A2A33',
+                    background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
+                    color: '#fff',
                     minWidth: { sm: '120px' },
                     '&:hover': {
-                      background: 'linear-gradient(135deg, #E5B03C 0%, #E67D36 100%)',
+                      background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
                     },
                   }}
                 >
@@ -268,37 +258,13 @@ const Home = () => {
                 </Button>
               </Box>
               
-              {/* Stats */}
-              <Grid container spacing={4} justifyContent="center">
-                {[
-                  { number: '10,000+', label: 'Verified Doctors' },
-                  { number: '500+', label: 'Hospitals' },
-                  { number: '1M+', label: 'Happy Patients' },
-                ].map((stat, index) => (
-                  <Grid item key={index}>
-                    <motion.div whileHover={{ scale: 1.05 }}>
-                      <Box textAlign="center">
-                        <Typography
-                          variant="h3"
-                          sx={{
-                            fontWeight: 800,
-                            background: 'linear-gradient(135deg, #F6C453, #FF914D)',
-                            backgroundClip: 'text',
-                            WebkitBackgroundClip: 'text',
-                            WebkitTextFillColor: 'transparent',
-                          }}
-                        >
-                          {stat.number}
-                        </Typography>
-                        <Typography variant="body2" sx={{ opacity: 0.8, textTransform: 'uppercase', letterSpacing: 1 }}>
-                          {stat.label}
-                        </Typography>
-                      </Box>
-                    </motion.div>
-                  </Grid>
-                ))}
-              </Grid>
-            </Box>
+              {/* Stats removed as requested (large aggregate counts) */}
+              <Box textAlign="center" sx={{ mt: 2 }}>
+                <Typography variant="subtitle1" sx={{ opacity: 0.85, color: 'text.secondary' }}>
+                  Trusted healthcare, close to you.
+                </Typography>
+              </Box>
+              </Box>
           </motion.div>
         </Container>
       </Box>
@@ -345,7 +311,7 @@ const Home = () => {
               action: 'hospitals'
             },
           ].map((action, index) => (
-            <Grid item xs={12} md={4} key={index}>
+            <Grid size={{ xs: 12, md: 4 }} key={index}>
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -426,7 +392,7 @@ const Home = () => {
           ) : (
             <Grid container spacing={4}>
               {displayDoctors.map((doctor) => (
-                <Grid item xs={12} md={4} key={doctor.id}>
+                <Grid size={{ xs: 12, md: 4 }} key={doctor.id}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -567,7 +533,7 @@ const Home = () => {
             { name: 'Dentistry', icon: <MedicalServices />, count: '160+ Doctors', color: '#06B6D4' },
             { name: 'Ophthalmology', icon: <Visibility />, count: '80+ Doctors', color: '#F59E0B' },
           ].map((specialty, index) => (
-            <Grid item xs={6} sm={4} md={3} key={index}>
+            <Grid size={{ xs: 6, sm: 4, md: 3 }} key={index}>
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}

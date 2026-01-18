@@ -94,7 +94,7 @@ h4 { font-size: 1.25rem; }
   border: 1px solid transparent;
 }
 
-.btn-primary::before {
+.btn-primary:not(.MuiButton-root)::before {
   content: '';
   position: absolute;
   top: 0;
@@ -106,11 +106,11 @@ h4 { font-size: 1.25rem; }
   transition: opacity 0.2s ease;
 }
 
-.btn-primary:hover::before {
+.btn-primary:not(.MuiButton-root):hover::before {
   opacity: 1;
 }
 
-.btn-primary:hover {
+.btn-primary:not(.MuiButton-root):hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
 }
@@ -128,7 +128,7 @@ h4 { font-size: 1.25rem; }
   box-shadow: var(--shadow-sm);
 }
 
-.btn-secondary:hover {
+.btn-secondary:not(.MuiButton-root):hover {
   background: var(--color-white);
   border-color: var(--color-primary-300);
   transform: translateY(-1px);
@@ -151,7 +151,7 @@ h4 { font-size: 1.25rem; }
   transition: all 0.3s ease;
 }
 
-.card:hover {
+.card:not(.MuiCard-root):hover {
   box-shadow: var(--shadow-xl);
   transform: translateY(-4px);
   border-color: rgba(13, 148, 136, 0.2);

@@ -250,7 +250,7 @@ const HospitalPortal = () => {
                   color: 'warning.main',
                 },
               ].map((stat, index) => (
-                <Grid item xs={12} sm={6} md={3} key={index}>
+                <Grid size={{ xs: 12, sm: 6, md: 3 }} key={index}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -299,7 +299,7 @@ const HospitalPortal = () => {
             </Grid>
 
             <Grid container spacing={3}>
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
@@ -327,7 +327,7 @@ const HospitalPortal = () => {
                 </Card>
               </Grid>
               
-              <Grid item xs={12} md={6}>
+              <Grid size={{ xs: 12, md: 6 }}>
                 <Card sx={{ height: '100%' }}>
                   <CardContent sx={{ p: 3 }}>
                     <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
@@ -385,7 +385,7 @@ const HospitalPortal = () => {
             
             <Grid container spacing={3}>
               {hospitalDoctors.map((doctor) => (
-                <Grid item xs={12} md={6} lg={4} key={doctor.id}>
+                <Grid size={{ xs: 12, md: 6, lg: 4 }} key={doctor.id}>
                   <Card
                     sx={{
                       height: '100%',
@@ -480,7 +480,7 @@ const HospitalPortal = () => {
                 
                 <Grid container spacing={2}>
                   {filteredDoctors.map((doctor) => (
-                    <Grid item xs={12} key={doctor.id}>
+                    <Grid size={{ xs: 12 }} key={doctor.id}>
                       <Card sx={{ p: 2 }}>
                         <Box display="flex" justifyContent="space-between" alignItems="center">
                           <Box display="flex" alignItems="center">

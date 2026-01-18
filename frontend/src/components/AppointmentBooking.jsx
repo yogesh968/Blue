@@ -101,47 +101,16 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
   const handleBooking = async () => {
     try {
       const token = localStorage.getItem('token');
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
       
       if (!token) {
         toast.error('Please login to book appointment');
         return;
       }
 
-      // First, try to get existing patient profile
-      let patientId = null;
-      try {
-        const profileResponse = await api.getPatientProfile(token);
-        if (profileResponse.ok) {
-          const profileData = await profileResponse.json();
-          patientId = profileData.id;
-        }
-      } catch (error) {
-        console.log('No existing patient profile found');
-      }
-
-      // If no patient profile exists, create one
-      if (!patientId) {
-        const patientResponse = await api.createPatientProfile({
-          gender: bookingData.patientInfo.gender || 'OTHER',
-          dob: null,
-          medicalHistory: {}
-        }, token);
-        
-        if (!patientResponse.ok) {
-          const errorData = await patientResponse.json();
-          throw new Error(errorData.error || 'Failed to create patient profile');
-        }
-        
-        const patientData = await patientResponse.json();
-        patientId = patientData.id;
-      }
-
-      // Create appointment
+      // Create appointment directly
       const appointmentData = {
-        patientId: patientId,
         doctorId: doctor.id,
-        appointmentDate: `${bookingData.date}T${bookingData.time}:00.000Z`,
+        appointmentDate: `${bookingData.date}T${bookingData.time}:00`,
         reason: bookingData.reason
       };
 
@@ -153,31 +122,6 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
       }
       
       const appointment = await response.json();
-      
-      // Create payment record
-      const paymentData = {
-        appointmentId: appointment.id,
-        amount: doctor.fee,
-        paymentMethod: bookingData.paymentMethod,
-        paymentStatus: 'PAID', // Simulate successful payment
-        transactionId: `TXN${Date.now()}`
-      };
-      
-      try {
-        await api.createPayment(paymentData, token);
-      } catch (paymentError) {
-        console.warn('Payment record creation failed:', paymentError);
-        // Continue even if payment record fails
-      }
-      
-      // Increment patient count for doctor's location if locationId exists
-      if (doctor.locationId) {
-        try {
-          await api.incrementLocationPatientCount(doctor.locationId, token);
-        } catch (error) {
-          console.log('Could not update patient count:', error);
-        }
-      }
       
       toast.success('Appointment booked successfully!');
       onSuccess && onSuccess({ ...bookingData, appointmentId: appointment.id });

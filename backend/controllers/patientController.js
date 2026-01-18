@@ -1,23 +1,21 @@
-const { prisma } = require('../db/config');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const createPatientProfile = async (req, res) => {
   try {
     const { userId } = req.user;
-    const { gender, dob, bloodGroup, address, emergencyContact, medicalHistory } = req.body;
+    const { gender, dob, medicalHistory } = req.body;
 
     const existingPatient = await prisma.patient.findUnique({ where: { userId } });
     if (existingPatient) {
-      return res.status(400).json({ error: 'Patient profile already exists' });
+      return res.json(existingPatient); // Return existing profile instead of error
     }
 
     const patient = await prisma.patient.create({
       data: {
         userId,
-        gender,
+        gender: gender || 'OTHER',
         dob: dob ? new Date(dob) : null,
-        bloodGroup,
-        address,
-        emergencyContact,
         medicalHistory: medicalHistory || {}
       },
       include: {
@@ -27,7 +25,8 @@ const createPatientProfile = async (req, res) => {
 
     res.status(201).json(patient);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to create patient profile' });
+    console.error('Error creating patient profile:', error);
+    res.status(500).json({ error: 'Failed to create patient profile', details: error.message });
   }
 };
 

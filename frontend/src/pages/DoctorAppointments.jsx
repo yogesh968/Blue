@@ -82,7 +82,7 @@ const DoctorAppointments = () => {
       
       <Grid container spacing={3}>
         {appointments.map(appointment => (
-          <Grid item xs={12} md={6} key={appointment.id}>
+          <Grid size={{ xs: 12, md: 6 }} key={appointment.id}>
             <Card sx={{ height: '100%', borderRadius: 2, boxShadow: 3 }}>
               <CardContent>
                 <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>

@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
@@ -16,7 +15,7 @@ enum Role {
 }
 
 model User {
-  id        Int     @id @default(autoincrement())
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   email     String  @unique
   password  String?
@@ -29,7 +28,7 @@ model User {
 }
 
 model Hospital {
-  id        Int       @id @default(autoincrement())
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
   name      String
   city      String
   address   String
@@ -42,9 +41,9 @@ model Hospital {
 }
 
 model Doctor {
-  id           Int             @id @default(autoincrement())
-  userId       Int             @unique
-  hospitalId   Int?
+  id           String          @id @default(auto()) @map("_id") @db.ObjectId
+  userId       String          @unique @db.ObjectId
+  hospitalId   String?         @db.ObjectId
   speciality   String
   experience   Int
   fees         Int
@@ -72,8 +71,8 @@ enum DayOfWeek {
 }
 
 model DoctorTiming {
-  id        Int       @id @default(autoincrement())
-  doctorId  Int
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId  String    @db.ObjectId
   dayOfWeek DayOfWeek
   startTime String
   endTime   String
@@ -82,8 +81,8 @@ model DoctorTiming {
 }
 
 model Patient {
-  id        Int       @id @default(autoincrement())
-  userId    Int       @unique
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String    @unique @db.ObjectId
   gender    String
   dob       DateTime?
   medicalHistory Json?
@@ -103,9 +102,9 @@ enum AppointmentStatus {
 }
 
 model Appointment {
-  id              Int       @id @default(autoincrement())
-  patientId       Int
-  doctorId        Int
+  id              String @id @default(auto()) @map("_id") @db.ObjectId
+  patientId       String @db.ObjectId
+  doctorId        String @db.ObjectId
   appointmentDate DateTime
   durationMinutes Int?
   reason          String
@@ -131,8 +130,8 @@ enum PaymentMethod {
 }
 
 model Payment {
-  id            Int       @id @default(autoincrement())
-  appointmentId Int       @unique
+  id            String @id @default(auto()) @map("_id") @db.ObjectId
+  appointmentId String @unique @db.ObjectId
   amount        Float
   paymentStatus PaymentStatus @default(PENDING)
   paymentMethod PaymentMethod
@@ -143,19 +142,19 @@ model Payment {
 }
 
 model Review {
-  id         Int     @id @default(autoincrement())
+  id         String @id @default(auto()) @map("_id") @db.ObjectId
   rating     Int
   reviewText String?
-  patientId  Int
-  doctorId   Int
+  patientId  String @db.ObjectId
+  doctorId   String @db.ObjectId
 
   patient  Patient @relation(fields: [patientId], references: [id])
   doctor   Doctor  @relation(fields: [doctorId], references: [id])
 }
 
 model DoctorLocation {
-  id            Int      @id @default(autoincrement())
-  doctorId      Int
+  id            String   @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId      String   @db.ObjectId
   name          String
   address       String
   city          String
@@ -183,9 +182,9 @@ enum BookingStatus {
 }
 
 model BedBooking {
-  id            Int           @id @default(autoincrement())
-  patientId     Int
-  hospitalId    Int
+  id            String        @id @default(auto()) @map("_id") @db.ObjectId
+  patientId     String        @db.ObjectId
+  hospitalId    String        @db.ObjectId
   bedType       BedType
   admissionDate DateTime
   dischargeDate DateTime?
@@ -205,22 +204,22 @@ enum AmbulanceType {
 }
 
 model Ambulance {
-  id           Int              @id @default(autoincrement())
-  vehicleNumber String          @unique
+  id           String              @id @default(auto()) @map("_id") @db.ObjectId
+  vehicleNumber String             @unique
   type         AmbulanceType
-  hospitalId   Int
-  isAvailable  Boolean          @default(true)
+  hospitalId   String              @db.ObjectId
+  isAvailable  Boolean             @default(true)
   location     String?
 
-  hospital     Hospital         @relation(fields: [hospitalId], references: [id])
+  hospital     Hospital            @relation(fields: [hospitalId], references: [id])
   bookings     AmbulanceBooking[]
 }
 
 model AmbulanceBooking {
-  id          Int       @id @default(autoincrement())
-  patientId   Int
-  hospitalId  Int?
-  ambulanceId Int?
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  patientId   String        @db.ObjectId
+  hospitalId  String?       @db.ObjectId
+  ambulanceId String?       @db.ObjectId
   pickupLocation String
   destination String
   bookingTime DateTime
@@ -235,8 +234,8 @@ model AmbulanceBooking {
 }
 
 model DoctorSchedule {
-  id        Int      @id @default(autoincrement())
-  doctorId  Int      @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  doctorId  String   @unique @db.ObjectId
   schedule  Json
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -251,9 +250,9 @@ enum InvitationStatus {
 }
 
 model DoctorInvitation {
-  id         Int              @id @default(autoincrement())
-  hospitalId Int
-  doctorId   Int
+  id         String           @id @default(auto()) @map("_id") @db.ObjectId
+  hospitalId String           @db.ObjectId
+  doctorId   String           @db.ObjectId
   status     InvitationStatus @default(PENDING)
   createdAt  DateTime         @default(now())
   updatedAt  DateTime         @updatedAt

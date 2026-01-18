@@ -1,5 +1,5 @@
-const { prisma } = require('../db/config');
-const { sendAppointmentNotification } = require('./notificationController');
+const { PrismaClient } = require('@prisma/client');
+const prisma = new PrismaClient();
 
 const createAppointment = async (req, res) => {
   try {
@@ -10,6 +10,16 @@ const createAppointment = async (req, res) => {
       const patient = await prisma.patient.findUnique({ where: { userId: req.user.userId } });
       if (patient) {
         patientId = patient.id;
+      } else {
+        // Create patient profile if it doesn't exist
+        const newPatient = await prisma.patient.create({
+          data: {
+            userId: req.user.userId,
+            gender: 'OTHER',
+            medicalHistory: {}
+          }
+        });
+        patientId = newPatient.id;
       }
     }
     
@@ -19,8 +29,8 @@ const createAppointment = async (req, res) => {
 
     const appointment = await prisma.appointment.create({
       data: {
-        patientId: parseInt(patientId),
-        doctorId: parseInt(doctorId),
+        patientId,
+        doctorId,
         appointmentDate: new Date(appointmentDate),
         reason,
         status: 'PENDING'
