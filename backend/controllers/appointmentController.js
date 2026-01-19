@@ -50,7 +50,8 @@ const createAppointment = async (req, res) => {
 
 const getAppointments = async (req, res) => {
   try {
-    const { userId, role } = req.user;
+    const userId = req.user?.userId;
+    const role = req.user?.role;
     const { doctorId } = req.params;
     
     let where = {};

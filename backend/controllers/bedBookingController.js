@@ -42,8 +42,9 @@ const createBedBooking = async (req, res) => {
 
 const getBedBookings = async (req, res) => {
   try {
-    const { userId, role } = req.user;
-    
+    const userId = req.user?.userId;
+    const role = req.user?.role;
+
     let where = {};
     if (role === 'PATIENT') {
       const patient = await prisma.patient.findUnique({ where: { userId } });

@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Filter, Star, MapPin, Clock, DollarSign, User } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import AppointmentBooking from '../components/AppointmentBooking';
+import api from '../services/api';
 import './Doctors.css';
 
 const Doctors = () => {
@@ -28,9 +29,11 @@ const Doctors = () => {
   const fetchDoctors = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3001/api/doctors');
+      // Use central API client so the base URL comes from VITE_API_URL in production
+      const response = await api.getDoctors();
       if (!response.ok) {
-        throw new Error('Failed to fetch doctors');
+        const txt = await response.text();
+        throw new Error(`Failed to fetch doctors: ${response.status} ${txt}`);
       }
       const doctorsData = await response.json();
       
