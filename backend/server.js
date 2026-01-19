@@ -9,15 +9,31 @@ const prisma = new PrismaClient();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+// Trust proxy when running behind a platform/load balancer (Render, Heroku, etc.)
+app.set('trust proxy', 1);
+
 // Middleware
 app.use(cors({
-  origin: [
-    'http://localhost:5173', 
-    'http://localhost:5174', 
-    'http://localhost:5175', 
-    'http://localhost:3000',
-    'https://bluevitals.onrender.com'
-  ],
+  origin: (origin, callback) => {
+    // Build allowed list from env + known dev origins
+    const allowed = [
+      process.env.FRONTEND_URL, // e.g. https://bluevitalls.netlify.app
+      'http://localhost:5173',
+      'http://localhost:5174',
+      'http://localhost:5175',
+      'http://localhost:3000',
+      'https://bluevitals.onrender.com'
+    ].filter(Boolean);
+
+    // Allow non-browser server-to-server requests (no origin) as well
+    if (!origin) return callback(null, true);
+
+    if (allowed.includes(origin)) {
+      return callback(null, true);
+    }
+
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -31,7 +47,9 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: false, // Set to true in production with HTTPS
+    // In production, cookies should be secure and cross-site cookies require SameSite=None
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
