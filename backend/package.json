@@ -4,10 +4,11 @@
   "description": "Healthcare Management System Backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "nodemon server.js",
-    "build": "npx prisma generate && npx prisma db push",
-    "postinstall": "npx prisma generate",
+  "start": "node server.js",
+  "dev": "nodemon server.js",
+  "build": "npx prisma@5.22.0 generate",
+  "build:push": "npx prisma@5.22.0 db push",
+  "postinstall": "npx prisma@5.22.0 generate",
     "db:seed": "node prisma/seed.js",
     "db:deploy": "npx prisma db push && npm run db:seed"
   },
