@@ -23,7 +23,8 @@ const RoleSelection = ({ onLogin }) => {
     setError('');
 
     try {
-      const response = await fetch('http://localhost:3001/api/auth/google/complete', {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://blue-1-makf.onrender.com/api';
+      const response = await fetch(`${API_BASE_URL}/auth/google/complete`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
