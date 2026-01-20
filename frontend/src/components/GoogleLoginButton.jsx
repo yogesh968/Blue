@@ -3,7 +3,8 @@ import './GoogleLoginButton.css';
 
 const GoogleLoginButton = ({ text = "Continue with Google" }) => {
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:3001/api/auth/google';
+    const backendUrl = import.meta.env.VITE_API_URL || 'https://blue-1-makf.onrender.com/api';
+    window.location.href = `${backendUrl}/auth/google`;
   };
 
   return (
