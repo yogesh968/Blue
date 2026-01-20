@@ -8,13 +8,20 @@ const AuthSuccess = ({ onLogin }) => {
   useEffect(() => {
     // Handle HTML-encoded URLs
     const urlString = window.location.href.replace(/&amp;/g, '&');
+    console.log('Original URL:', window.location.href);
+    console.log('Decoded URL:', urlString);
+    
     const url = new URL(urlString);
     const token = url.searchParams.get('token');
     const userParam = url.searchParams.get('user');
+    
+    console.log('Token:', token);
+    console.log('User param:', userParam);
 
     if (token && userParam) {
       try {
         const user = JSON.parse(decodeURIComponent(userParam));
+        console.log('Parsed user:', user);
         
         localStorage.setItem('token', token);
         localStorage.setItem('user', JSON.stringify(user));
@@ -29,6 +36,7 @@ const AuthSuccess = ({ onLogin }) => {
           navigate('/doctors');
         } else {
           // Redirect based on role
+          console.log('Redirecting to user portal for role:', user.role);
           if (user.role === 'DOCTOR') {
             navigate('/doctor-portal');
           } else if (user.role === 'PATIENT') {
@@ -44,6 +52,7 @@ const AuthSuccess = ({ onLogin }) => {
         navigate('/login?error=auth_failed');
       }
     } else {
+      console.error('Missing token or user data');
       navigate('/login?error=auth_failed');
     }
   }, [searchParams, navigate, onLogin]);
