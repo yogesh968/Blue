@@ -6,8 +6,15 @@ const AuthSuccess = ({ onLogin }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const userParam = searchParams.get('user');
+    // Get the full URL and decode HTML entities
+    const fullUrl = window.location.href.replace(/&amp;/g, '&');
+    const url = new URL(fullUrl);
+    
+    const token = url.searchParams.get('token');
+    const userParam = url.searchParams.get('user');
+
+    console.log('Token:', token);
+    console.log('User param:', userParam);
 
     if (token && userParam) {
       try {
@@ -41,6 +48,7 @@ const AuthSuccess = ({ onLogin }) => {
         navigate('/login?error=auth_failed');
       }
     } else {
+      console.error('Missing token or user data');
       navigate('/login?error=auth_failed');
     }
   }, [searchParams, navigate, onLogin]);
