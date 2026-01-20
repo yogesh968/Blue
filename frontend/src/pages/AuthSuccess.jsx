@@ -6,8 +6,11 @@ const AuthSuccess = ({ onLogin }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    const token = searchParams.get('token');
-    const userParam = searchParams.get('user');
+    // Handle HTML-encoded URLs
+    const urlString = window.location.href.replace(/&amp;/g, '&');
+    const url = new URL(urlString);
+    const token = url.searchParams.get('token');
+    const userParam = url.searchParams.get('user');
 
     if (token && userParam) {
       try {
