@@ -23,25 +23,28 @@ const googleCallback = async (req, res) => {
     
     console.log('Found existing user:', user ? 'Yes' : 'No');
     
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
+    
     if (!user) {
       // New user - redirect to role selection
       console.log('Redirecting to role selection');
       const tempToken = jwt.sign({ googleId, email, name }, process.env.JWT_SECRET, { expiresIn: '10m' });
-      return res.redirect(`http://localhost:5173/select-role?token=${tempToken}`);
+      return res.redirect(`${frontendUrl}/select-role?token=${tempToken}`);
     }
     
     // Existing user - login directly
     console.log('Existing user login:', user.role);
     const token = generateToken(user.id, user.role);
-    res.redirect(`http://localhost:5173/auth-success?token=${token}&user=${encodeURIComponent(JSON.stringify({
+    const userParam = encodeURIComponent(JSON.stringify({
       id: user.id,
       name: user.name,
       email: user.email,
       role: user.role
-    }))}`);
+    }));
+    res.redirect(`${frontendUrl}/auth-success?token=${token}&user=${userParam}`);
   } catch (error) {
     console.error('Google OAuth error:', error);
-    res.redirect('http://localhost:5173/login?error=auth_failed');
+    res.redirect(`${frontendUrl}/login?error=auth_failed`);
   }
 };
 
