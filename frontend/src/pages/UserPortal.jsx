@@ -179,10 +179,22 @@ const UserPortal = () => {
         const newBooking = await response.json();
         console.log('New booking created:', newBooking);
         setBedBookings(prev => [...prev, newBooking]);
-        toast.success('Bed booked successfully!');
+        
+        // Show success toast with auto-dismiss
+        toast.success('Bed booked successfully!', {
+          duration: 3000,
+          position: 'top-right'
+        });
+        
+        // Reset form and state
         setShowBedBookingForm(false);
         setSelectedHospital(null);
-        fetchUserData(); // Refresh data
+        setShowHospitalSelector(false);
+        
+        // Refresh data after a short delay
+        setTimeout(() => {
+          fetchUserData();
+        }, 500);
       } else {
         const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
         console.error('Bed booking failed:', errorData);
@@ -190,7 +202,10 @@ const UserPortal = () => {
       }
     } catch (err) {
       console.error('Bed booking error:', err);
-      toast.error(err.message || 'Failed to book bed');
+      toast.error(err.message || 'Failed to book bed', {
+        duration: 4000,
+        position: 'top-right'
+      });
     }
   };
 
@@ -218,7 +233,30 @@ const UserPortal = () => {
 
   return (
     <div className="user-portal">
-      <Toaster position="top-right" />
+      <Toaster 
+        position="top-right" 
+        toastOptions={{
+          duration: 3000,
+          style: {
+            background: '#363636',
+            color: '#fff',
+          },
+          success: {
+            duration: 3000,
+            iconTheme: {
+              primary: '#4ade80',
+              secondary: '#fff',
+            },
+          },
+          error: {
+            duration: 4000,
+            iconTheme: {
+              primary: '#ef4444',
+              secondary: '#fff',
+            },
+          },
+        }}
+      />
       
       <div className="portal-header">
         <h1>My Healthcare Dashboard</h1>
