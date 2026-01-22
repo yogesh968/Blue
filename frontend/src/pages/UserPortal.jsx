@@ -158,6 +158,13 @@ const UserPortal = () => {
   const bookBed = async (bookingData) => {
     try {
       const token = localStorage.getItem('token');
+      if (!token) {
+        toast.error('Please login to book a bed');
+        return;
+      }
+
+      console.log('Booking bed with data:', bookingData);
+      
       const response = await api.createBedBooking({
         hospitalId: bookingData.hospitalId,
         bedType: bookingData.bedType,
@@ -166,16 +173,20 @@ const UserPortal = () => {
         reason: bookingData.reason
       }, token);
       
+      console.log('Bed booking response:', response);
+      
       if (response.ok) {
         const newBooking = await response.json();
+        console.log('New booking created:', newBooking);
         setBedBookings(prev => [...prev, newBooking]);
         toast.success('Bed booked successfully!');
         setShowBedBookingForm(false);
         setSelectedHospital(null);
         fetchUserData(); // Refresh data
       } else {
-        const error = await response.json();
-        throw new Error(error.error || 'Failed to book bed');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Bed booking failed:', errorData);
+        throw new Error(errorData.error || 'Failed to book bed');
       }
     } catch (err) {
       console.error('Bed booking error:', err);
@@ -327,24 +338,55 @@ const UserPortal = () => {
                 e.preventDefault();
                 const formData = new FormData(e.target);
                 const hospitalId = selectedHospital?.hospitalId || formData.get('hospitalId');
+                const bedType = formData.get('bedType');
+                const admissionDate = formData.get('admissionDate');
+                const patientName = formData.get('patientName');
+                const reason = formData.get('reason');
+                
+                console.log('Form data:', { hospitalId, bedType, admissionDate, patientName, reason });
                 
                 if (!hospitalId) {
                   toast.error('Please select a hospital');
                   return;
                 }
                 
+                if (!bedType) {
+                  toast.error('Please select a bed type');
+                  return;
+                }
+                
+                if (!admissionDate) {
+                  toast.error('Please select an admission date');
+                  return;
+                }
+                
+                if (!patientName) {
+                  toast.error('Please enter patient name');
+                  return;
+                }
+                
+                if (!reason) {
+                  toast.error('Please enter reason for admission');
+                  return;
+                }
+                
                 bookBed({
                   hospitalId,
-                  bedType: formData.get('bedType'),
-                  admissionDate: formData.get('admissionDate'),
-                  patientName: formData.get('patientName'),
-                  reason: formData.get('reason')
+                  bedType,
+                  admissionDate,
+                  patientName,
+                  reason
                 });
               }}>
                 <div className="form-group">
                   <label>Hospital *</label>
                   {selectedHospital ? (
                     <div className="selected-hospital">
+                      <input 
+                        type="hidden" 
+                        name="hospitalId" 
+                        value={selectedHospital.hospitalId}
+                      />
                       <input 
                         type="text" 
                         value={selectedHospital.hospitalName} 
