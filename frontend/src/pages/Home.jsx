@@ -206,11 +206,11 @@ const Home = () => {
 
             <div className="hero-stats">
               <div className="stat">
-                <span className="stat-number">500+</span>
+                <span className="stat-number">15+</span>
                 <span className="stat-label">Doctors</span>
               </div>
               <div className="stat">
-                <span className="stat-number">50+</span>
+                <span className="stat-number">10+</span>
                 <span className="stat-label">Hospitals</span>
               </div>
               <div className="stat">
