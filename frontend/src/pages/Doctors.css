@@ -359,41 +359,59 @@
 
   @media (max-width: 768px) {
     .doctors-header {
-      padding: 2rem 0;
+      padding: 2.5rem 1rem;
     }
 
     .doctors-header h1 {
-      font-size: 2rem;
+      font-size: 1.75rem;
+    }
+
+    .search-section {
+      padding: 0 1rem;
     }
 
     .doctors-layout {
       grid-template-columns: 1fr;
-      gap: 1rem;
+      gap: 1.5rem;
+      padding: 0 1rem;
     }
 
     .filters-sidebar {
       position: static;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
+    }
+
+    .doctors-main {
+      padding: 1.25rem;
     }
 
     .doctor-card {
       flex-direction: column;
-      text-align: left;
+      padding: 1.25rem;
     }
 
     .doctor-avatar {
       width: 60px;
       height: 60px;
-      margin-bottom: 1rem;
     }
 
     .doctor-details {
       grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+
+    .card-actions {
+      flex-direction: column;
     }
 
     .book-btn {
       width: 100%;
-      text-align: center;
+      order: -1;
+      /* Book button first on mobile */
+    }
+
+    .profile-btn {
+      width: 100%;
     }
 
     .results-header {

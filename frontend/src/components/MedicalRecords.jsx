@@ -14,43 +14,15 @@ const MedicalRecords = () => {
     hospitalName: ''
   });
 
-  const mockRecords = [
-    {
-      id: 1,
-      recordType: 'Consultation',
-      description: 'Regular cardiac checkup. Blood pressure normal, ECG shows normal rhythm.',
-      date: '2024-01-15',
-      doctorName: 'Dr. Sarah Johnson',
-      hospitalName: 'Apollo Hospital',
-      createdAt: '2024-01-15T10:30:00Z'
-    },
-    {
-      id: 2,
-      recordType: 'Lab Report',
-      description: 'Blood test results: Cholesterol levels slightly elevated. Recommended dietary changes.',
-      date: '2024-01-10',
-      doctorName: 'Dr. Michael Chen',
-      hospitalName: 'Max Healthcare',
-      createdAt: '2024-01-10T14:20:00Z'
-    },
-    {
-      id: 3,
-      recordType: 'Prescription',
-      description: 'Prescribed medication for hypertension: Amlodipine 5mg once daily.',
-      date: '2024-01-08',
-      doctorName: 'Dr. Sarah Johnson',
-      hospitalName: 'Apollo Hospital',
-      createdAt: '2024-01-08T16:45:00Z'
-    }
-  ];
-
   useEffect(() => {
-    setRecords(mockRecords);
+    // In a real app, fetch from API here
+    setRecords([]);
   }, []);
+
 
   const handleAddRecord = (e) => {
     e.preventDefault();
-    
+
     if (!newRecord.recordType || !newRecord.description) {
       toast.error('Please fill in required fields');
       return;
@@ -100,7 +72,7 @@ const MedicalRecords = () => {
             <p>Your complete medical history and documents</p>
           </div>
         </div>
-        <button 
+        <button
           className="btn-primary"
           onClick={() => setShowAddRecord(true)}
         >
@@ -140,10 +112,10 @@ const MedicalRecords = () => {
                 <span>{record.date}</span>
               </div>
             </div>
-            
+
             <div className="record-content">
               <p className="record-description">{record.description}</p>
-              
+
               <div className="record-details">
                 {record.doctorName && (
                   <div className="detail-item">
@@ -159,9 +131,9 @@ const MedicalRecords = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="record-actions">
-              <button 
+              <button
                 className="btn-secondary"
                 onClick={() => downloadRecord(record)}
               >
@@ -177,7 +149,7 @@ const MedicalRecords = () => {
           <FileText size={48} className="no-records-icon" />
           <h3>No Medical Records</h3>
           <p>Start by adding your first medical record</p>
-          <button 
+          <button
             className="btn-primary"
             onClick={() => setShowAddRecord(true)}
           >
@@ -193,13 +165,13 @@ const MedicalRecords = () => {
               <h3>Add Medical Record</h3>
               <button onClick={() => setShowAddRecord(false)}>×</button>
             </div>
-            
+
             <form onSubmit={handleAddRecord}>
               <div className="form-group">
                 <label>Record Type *</label>
                 <select
                   value={newRecord.recordType}
-                  onChange={(e) => setNewRecord({...newRecord, recordType: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, recordType: e.target.value })}
                   required
                 >
                   <option value="">Select record type</option>
@@ -211,25 +183,25 @@ const MedicalRecords = () => {
                   <option value="Other">Other</option>
                 </select>
               </div>
-              
+
               <div className="form-group">
                 <label>Description *</label>
                 <textarea
                   value={newRecord.description}
-                  onChange={(e) => setNewRecord({...newRecord, description: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, description: e.target.value })}
                   placeholder="Describe the medical record details..."
                   rows={4}
                   required
                 />
               </div>
-              
+
               <div className="form-row">
                 <div className="form-group">
                   <label>Date</label>
                   <input
                     type="date"
                     value={newRecord.date}
-                    onChange={(e) => setNewRecord({...newRecord, date: e.target.value})}
+                    onChange={(e) => setNewRecord({ ...newRecord, date: e.target.value })}
                   />
                 </div>
                 <div className="form-group">
@@ -237,22 +209,22 @@ const MedicalRecords = () => {
                   <input
                     type="text"
                     value={newRecord.doctorName}
-                    onChange={(e) => setNewRecord({...newRecord, doctorName: e.target.value})}
+                    onChange={(e) => setNewRecord({ ...newRecord, doctorName: e.target.value })}
                     placeholder="Doctor's name"
                   />
                 </div>
               </div>
-              
+
               <div className="form-group">
                 <label>Hospital/Clinic Name</label>
                 <input
                   type="text"
                   value={newRecord.hospitalName}
-                  onChange={(e) => setNewRecord({...newRecord, hospitalName: e.target.value})}
+                  onChange={(e) => setNewRecord({ ...newRecord, hospitalName: e.target.value })}
                   placeholder="Hospital or clinic name"
                 />
               </div>
-              
+
               <div className="modal-actions">
                 <button type="button" onClick={() => setShowAddRecord(false)} className="btn-secondary">
                   Cancel

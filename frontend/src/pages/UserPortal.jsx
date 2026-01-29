@@ -125,12 +125,9 @@ const UserPortal = () => {
         const paymentsData = await paymentsRes.value.json();
         setBills(paymentsData);
       } else {
-        // Fallback mock data if API fails or is empty, for demonstration
-        setBills([
-          { id: 101, description: 'Consultation Fee - Dr. Sarah', amount: 800, date: '2023-11-15', status: 'PENDING' },
-          { id: 102, description: 'Lab Tests', amount: 1200, date: '2023-11-10', status: 'PAID' }
-        ]);
+        setBills([]);
       }
+
     } catch (err) {
       console.error("Error fetching data", err);
     } finally {
@@ -224,21 +221,31 @@ const UserPortal = () => {
               <Calendar size={20} />
             </div>
             <div className="stat-info">
-              <span className="stat-value">{appointments.filter(a => a.status === 'pending').length}</span>
+              <span className="stat-value">{appointments.filter(a => a.status === 'PENDING' || a.status === 'pending').length}</span>
               <span className="stat-label">Upcoming</span>
             </div>
           </div>
           <div className="stat-card">
             <div className="stat-icon bg-green-100 text-green-600">
-              <Activity size={20} />
+              <Heart size={20} />
             </div>
             <div className="stat-info">
-              <span className="stat-value">{bedBookings.filter(b => b.status === 'CONFIRMED').length}</span>
-              <span className="stat-label">Active Beds</span>
+              <span className="stat-value">{bedBookings.filter(b => b.status === 'PENDING' || b.status === 'CONFIRMED').length}</span>
+              <span className="stat-label">Beds</span>
+            </div>
+          </div>
+          <div className="stat-card">
+            <div className="stat-icon bg-amber-100 text-amber-600">
+              <DollarSign size={20} />
+            </div>
+            <div className="stat-info">
+              <span className="stat-value">{bills.filter(b => b.status === 'PENDING').length}</span>
+              <span className="stat-label">Bills</span>
             </div>
           </div>
         </div>
       </section>
+
 
       {/* Main Navigation */}
       <div className="portal-container">

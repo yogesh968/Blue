@@ -130,6 +130,33 @@
   box-shadow: 0 4px 12px -2px rgba(0, 0, 0, 0.3);
 }
 
-.specialty-card.selected .specialty-btn:hover {
-  background: linear-gradient(135deg, var(--color-gray-800) 0%, var(--color-gray-900) 100%);
+@media (max-width: 768px) {
+  .specialty-card {
+    padding: 1.5rem;
+    border-radius: 1rem;
+  }
+
+  .specialty-icon {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 1rem;
+  }
+
+  .specialty-name {
+    font-size: 1.125rem;
+  }
+
+  .specialty-description {
+    font-size: 0.85rem;
+    margin-bottom: 1rem;
+  }
+
+  .specialty-stats {
+    margin-bottom: 1.5rem;
+  }
+
+  .specialty-btn {
+    padding: 0.75rem;
+    font-size: 0.85rem;
+  }
 }

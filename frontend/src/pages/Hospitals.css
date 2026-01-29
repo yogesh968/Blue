@@ -307,15 +307,55 @@
 }
 
 @media (max-width: 768px) {
+  .hospitals-header {
+    padding: 2.5rem 1rem;
+  }
+
+  .hospitals-header h1 {
+    font-size: 1.75rem;
+  }
+
   .search-filters {
     flex-direction: column;
+    padding: 0 1rem;
+    gap: 0.75rem;
+  }
+
+  .filter-wrapper {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .hospitals-content {
+    padding: 1.5rem 1rem;
   }
 
   .hospitals-grid {
     grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .hospital-card {
+    padding: 1.25rem;
+  }
+
+  .hospital-header {
+    gap: 0.75rem;
+  }
+
+  .hospital-icon {
+    width: 48px;
+    height: 48px;
+    font-size: 1.25rem;
   }
 
   .hospital-actions {
     flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    width: 100%;
   }
 }
