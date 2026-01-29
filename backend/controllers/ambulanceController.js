@@ -16,7 +16,7 @@ const createAmbulanceBooking = async (req, res) => {
 
     const booking = await prisma.ambulanceBooking.create({
       data: {
-        patientId: parseInt(patientId),
+        patientId: patientId,
         ambulanceId: availableAmbulance.id,
         pickupLocation,
         destination,
@@ -49,7 +49,7 @@ const createAmbulanceBooking = async (req, res) => {
 const getAmbulanceBookings = async (req, res) => {
   try {
     const { userId, role } = req.user;
-    
+
     let where = {};
     if (role === 'PATIENT') {
       const patient = await prisma.patient.findUnique({ where: { userId } });
@@ -81,7 +81,7 @@ const updateAmbulanceBooking = async (req, res) => {
     const { status } = req.body;
 
     const booking = await prisma.ambulanceBooking.update({
-      where: { id: parseInt(id) },
+      where: { id: id },
       data: { status },
       include: {
         ambulance: true

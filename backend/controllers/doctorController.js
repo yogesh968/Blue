@@ -4,7 +4,7 @@ const prisma = new PrismaClient();
 const getDoctors = async (req, res) => {
   try {
     const { speciality, city, hospitalId } = req.query;
-    
+
     let where = {};
     if (speciality) where.speciality = { contains: speciality };
     if (hospitalId) where.hospitalId = hospitalId;
@@ -30,10 +30,10 @@ const getDoctors = async (req, res) => {
 
     // Calculate average rating for each doctor
     const doctorsWithRating = doctors.map(doctor => {
-      const avgRating = doctor.reviews.length > 0 
+      const avgRating = doctor.reviews.length > 0
         ? doctor.reviews.reduce((sum, review) => sum + review.rating, 0) / doctor.reviews.length
         : 0;
-      
+
       return {
         ...doctor,
         averageRating: Math.round(avgRating * 10) / 10,
@@ -53,7 +53,7 @@ const getDoctors = async (req, res) => {
 const getDoctorById = async (req, res) => {
   try {
     const { id } = req.params;
-    
+
     const doctor = await prisma.doctor.findUnique({
       where: { id },
       include: {
@@ -132,11 +132,11 @@ const getDoctorAvailability = async (req, res) => {
   try {
     const { id } = req.params;
     const { date } = req.query;
-    
+
     if (!date) {
       return res.status(400).json({ error: 'Date is required' });
     }
-    
+
     // Get doctor's existing appointments for the date
     const existingAppointments = await prisma.appointment.findMany({
       where: {
@@ -153,13 +153,13 @@ const getDoctorAvailability = async (req, res) => {
         appointmentDate: true
       }
     });
-    
+
     // Generate all possible time slots
     const allSlots = [
       '09:00', '09:30', '10:00', '10:30', '11:00', '11:30',
       '14:00', '14:30', '15:00', '15:30', '16:00', '16:30'
     ];
-    
+
     // Filter out booked slots
     const bookedTimes = existingAppointments.map(apt => {
       const time = new Date(apt.appointmentDate).toLocaleTimeString('en-GB', {
@@ -169,9 +169,9 @@ const getDoctorAvailability = async (req, res) => {
       });
       return time;
     });
-    
+
     const availableSlots = allSlots.filter(slot => !bookedTimes.includes(slot));
-    
+
     res.json({ availableSlots });
   } catch (error) {
     console.error('Error fetching availability:', error);
@@ -183,7 +183,7 @@ const getDoctorAvailability = async (req, res) => {
 const getDoctorInvitations = async (req, res) => {
   try {
     const { userId } = req.user;
-    
+
     const doctor = await prisma.doctor.findUnique({ where: { userId } });
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor profile not found' });
@@ -213,7 +213,7 @@ const respondToInvitation = async (req, res) => {
     const { invitationId } = req.params;
     const { status } = req.body; // 'ACCEPTED' or 'REJECTED'
     const { userId } = req.user;
-    
+
     const doctor = await prisma.doctor.findUnique({ where: { userId } });
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor profile not found' });
@@ -221,7 +221,7 @@ const respondToInvitation = async (req, res) => {
 
     const invitation = await prisma.doctorInvitation.findFirst({
       where: {
-        id: parseInt(invitationId),
+        id: invitationId,
         doctorId: doctor.id,
         status: 'PENDING'
       },
@@ -234,7 +234,7 @@ const respondToInvitation = async (req, res) => {
 
     // Update invitation status
     const updatedInvitation = await prisma.doctorInvitation.update({
-      where: { id: parseInt(invitationId) },
+      where: { id: invitationId },
       data: { status }
     });
 
@@ -260,7 +260,7 @@ const respondToInvitation = async (req, res) => {
 const getCurrentDoctorProfile = async (req, res) => {
   try {
     const { userId } = req.user;
-    
+
     const doctor = await prisma.doctor.findUnique({
       where: { userId },
       include: {
@@ -280,11 +280,11 @@ const getCurrentDoctorProfile = async (req, res) => {
   }
 };
 
-module.exports = { 
-  getDoctors, 
-  getDoctorById, 
-  getDoctorAvailability, 
-  createDoctorProfile, 
+module.exports = {
+  getDoctors,
+  getDoctorById,
+  getDoctorAvailability,
+  createDoctorProfile,
   updateDoctorProfile,
   getDoctorInvitations,
   respondToInvitation,

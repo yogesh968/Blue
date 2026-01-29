@@ -5,11 +5,11 @@ const prisma = new PrismaClient();
 const getDoctorLocations = async (req, res) => {
   try {
     const { doctorId } = req.params;
-    
+
     // Return empty array if table doesn't exist or no locations found
     const locations = await prisma.doctorLocation.findMany({
       where: {
-        doctorId: parseInt(doctorId),
+        doctorId,
         isActive: true
       }
     }).catch(() => []);
@@ -33,7 +33,7 @@ const addDoctorLocation = async (req, res) => {
   try {
     const { doctorId } = req.params;
     const { name, address, city, phone, fees, timings } = req.body;
-    
+
     // Validate required fields
     if (!name || !address || !city) {
       return res.status(400).json({ error: 'Name, address, and city are required' });
@@ -41,16 +41,16 @@ const addDoctorLocation = async (req, res) => {
 
     // Check if doctor exists
     const doctor = await prisma.doctor.findUnique({
-      where: { id: parseInt(doctorId) }
+      where: { id: doctorId }
     });
-    
+
     if (!doctor) {
       return res.status(404).json({ error: 'Doctor not found' });
     }
 
     const location = await prisma.doctorLocation.create({
       data: {
-        doctorId: parseInt(doctorId),
+        doctorId,
         name,
         address,
         city,
@@ -80,7 +80,7 @@ const updateDoctorLocation = async (req, res) => {
     const { name, address, city, phone } = req.body;
 
     const location = await prisma.doctorLocation.update({
-      where: { id: parseInt(locationId) },
+      where: { id: locationId },
       data: {
         name,
         address,
@@ -102,7 +102,7 @@ const incrementLocationPatientCount = async (req, res) => {
     const { locationId } = req.params;
 
     const location = await prisma.doctorLocation.update({
-      where: { id: parseInt(locationId) },
+      where: { id: locationId },
       data: {
         totalPatients: { increment: 1 }
       }
@@ -121,7 +121,7 @@ const deleteDoctorLocation = async (req, res) => {
     const { locationId } = req.params;
 
     await prisma.doctorLocation.update({
-      where: { id: parseInt(locationId) },
+      where: { id: locationId },
       data: { isActive: false }
     });
 
@@ -140,13 +140,13 @@ const getDoctorAppointments = async (req, res) => {
 
     const startDate = date ? new Date(date) : new Date();
     startDate.setHours(0, 0, 0, 0);
-    
+
     const endDate = new Date(startDate);
     endDate.setHours(23, 59, 59, 999);
 
     const appointments = await prisma.appointment.findMany({
       where: {
-        doctorId: parseInt(doctorId),
+        doctorId,
         appointmentDate: {
           gte: startDate,
           lte: endDate

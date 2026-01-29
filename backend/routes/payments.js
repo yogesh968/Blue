@@ -86,7 +86,7 @@ router.put('/:id', authenticateToken, async (req, res) => {
     const { status } = req.body;
 
     const payment = await prisma.payment.update({
-      where: { id: parseInt(id) },
+      where: { id },
       data: {
         paymentStatus: status,
         transactionId: status === 'PAID' ? `TXN_${Date.now()}` : undefined

@@ -8,11 +8,11 @@ const prisma = new PrismaClient();
 router.get('/doctors/:doctorId/schedule', authenticateToken, async (req, res) => {
   try {
     const { doctorId } = req.params;
-    
+
     const schedule = await prisma.doctorSchedule.findUnique({
-      where: { doctorId: parseInt(doctorId) }
+      where: { doctorId }
     });
-    
+
     if (schedule) {
       res.json(schedule.schedule);
     } else {
@@ -38,16 +38,16 @@ router.put('/doctors/:doctorId/schedule', authenticateToken, async (req, res) =>
   try {
     const { doctorId } = req.params;
     const scheduleData = req.body;
-    
+
     const schedule = await prisma.doctorSchedule.upsert({
-      where: { doctorId: parseInt(doctorId) },
+      where: { doctorId },
       update: { schedule: scheduleData },
       create: {
-        doctorId: parseInt(doctorId),
+        doctorId,
         schedule: scheduleData
       }
     });
-    
+
     res.json({ message: 'Schedule updated successfully', schedule: schedule.schedule });
   } catch (error) {
     console.error('Error updating doctor schedule:', error);

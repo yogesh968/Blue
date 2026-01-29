@@ -1,9 +1,9 @@
 const express = require('express');
-const { 
-  getDoctors, 
-  getDoctorById, 
-  getDoctorAvailability, 
-  createDoctorProfile, 
+const {
+  getDoctors,
+  getDoctorById,
+  getDoctorAvailability,
+  createDoctorProfile,
   updateDoctorProfile,
   getDoctorInvitations,
   respondToInvitation,
@@ -32,7 +32,7 @@ router.get('/:doctorId/appointments', authenticateToken, async (req, res) => {
     const { date } = req.query;
 
     const whereClause = {
-      doctorId: parseInt(doctorId)
+      doctorId: doctorId
     };
 
     if (date) {

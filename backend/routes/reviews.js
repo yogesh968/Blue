@@ -6,7 +6,7 @@ router.post('/', authenticateToken, async (req, res) => {
   try {
     const { prisma } = require('../db/config');
     const { doctorId, rating, reviewText } = req.body;
-    
+
     const patient = await prisma.patient.findUnique({
       where: { userId: req.user.userId }
     });
@@ -14,7 +14,7 @@ router.post('/', authenticateToken, async (req, res) => {
     const review = await prisma.review.create({
       data: {
         patientId: patient.id,
-        doctorId: parseInt(doctorId),
+        doctorId: doctorId,
         rating: parseInt(rating),
         reviewText
       }
