@@ -11,18 +11,9 @@ const ProtectedRoute = ({ children, user, allowedRoles, redirectTo = '/login' })
   if (allowedRoles && allowedRoles.length > 0) {
     const userRole = user.role?.toLowerCase();
     const isAllowed = allowedRoles.some(role => role.toLowerCase() === userRole);
-    
+
     if (!isAllowed) {
-      // Redirect to appropriate portal based on user's actual role
-      const roleRedirects = {
-        'doctor': '/doctor-portal',
-        'hospital': '/hospital-portal',
-        'user': '/user-portal',
-        'patient': '/user-portal'
-      };
-      
-      const userRedirect = roleRedirects[userRole] || '/user-portal';
-      return <Navigate to={userRedirect} replace />;
+      return <Navigate to="/user-portal" replace />;
     }
   }
 

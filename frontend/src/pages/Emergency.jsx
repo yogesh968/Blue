@@ -79,19 +79,19 @@ const Emergency = () => {
     }
 
     setIsRequestingAmbulance(true);
-    
+
     try {
       // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 2000));
-      
+
       toast.success('🚑 Ambulance dispatched! ETA: 8-12 minutes');
       toast.success('📞 Emergency contact will call you shortly');
-      
+
       // Reset form
       setLocation('');
       setEmergencyType('');
       setPatientInfo({ name: '', age: '', condition: '' });
-      
+
     } catch (error) {
       toast.error('Failed to request ambulance. Please call 108 directly.');
     } finally {
@@ -133,7 +133,7 @@ const Emergency = () => {
                       <p>{service.description}</p>
                       <div className="service-phone">{service.phone}</div>
                     </div>
-                    <button 
+                    <button
                       onClick={() => handleEmergencyCall(service.phone)}
                       className="btn btn-emergency"
                     >
@@ -160,7 +160,7 @@ const Emergency = () => {
 
                 <div className="form-group">
                   <label>Emergency Type</label>
-                  <select 
+                  <select
                     value={emergencyType}
                     onChange={(e) => setEmergencyType(e.target.value)}
                   >
@@ -179,7 +179,7 @@ const Emergency = () => {
                     type="text"
                     placeholder="Patient's name"
                     value={patientInfo.name}
-                    onChange={(e) => setPatientInfo({...patientInfo, name: e.target.value})}
+                    onChange={(e) => setPatientInfo({ ...patientInfo, name: e.target.value })}
                   />
                 </div>
 
@@ -190,7 +190,7 @@ const Emergency = () => {
                       type="number"
                       placeholder="Age"
                       value={patientInfo.age}
-                      onChange={(e) => setPatientInfo({...patientInfo, age: e.target.value})}
+                      onChange={(e) => setPatientInfo({ ...patientInfo, age: e.target.value })}
                     />
                   </div>
                   <div className="form-group">
@@ -199,12 +199,12 @@ const Emergency = () => {
                       type="text"
                       placeholder="Brief condition"
                       value={patientInfo.condition}
-                      onChange={(e) => setPatientInfo({...patientInfo, condition: e.target.value})}
+                      onChange={(e) => setPatientInfo({ ...patientInfo, condition: e.target.value })}
                     />
                   </div>
                 </div>
 
-                <button 
+                <button
                   onClick={handleAmbulanceRequest}
                   disabled={isRequestingAmbulance}
                   className="btn btn-primary btn-large"
@@ -231,13 +231,13 @@ const Emergency = () => {
                       </div>
                     </div>
                     <div className="hospital-actions">
-                      <button 
+                      <button
                         onClick={() => handleEmergencyCall(hospital.phone)}
                         className="btn btn-secondary"
                       >
                         📞 Call
                       </button>
-                      <button 
+                      <button
                         onClick={() => handleHospitalDirections(hospital.name)}
                         className="btn btn-primary"
                       >

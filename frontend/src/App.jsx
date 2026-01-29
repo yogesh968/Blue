@@ -14,11 +14,9 @@ import Hospitals from './pages/Hospitals';
 import Services from './pages/Services';
 import Emergency from './pages/Emergency';
 import UserPortal from './pages/UserPortal';
-import DoctorPortal from './pages/DoctorPortal';
-import DoctorAppointments from './pages/DoctorAppointments';
-import DoctorLocations from './pages/DoctorLocations';
-import DoctorSchedule from './pages/DoctorSchedule';
-import HospitalPortal from './pages/HospitalPortal';
+import DoctorProfile from './pages/DoctorProfile';
+
+
 import RoleSelection from './pages/RoleSelection';
 import AuthSuccess from './pages/AuthSuccess';
 
@@ -28,7 +26,7 @@ function App() {
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     const storedToken = localStorage.getItem('token');
-    
+
     if (storedUser && storedToken) {
       setUser(JSON.parse(storedUser));
     }
@@ -46,28 +44,16 @@ function App() {
     localStorage.removeItem('doctorId');
     localStorage.removeItem('patientId');
     localStorage.removeItem('hospitalId');
-    
+
     // Clear all cookies
-    document.cookie.split(";").forEach(function(c) { 
-      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    document.cookie.split(";").forEach(function (c) {
+      document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/");
     });
-    
+
     setUser(null);
   };
 
-  // Role-based redirect function
-  const getRoleBasedRedirect = () => {
-    if (!user) return '/';
-    const role = user.role?.toLowerCase();
-    switch (role) {
-      case 'doctor': return '/doctor-portal';
-      case 'hospital': return '/hospital-portal';
-      case 'user':
-      case 'patient':
-        return '/user-portal';
-      default: return '/user-portal'; // Default to user portal
-    }
-  };
+
 
   return (
     <ThemeProvider theme={theme}>
@@ -77,81 +63,46 @@ function App() {
           <Toaster position="top-right" />
           <Navbar user={user} onLogout={handleLogout} />
           <main>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route 
-              path="/login" 
-              element={user ? <Navigate to={getRoleBasedRedirect()} /> : <Login onLogin={handleLogin} />} 
-            />
-            <Route 
-              path="/register" 
-              element={user ? <Navigate to={getRoleBasedRedirect()} /> : <Register onLogin={handleLogin} />} 
-            />
-            <Route 
-              path="/select-role" 
-              element={user ? <Navigate to={getRoleBasedRedirect()} /> : <RoleSelection onLogin={handleLogin} />} 
-            />
-            <Route 
-              path="/auth-success" 
-              element={user ? <Navigate to={getRoleBasedRedirect()} /> : <AuthSuccess onLogin={handleLogin} />} 
-            />
-            
-            {/* Public routes - accessible to everyone */}
-            <Route path="/doctors" element={<Doctors />} />
-            <Route path="/hospitals" element={<Hospitals />} />
-            <Route path="/services" element={<Services />} />
-            <Route path="/emergency" element={<Emergency />} />
-            
-            {/* Protected role-based routes */}
-            <Route 
-              path="/user-portal" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['user', 'patient']}>
-                  <UserPortal />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/doctor-portal" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['doctor']}>
-                  <DoctorPortal />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/doctor-portal/appointments" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['doctor']}>
-                  <DoctorAppointments />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/doctor-portal/locations" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['doctor']}>
-                  <DoctorLocations />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/doctor-portal/schedule" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['doctor']}>
-                  <DoctorSchedule />
-                </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/hospital-portal" 
-              element={
-                <ProtectedRoute user={user} allowedRoles={['hospital']}>
-                  <HospitalPortal />
-                </ProtectedRoute>
-              } 
-            />
-          </Routes>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route
+                path="/login"
+                element={user ? <Navigate to="/user-portal" /> : <Login onLogin={handleLogin} />}
+              />
+              <Route
+                path="/register"
+                element={user ? <Navigate to="/user-portal" /> : <Register onLogin={handleLogin} />}
+              />
+              <Route
+                path="/select-role"
+                element={user ? <Navigate to="/user-portal" /> : <RoleSelection onLogin={handleLogin} />}
+              />
+              <Route
+                path="/auth-success"
+                element={user ? <Navigate to="/user-portal" /> : <AuthSuccess onLogin={handleLogin} />}
+              />
+
+              {/* Public routes - accessible to everyone */}
+              <Route path="/doctors" element={<Doctors />} />
+              <Route path="/doctors/:id" element={<DoctorProfile />} />
+              <Route path="/hospitals" element={<Hospitals />} />
+
+              <Route path="/services" element={<Services />} />
+              <Route path="/emergency" element={<Emergency />} />
+
+              {/* Protected role-based routes - Only User/Patient remains */}
+              <Route
+                path="/user-portal"
+                element={
+                  <ProtectedRoute user={user} allowedRoles={['user', 'patient']}>
+                    <UserPortal />
+                  </ProtectedRoute>
+                }
+              />
+              {/* Redirect any unknown role or other portal attempts to user portal or home */}
+              <Route path="/doctor-portal/*" element={<Navigate to="/user-portal" replace />} />
+              <Route path="/hospital-portal/*" element={<Navigate to="/user-portal" replace />} />
+            </Routes>
           </main>
         </div>
       </Router>

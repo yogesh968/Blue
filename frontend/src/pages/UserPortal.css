@@ -1,331 +1,219 @@
+/* UserPortal.css - Modern Dashboard Styling */
 .user-portal {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  min-height: 100vh;
+  background-color: var(--color-gray-50);
+  padding-bottom: 2rem;
 }
 
-.portal-header h1 {
-  color: var(--color-primary-600);
-  margin-bottom: 2rem;
-}
-
-.portal-tabs {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 2rem;
-  border-bottom: 1px solid var(--color-gray-200);
-}
-
-.tab {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 1rem 1.5rem;
-  border: none;
-  background: none;
-  color: var(--color-gray-600);
-  font-weight: 500;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-  pointer-events: auto;
-  z-index: 10;
-  position: relative;
-}
-
-.tab.active {
-  color: var(--color-primary-600);
-  border-bottom-color: var(--color-primary-600);
-  pointer-events: auto;
-}
-
-.appointments-section h2,
-.bills-section h2 {
-  color: var(--color-gray-900);
-  margin-bottom: 1rem;
-}
-
-.appointments-list,
-.bills-list {
+.user-portal-loading {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  color: var(--color-gray-500);
 }
 
-.appointment-card,
-.bill-card {
-  background: white;
-  padding: 1.5rem;
-  border-radius: 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  border: 1px solid var(--color-gray-100);
+/* Animations */
+.fade-in {
+  animation: fadeIn 0.4s ease-in-out;
 }
 
-.appointment-card {
+.slide-down {
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Welcome Section */
+.portal-welcome {
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-primary-800));
+  color: white;
+  padding: 2rem 2rem 6rem;
+  /* Extra padding at bottom for overlap */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
 }
 
-.appointment-info {
+.welcome-content h1 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: white;
+}
+
+.welcome-content p {
+  opacity: 0.9;
+  font-size: 1.1rem;
+}
+
+/* Quick Stats */
+.quick-stats {
+  display: flex;
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(10px);
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 160px;
+}
+
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+}
+
+.stat-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.stat-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.stat-label {
+  font-size: 0.8rem;
+  opacity: 0.9;
+}
+
+/* Main Layout */
+.portal-container {
   display: flex;
   gap: 2rem;
-  align-items: center;
+  max-width: 1200px;
+  margin: -4rem auto 0;
+  /* Neg margin to overlap header */
+  padding: 0 1.5rem;
+  align-items: flex-start;
 }
 
-.doctor-info h4 {
-  margin: 0 0 0.25rem 0;
-  color: var(--color-gray-900);
-}
-
-.specialty {
-  margin: 0;
-  color: var(--color-primary-600);
-  font-weight: 500;
-  font-size: 0.875rem;
-}
-
-.appointment-details p {
-  margin: 0.25rem 0;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  color: var(--color-gray-600);
-  font-size: 0.875rem;
-}
-
-.appointment-actions {
+/* Sidebar */
+.portal-sidebar {
+  width: 260px;
+  flex-shrink: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-end;
-  gap: 1rem;
+  gap: 1.5rem;
 }
 
-.status {
-  padding: 0.25rem 0.75rem;
+.sidebar-nav {
+  background: white;
   border-radius: 1rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-}
-
-.status.confirmed {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.status.pending {
-  background: #fef3c7;
-  color: #92400e;
-}
-
-.status.cancelled {
-  background: #fee2e2;
-  color: #991b1b;
-}
-
-.status.paid {
-  background: #dcfce7;
-  color: #166534;
-}
-
-.btn-cancel {
-  background: var(--color-error);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.bill-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.bill-header h4 {
-  margin: 0;
-  color: var(--color-gray-900);
-}
-
-.bill-info p {
-  margin: 0.5rem 0;
-  color: var(--color-gray-600);
-  font-size: 0.875rem;
-}
-
-.charges-breakdown {
-  margin-top: 1rem;
   padding: 1rem;
-  background: var(--color-gray-50);
-  border-radius: 0.5rem;
-}
-
-.charges-breakdown h5 {
-  margin: 0 0 0.75rem 0;
-  color: var(--color-gray-900);
-}
-
-.charges-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  box-shadow: var(--shadow-md);
+  display: flex;
+  flex-direction: column;
   gap: 0.5rem;
-  margin-bottom: 1rem;
 }
 
-.charges-grid p {
-  margin: 0.25rem 0;
+.nav-item {
   display: flex;
-  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1rem;
+  border-radius: 0.75rem;
   color: var(--color-gray-600);
-  font-size: 0.875rem;
-}
-
-.charges-grid span {
-  font-weight: 500;
-  color: var(--color-gray-900);
-}
-
-.total-amount {
-  border-top: 1px solid var(--color-gray-200);
-  padding-top: 0.75rem;
-  font-size: 1.1rem;
-  color: var(--color-gray-900);
-}
-
-.bill-actions {
-  display: flex;
-  gap: 1rem;
-  margin-top: 1rem;
-}
-
-.btn-pay {
-  background: var(--color-success);
-  color: white;
+  background: transparent;
   border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
   cursor: pointer;
-}
-
-.btn-download {
-  background: var(--color-secondary-500);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
   font-weight: 500;
-  cursor: pointer;
+  transition: all 0.2s;
+  text-align: left;
+  font-size: 0.95rem;
 }
 
-@media (max-width: 768px) {
-  .user-portal {
-    padding: 1rem;
-  }
-  
-  .portal-tabs {
-    flex-direction: column;
-    gap: 0;
-  }
-  
-  .appointment-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .appointment-info {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    width: 100%;
-  }
-  
-  .appointment-actions {
-    flex-direction: row;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
-  }
-  
-  .charges-grid {
-    grid-template-columns: 1fr;
-  }
-  
-  .bill-actions {
-    flex-direction: column;
-  }
-}
-/* Loading and Error States */
-.loading-container,
-.error-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.spinner {
-  animation: spin 1s linear infinite;
+.nav-item:hover {
+  background-color: var(--color-gray-50);
   color: var(--color-primary-600);
-  margin-bottom: 1rem;
 }
 
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.nav-item.active {
+  background-color: var(--color-primary-50);
+  color: var(--color-primary-700);
+  font-weight: 600;
 }
 
-.error-message {
-  color: var(--color-error);
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
-}
-
-.btn-retry {
-  background: var(--color-primary-600);
+.sidebar-promo {
+  background: linear-gradient(135deg, var(--color-secondary-500), #2563eb);
   color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
-}
-
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 3rem;
-  text-align: center;
-  color: var(--color-gray-500);
-  background: var(--color-gray-50);
   border-radius: 1rem;
-  border: 2px dashed var(--color-gray-200);
+  padding: 1.5rem;
+  text-align: center;
+  box-shadow: var(--shadow-md);
 }
 
-.empty-state svg {
-  margin-bottom: 1rem;
-  opacity: 0.5;
-}
-
-.empty-state p {
-  margin: 0;
+.promo-content h3 {
   font-size: 1.1rem;
-  font-weight: 500;
+  margin-bottom: 0.5rem;
+  color: white;
 }
 
-/* Bed Booking Styles */
-.beds-section {
-  margin-top: 2rem;
+.promo-content p {
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  opacity: 0.9;
+}
+
+.btn-promo {
+  display: inline-block;
+  background: white;
+  color: var(--color-secondary-500);
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+/* Main Content Area */
+.portal-main-content {
+  flex: 1;
+}
+
+.content-section {
+  background: white;
+  border-radius: 1rem;
+  padding: 2rem;
+  box-shadow: var(--shadow-md);
+  min-height: 500px;
 }
 
 .section-header {
@@ -335,167 +223,422 @@
   margin-bottom: 2rem;
 }
 
-.bed-booking-form {
+.section-header h2 {
+  font-size: 1.5rem;
+  color: var(--color-gray-800);
+  margin: 0;
+}
+
+/* Modern Card Styles */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.modern-card {
   background: white;
-  padding: 2rem;
-  border-radius: 1rem;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  margin-bottom: 2rem;
   border: 1px solid var(--color-gray-200);
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: all 0.2s ease;
   position: relative;
-  z-index: 1;
 }
 
-.portal-tabs {
-  position: relative;
-  z-index: 10;
+.modern-card:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-primary-200);
 }
 
-.bed-booking-form h3 {
-  margin: 0 0 1.5rem 0;
+.card-status {
+  padding: 1rem 1.5rem 0;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  padding: 0.25rem 0.75rem;
+  border-radius: 2rem;
+}
+
+.status-badge.pending,
+.status-badge.PENDING {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.status-badge.confirmed,
+.status-badge.CONFIRMED {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-badge.cancelled,
+.status-badge.CANCELLED {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status-badge.completed,
+.status-badge.COMPLETED {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+
+.card-body {
+  padding: 1rem 1.5rem;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+}
+
+.card-body-compact {
+  padding: 1rem 1.5rem;
+}
+
+.doctor-avatar-placeholder {
+  width: 50px;
+  height: 50px;
+  background: var(--color-gray-100);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-gray-400);
+  flex-shrink: 0;
+}
+
+.doctor-link {
+  text-decoration: none;
+  color: inherit;
+  transition: all 0.2s;
+  display: inline-block;
+}
+
+.doctor-link:hover h3 {
+  color: var(--color-primary-600);
+}
+
+.card-info h3 {
+  font-size: 1.1rem;
+  margin: 0 0 0.25rem;
   color: var(--color-gray-900);
 }
 
-.form-group {
-  margin-bottom: 1.5rem;
-}
 
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
+.specialty {
+  color: var(--color-primary-600);
   font-weight: 500;
-  color: var(--color-gray-700);
+  font-size: 0.9rem;
+  margin-bottom: 0.75rem;
 }
 
-.form-group input,
-.form-group select,
-.form-group textarea {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid var(--color-gray-300);
-  border-radius: 0.5rem;
-  font-size: 1rem;
-  transition: border-color 0.2s ease;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--color-primary-500);
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-}
-
-.selected-hospital {
+.meta-row {
   display: flex;
   gap: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  color: var(--color-gray-600);
+}
+
+.meta-item {
+  display: flex;
   align-items: center;
+  gap: 0.4rem;
 }
 
-.readonly-input {
-  background-color: var(--color-gray-50);
-  cursor: not-allowed;
+.location-row {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.85rem;
+  color: var(--color-gray-500);
 }
 
-.btn-change {
-  background: var(--color-secondary-500);
-  color: white;
-  border: none;
-  padding: 0.5rem 1rem;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  cursor: pointer;
-  white-space: nowrap;
-}
-
-.btn-select-hospital {
-  background: var(--color-primary-600);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
-  width: 100%;
-}
-
-.hospital-selector {
-  margin-top: 1rem;
-  padding: 1rem;
-  border: 1px solid var(--color-gray-200);
-  border-radius: 0.5rem;
+.card-footer {
+  border-top: 1px solid var(--color-gray-100);
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   background: var(--color-gray-50);
 }
 
-.hospital-selector h4 {
-  margin: 0 0 1rem 0;
-  color: var(--color-gray-900);
+.fee {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--color-gray-800);
 }
 
-.hospital-list {
+.btn-text-danger {
+  color: var(--color-error);
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.btn-text-danger:hover {
+  text-decoration: underline;
+}
+
+/* Booking Form Styles */
+.booking-form-container {
+  background: var(--color-gray-50);
+  border: 1px solid var(--color-gray-200);
+  border-radius: 1rem;
+  padding: 2rem;
+  margin-bottom: 2rem;
+}
+
+.form-header h3 {
+  margin-bottom: 0.5rem;
+}
+
+.form-header p {
+  color: var(--color-gray-500);
+  margin-bottom: 1.5rem;
+}
+
+.modern-form {
   display: grid;
-  gap: 0.75rem;
-  max-height: 300px;
-  overflow-y: auto;
+  gap: 1.5rem;
 }
 
-.hospital-option {
-  padding: 1rem;
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-gray-300);
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  transition: all 0.2s;
+}
+
+.input-field:focus {
+  border-color: var(--color-primary-500);
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, 0.1);
+}
+
+.form-actions-right {
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* Empty State */
+.empty-state {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 4rem 2rem;
+  background: var(--color-gray-50);
+  border-radius: 1rem;
+  border: 2px dashed var(--color-gray-200);
+  color: var(--color-gray-500);
+}
+
+.empty-state svg {
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+  color: var(--color-gray-800);
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Buttons */
+.btn-primary.sm {
+  padding: 0.5rem 1rem;
+  font-size: 0.9rem;
+  gap: 0.5rem;
+}
+
+.btn-xs {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  border: 1px solid var(--color-gray-300);
+  background: white;
+  border-radius: 0.25rem;
+  cursor: pointer;
+}
+
+.btn-outline {
+  background: white;
+  border: 1px solid var(--color-gray-300);
+  padding: 0.75rem;
+  border-radius: 0.5rem;
+  text-align: left;
+  color: var(--color-gray-600);
+  cursor: pointer;
+}
+
+/* Hospital Badge */
+.selected-hospital-badge {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1rem;
+  background: white;
+  border: 1px solid var(--color-primary-200);
+  border-radius: 0.5rem;
+  color: var(--color-primary-800);
+  font-weight: 500;
+}
+
+/* Hospital Selector Dropdown */
+.hospital-search-box {
+  position: relative;
+}
+
+.hospital-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
   background: white;
   border: 1px solid var(--color-gray-200);
   border-radius: 0.5rem;
+  margin-top: 0.5rem;
+  max-height: 200px;
+  overflow-y: auto;
+  z-index: 50;
+  box-shadow: var(--shadow-lg);
+}
+
+.hospital-item {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid var(--color-gray-100);
   cursor: pointer;
-  transition: all 0.2s ease;
 }
 
-.hospital-option h5 {
-  margin: 0 0 0.25rem 0;
-  color: var(--color-gray-900);
-  font-size: 1rem;
+.hospital-item:hover {
+  background: var(--color-gray-50);
 }
 
-.hospital-option p {
-  margin: 0.125rem 0;
-  color: var(--color-gray-600);
-  font-size: 0.875rem;
+.hospital-item:last-child {
+  border-bottom: none;
 }
 
-.form-actions {
+.hospital-item strong {
+  display: block;
+  color: var(--color-gray-800);
+}
+
+.hospital-item small {
+  color: var(--color-gray-500);
+}
+
+/* Booking Card Modern */
+.card-header-row {
+  padding: 1rem 1.5rem;
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
-  margin-top: 2rem;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--color-gray-50);
+  border-bottom: 1px solid var(--color-gray-100);
 }
 
-.btn-primary {
-  background: var(--color-primary-600);
-  color: white;
-  border: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 0.5rem;
-  font-weight: 500;
-  cursor: pointer;
+.card-header-row h4 {
+  margin: 0;
+  font-size: 1.1rem;
 }
 
-.bookings-list {
-  display: grid;
-  gap: 1rem;
-}
-
-.booking-card {
-  background: white;
-  padding: 1.5rem;
+.status-pill {
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 0.25rem 0.75rem;
   border-radius: 1rem;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-  border: 1px solid var(--color-gray-100);
+  text-transform: uppercase;
 }
 
-.booking-info h4 {
-  margin: 0 0 1rem 0;
-  color: var(--color-gray-900);
+.status-pill.CONFIRMED,
+.status-pill.confirmed {
+  background: #dcfce7;
+  color: #15803d;
 }
 
-.booking-info p {
-  margin: 0.5rem 0;
-  color: var(--color-gray-600);
+.status-pill.PAID,
+.status-pill.paid {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.status-pill.PENDING,
+.status-pill.pending {
+  background: #fef3c7;
+  color: #b45309;
+}
+
+.status-pill.REJECTED,
+.status-pill.rejected,
+.status-pill.CANCELLED,
+.status-pill.cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+
+@media (max-width: 1024px) {
+  .portal-container {
+    flex-direction: column;
+    margin-top: -2rem;
+  }
+
+  .portal-sidebar {
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .sidebar-nav {
+    flex-direction: row;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+  }
+
+  .sidebar-promo {
+    display: none;
+  }
+
+  .nav-item {
+    white-space: nowrap;
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 768px) {
+  .welcome-content {
+    width: 100%;
+    text-align: center;
+  }
+
+  .quick-stats {
+    width: 100%;
+    justify-content: center;
+    margin-top: 1rem;
+  }
+
+  .stat-card {
+    flex: 1;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+  }
 }

@@ -36,7 +36,7 @@ const Login = ({ onLogin }) => {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('userRole', data.user.role);
-        
+
         // Store role-specific IDs
         if (data.user.role === 'DOCTOR' && data.doctor) {
           localStorage.setItem('doctorId', data.doctor.id);
@@ -45,25 +45,10 @@ const Login = ({ onLogin }) => {
         } else if (data.user.role === 'HOSPITAL' && data.hospital) {
           localStorage.setItem('hospitalId', data.hospital.id);
         }
-        
+
         onLogin(data.user);
-        
-        // Check if there's a pending appointment first
-        const pendingAppointment = localStorage.getItem('pendingAppointment');
-        if (pendingAppointment) {
-          navigate('/doctors');
-        } else {
-          // Redirect based on role
-          if (data.user.role === 'DOCTOR') {
-            navigate('/doctor-portal');
-          } else if (data.user.role === 'PATIENT') {
-            navigate('/user-portal');
-          } else if (data.user.role === 'HOSPITAL') {
-            navigate('/hospital-portal');
-          } else {
-            navigate('/user-portal');
-          }
-        }
+
+        navigate('/user-portal');
       } else {
         setError(data.error || 'Login failed');
       }
@@ -83,11 +68,11 @@ const Login = ({ onLogin }) => {
         </div>
 
         <GoogleLoginButton text="Sign in with Google" />
-        
+
         <div className="divider">
           <span>or</span>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">

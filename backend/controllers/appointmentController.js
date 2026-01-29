@@ -1,10 +1,11 @@
-const { PrismaClient } = require('@prisma/client');
-const prisma = new PrismaClient();
+const { prisma } = require('../db/config');
+const { sendAppointmentNotification } = require('./notificationController');
+
 
 const createAppointment = async (req, res) => {
   try {
     let { patientId, doctorId, appointmentDate, reason } = req.body;
-    
+
     // If patientId not provided, get from authenticated user
     if (!patientId && req.user) {
       const patient = await prisma.patient.findUnique({ where: { userId: req.user.userId } });
@@ -22,10 +23,12 @@ const createAppointment = async (req, res) => {
         patientId = newPatient.id;
       }
     }
-    
+
     if (!patientId || !doctorId || !appointmentDate || !reason) {
       return res.status(400).json({ error: 'PatientId, doctorId, appointmentDate, and reason are required' });
     }
+
+    const doctor = await prisma.doctor.findUnique({ where: { id: doctorId } });
 
     const appointment = await prisma.appointment.create({
       data: {
@@ -41,6 +44,19 @@ const createAppointment = async (req, res) => {
       }
     });
 
+    // Create a pending payment record
+    if (doctor && doctor.fees) {
+      await prisma.payment.create({
+        data: {
+          appointmentId: appointment.id,
+          amount: parseFloat(doctor.fees),
+          paymentStatus: 'PENDING',
+          paymentMethod: 'CASH' // Default
+        }
+      });
+    }
+
+
     res.status(201).json(appointment);
   } catch (error) {
     console.error('Error creating appointment:', error);
@@ -53,9 +69,9 @@ const getAppointments = async (req, res) => {
     const userId = req.user?.userId;
     const role = req.user?.role;
     const { doctorId } = req.params;
-    
+
     let where = {};
-    
+
     // If doctorId is provided in params, use it directly
     if (doctorId) {
       where.doctorId = parseInt(doctorId);
@@ -78,11 +94,11 @@ const getAppointments = async (req, res) => {
     const appointments = await prisma.appointment.findMany({
       where,
       include: {
-        doctor: { 
-          include: { 
+        doctor: {
+          include: {
             user: { select: { name: true } },
             hospital: { select: { name: true, city: true } }
-          } 
+          }
         },
         patient: { include: { user: { select: { name: true } } } },
         payment: true

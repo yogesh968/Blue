@@ -11,13 +11,13 @@ const handleResponse = async (response) => {
 
 const api = {
   // Auth endpoints
-  register: (userData) => 
+  register: (userData) =>
     fetch(`${API_BASE_URL}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(userData)
     }),
-  
+
   login: (credentials) =>
     fetch(`${API_BASE_URL}/auth/login`, {
       method: 'POST',
@@ -28,14 +28,14 @@ const api = {
   // Doctor endpoints
   getDoctors: (params = '') =>
     fetch(`${API_BASE_URL}/doctors${params}`),
-  
+
   getDoctorById: (id) =>
     fetch(`${API_BASE_URL}/doctors/${id}`),
 
   // Hospital endpoints
   getHospitals: (params = '') =>
     fetch(`${API_BASE_URL}/hospitals${params}`),
-  
+
   getHospitalById: (id) =>
     fetch(`${API_BASE_URL}/hospitals/${id}`),
 
@@ -64,6 +64,11 @@ const api = {
         'Authorization': `Bearer ${token}`
       },
       body: JSON.stringify(paymentData)
+    }),
+
+  getPayments: (token) =>
+    fetch(`${API_BASE_URL}/payments`, {
+      headers: { 'Authorization': `Bearer ${token}` }
     }),
 
   // Doctor Location endpoints

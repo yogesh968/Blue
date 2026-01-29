@@ -1,20 +1,25 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { Star, MapPin, Clock, ArrowRight } from 'lucide-react';
+
 import './DoctorCard.css';
 
 const DoctorCard = ({ doctor }) => {
+  const navigate = useNavigate();
   return (
-    <motion.div 
+    <motion.div
       className="doctor-card"
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
       viewport={{ once: true }}
+      onClick={() => navigate(`/doctors/${doctor.id}`)}
+      style={{ cursor: 'pointer' }}
     >
       <div className="doctor-header">
-        <motion.div 
+        <motion.div
           className="doctor-avatar"
           whileHover={{ scale: 1.1 }}
           transition={{ duration: 0.2 }}
@@ -22,7 +27,7 @@ const DoctorCard = ({ doctor }) => {
           {doctor.image}
         </motion.div>
         <div className="doctor-status">
-          <motion.span 
+          <motion.span
             className={`status-badge ${doctor.available ? 'available' : 'busy'}`}
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -33,7 +38,7 @@ const DoctorCard = ({ doctor }) => {
           </motion.span>
         </div>
       </div>
-      
+
       <div className="doctor-info">
         <h3 className="doctor-name">{doctor.name}</h3>
         <p className="doctor-specialty">{doctor.specialty}</p>
@@ -48,13 +53,13 @@ const DoctorCard = ({ doctor }) => {
           </div>
         </div>
       </div>
-      
+
       <div className="doctor-rating">
         <div className="rating-stars">
           {[...Array(5)].map((_, i) => (
-            <Star 
-              key={i} 
-              size={16} 
+            <Star
+              key={i}
+              size={16}
               className={i < Math.floor(doctor.rating) ? 'filled' : 'empty'}
             />
           ))}
@@ -62,21 +67,25 @@ const DoctorCard = ({ doctor }) => {
         </div>
         <span className="rating-count">({doctor.reviews} reviews)</span>
       </div>
-      
+
       <div className="doctor-fee">
         <span className="fee-label">Consultation Fee</span>
         <span className="fee-amount">₹{doctor.fee}</span>
       </div>
-      
+
       <div className="doctor-actions">
-        <motion.button 
+        <motion.button
           className="btn btn-secondary"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
+          onClick={(e) => {
+            e.stopPropagation();
+            navigate(`/doctors/${doctor.id}`);
+          }}
         >
           View Profile
         </motion.button>
-        <motion.button 
+        <motion.button
           className="btn btn-primary"
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}

@@ -22,18 +22,21 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
 
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
-  
+
   // Fetch available slots from backend
   const fetchAvailableSlots = async (date) => {
     if (!date) return;
-    
+
     setLoadingSlots(true);
     try {
       const token = localStorage.getItem('token');
-      const response = await fetch(`http://localhost:3001/api/doctors/${doctor.id}/availability?date=${date}`, {
+      const API_BASE_URL = import.meta.env.VITE_API_URL || 'https://blue-1-makf.onrender.com/api';
+      const response = await fetch(`${API_BASE_URL}/doctors/${doctor.id}/availability?date=${date}`, {
         headers: { 'Authorization': `Bearer ${token}` }
       });
-      
+
+
+
       if (response.ok) {
         const data = await response.json();
         setAvailableSlots(data.availableSlots || []);
@@ -57,7 +60,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
       setLoadingSlots(false);
     }
   };
-  
+
   const handleDateChange = (date) => {
     handleInputChange('date', date);
     handleInputChange('time', ''); // Reset time selection
@@ -101,7 +104,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
   const handleBooking = async () => {
     try {
       const token = localStorage.getItem('token');
-      
+
       if (!token) {
         toast.error('Please login to book appointment');
         return;
@@ -115,14 +118,14 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
       };
 
       const response = await api.createAppointment(appointmentData, token);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to book appointment');
       }
-      
+
       const appointment = await response.json();
-      
+
       toast.success('Appointment booked successfully!');
       onSuccess && onSuccess({ ...bookingData, appointmentId: appointment.id });
       setStep(5); // Success step
@@ -154,7 +157,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
                   required
                 />
               </div>
-              
+
               <div className="time-selection">
                 <label>Select Time Slot *</label>
                 {!bookingData.date ? (
@@ -181,8 +184,8 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
                 ) : (
                   <div className="no-slots">
                     <p>No available slots for this date</p>
-                    <button 
-                      type="button" 
+                    <button
+                      type="button"
                       className="retry-btn"
                       onClick={() => fetchAvailableSlots(bookingData.date)}
                     >
@@ -328,7 +331,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
                   <span>₹{doctor.fee}</span>
                 </div>
               </div>
-              
+
               <div className="payment-methods">
                 <h4>Payment Method</h4>
                 <div className="payment-options">
@@ -387,7 +390,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
           <h2>Book Appointment</h2>
           <button className="close-btn" onClick={onClose}>×</button>
         </div>
-        
+
         {step < 5 && (
           <div className="progress-bar">
             <div className="progress-steps">
@@ -398,8 +401,8 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
               ))}
             </div>
             <div className="progress-line">
-              <div 
-                className="progress-fill" 
+              <div
+                className="progress-fill"
                 style={{ width: `${((step - 1) / 3) * 100}%` }}
               ></div>
             </div>

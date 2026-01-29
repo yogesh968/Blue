@@ -38,7 +38,7 @@ const Register = ({ onLogin }) => {
         localStorage.setItem('token', data.token);
         localStorage.setItem('user', JSON.stringify(data.user));
         onLogin(data.user);
-        
+
         // Check if there's a pending appointment
         const pendingAppointment = localStorage.getItem('pendingAppointment');
         if (pendingAppointment) {
@@ -65,11 +65,11 @@ const Register = ({ onLogin }) => {
         </div>
 
         <GoogleLoginButton text="Sign up with Google" />
-        
+
         <div className="divider">
           <span>or</span>
         </div>
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">
@@ -137,7 +137,7 @@ const Register = ({ onLogin }) => {
             </div>
           </div>
 
-          <div className="form-group">
+          <div className="form-group" style={{ display: 'none' }}>
             <label>Account Type</label>
             <div className="role-options">
               <label className="role-option">
@@ -145,48 +145,14 @@ const Register = ({ onLogin }) => {
                   type="radio"
                   name="role"
                   value="PATIENT"
-                  checked={formData.role === 'PATIENT'}
-                  onChange={handleChange}
+                  checked={true}
+                  readOnly
                 />
                 <div className="role-content">
                   <span className="role-icon"><FaUser /></span>
                   <div>
                     <div className="role-title">Patient</div>
                     <div className="role-desc">Book appointments & manage health</div>
-                  </div>
-                </div>
-              </label>
-
-              <label className="role-option">
-                <input
-                  type="radio"
-                  name="role"
-                  value="DOCTOR"
-                  checked={formData.role === 'DOCTOR'}
-                  onChange={handleChange}
-                />
-                <div className="role-content">
-                  <span className="role-icon"><FaUserMd /></span>
-                  <div>
-                    <div className="role-title">Doctor</div>
-                    <div className="role-desc">Provide medical consultations</div>
-                  </div>
-                </div>
-              </label>
-
-              <label className="role-option">
-                <input
-                  type="radio"
-                  name="role"
-                  value="HOSPITAL"
-                  checked={formData.role === 'HOSPITAL'}
-                  onChange={handleChange}
-                />
-                <div className="role-content">
-                  <span className="role-icon"><FaHospital /></span>
-                  <div>
-                    <div className="role-title">Hospital</div>
-                    <div className="role-desc">Manage hospital operations</div>
                   </div>
                 </div>
               </label>

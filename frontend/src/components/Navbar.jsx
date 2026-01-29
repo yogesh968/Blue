@@ -3,7 +3,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import {
   AppBar,
   Toolbar,
-  Typography,
   Button,
   Box,
   IconButton,
@@ -51,19 +50,8 @@ const Navbar = ({ user, onLogout }) => {
   };
 
   const getMenuItems = () => {
-    if (user && user.role?.toLowerCase() === 'doctor') {
-      return [
-        { text: 'Dashboard', path: '/doctor-portal' },
-        { text: 'Appointments', path: '/doctor-portal/appointments' },
-        { text: 'My Locations', path: '/doctor-portal/locations' },
-        { text: 'Schedule', path: '/doctor-portal/schedule' },
-      ];
-    } else if (user && user.role?.toLowerCase() === 'hospital') {
-      return [
-        { text: 'Home', path: '/' },
-        { text: 'Emergency', path: '/emergency' },
-      ];
-    } else if (user && (user.role?.toLowerCase() === 'user' || user.role?.toLowerCase() === 'patient')) {
+    // simplified for Patient/User only
+    if (user) {
       return [
         { text: 'Home', path: '/' },
         { text: 'Doctors', path: '/doctors' },
@@ -129,15 +117,7 @@ const Navbar = ({ user, onLogout }) => {
         <Toolbar sx={{ px: { xs: 2, md: 4 } }}>
           <Box
             component={Link}
-            to={
-              user
-                ? user.role === 'DOCTOR' || user.role === 'doctor'
-                  ? '/doctor-portal'
-                  : user.role === 'HOSPITAL' || user.role === 'hospital'
-                  ? '/hospital-portal'
-                  : '/user-portal'
-                : '/'
-            }
+            to={user ? '/user-portal' : '/'}
             sx={{
               display: 'flex',
               alignItems: 'center',
@@ -193,7 +173,7 @@ const Navbar = ({ user, onLogout }) => {
                     fontWeight: 500,
                   }}
                 >
-                  Hi, {user.role === 'DOCTOR' || user.role === 'doctor' ? 'Dr. ' : ''}{user.name} ({user.role})
+                  Hi, {user.name}
                 </Button>
                 <Menu
                   anchorEl={anchorEl}
@@ -209,13 +189,7 @@ const Navbar = ({ user, onLogout }) => {
                 >
                   <MenuItem
                     component={Link}
-                    to={
-                      user.role === 'DOCTOR' || user.role === 'doctor'
-                        ? '/doctor-portal'
-                        : user.role === 'HOSPITAL' || user.role === 'hospital'
-                        ? '/hospital-portal'
-                        : '/user-portal'
-                    }
+                    to="/user-portal"
                     onClick={handleProfileMenuClose}
                   >
                     <Dashboard sx={{ mr: 1 }} />

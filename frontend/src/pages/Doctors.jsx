@@ -36,7 +36,7 @@ const Doctors = () => {
         throw new Error(`Failed to fetch doctors: ${response.status} ${txt}`);
       }
       const doctorsData = await response.json();
-      
+
       // Transform API data to match frontend format
       const transformedDoctors = doctorsData.map(doctor => ({
         id: doctor.id,
@@ -52,7 +52,7 @@ const Doctors = () => {
         available: doctor.isAvailable !== false,
         qualification: doctor.qualification
       }));
-      
+
       setDoctors(transformedDoctors);
       setFilteredDoctors(transformedDoctors);
       setError(null);
@@ -72,7 +72,7 @@ const Doctors = () => {
     const userData = localStorage.getItem('user');
     if (token && userData) {
       setUser(JSON.parse(userData));
-      
+
       // Check if there's a pending appointment after login
       const pendingAppointment = localStorage.getItem('pendingAppointment');
       if (pendingAppointment) {
@@ -94,12 +94,12 @@ const Doctors = () => {
   useEffect(() => {
     let filtered = doctors.filter(doctor => {
       const matchesSearch = doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase());
+        doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase());
       const matchesSpecialty = !filters.specialty || doctor.specialty === filters.specialty;
       const matchesLocation = !filters.location || doctor.location === filters.location;
-      const matchesAvailability = !filters.availability || 
-                                 (filters.availability === 'available' && doctor.available) ||
-                                 (filters.availability === 'all');
+      const matchesAvailability = !filters.availability ||
+        (filters.availability === 'available' && doctor.available) ||
+        (filters.availability === 'all');
       const matchesFee = doctor.fee >= filters.feeRange[0] && doctor.fee <= filters.feeRange[1];
 
       return matchesSearch && matchesSpecialty && matchesLocation && matchesAvailability && matchesFee;
@@ -133,12 +133,12 @@ const Doctors = () => {
   return (
     <div className="doctors-page">
       <Toaster position="top-right" />
-      
+
       <div className="doctors-header">
         <div className="container">
           <h1>Find Doctors</h1>
           <p>Book appointments with verified doctors</p>
-          
+
           <div className="search-section">
             <div className="search-input-wrapper">
               <Search size={20} className="search-icon" />
@@ -162,12 +162,12 @@ const Doctors = () => {
                 <Filter size={20} />
                 <h3>Filters</h3>
               </div>
-              
+
               <div className="filter-group">
                 <label>Specialty</label>
-                <select 
-                  value={filters.specialty} 
-                  onChange={(e) => setFilters({...filters, specialty: e.target.value})}
+                <select
+                  value={filters.specialty}
+                  onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
                 >
                   <option value="">All Specialties</option>
                   <option value="Cardiologist">Cardiologist</option>
@@ -185,12 +185,12 @@ const Doctors = () => {
                   <option value="Pulmonology">Pulmonology</option>
                 </select>
               </div>
-              
+
               <div className="filter-group">
                 <label>Location</label>
-                <select 
-                  value={filters.location} 
-                  onChange={(e) => setFilters({...filters, location: e.target.value})}
+                <select
+                  value={filters.location}
+                  onChange={(e) => setFilters({ ...filters, location: e.target.value })}
                 >
                   <option value="">All Locations</option>
                   <option value="Mumbai">Mumbai</option>
@@ -198,19 +198,19 @@ const Doctors = () => {
                   <option value="Bangalore">Bangalore</option>
                 </select>
               </div>
-              
+
               <div className="filter-group">
                 <label>Availability</label>
-                <select 
-                  value={filters.availability} 
-                  onChange={(e) => setFilters({...filters, availability: e.target.value})}
+                <select
+                  value={filters.availability}
+                  onChange={(e) => setFilters({ ...filters, availability: e.target.value })}
                 >
                   <option value="">All</option>
                   <option value="available">Available Today</option>
                 </select>
               </div>
             </div>
-            
+
             <div className="doctors-main">
               <div className="results-header">
                 <h3>{filteredDoctors.length} Doctors Found</h3>
@@ -221,7 +221,7 @@ const Doctors = () => {
                   <option>Sort by Fee (High to Low)</option>
                 </select>
               </div>
-              
+
               {loading ? (
                 <div className="loading-state">
                   <p>Loading doctors...</p>
@@ -245,7 +245,7 @@ const Doctors = () => {
                         {doctor.qualification && (
                           <p className="qualification">{doctor.qualification}</p>
                         )}
-                        
+
                         <div className="doctor-details">
                           <div className="detail-item">
                             <Star size={16} className="rating-icon" />
@@ -266,20 +266,29 @@ const Doctors = () => {
                             </span>
                           </div>
                         </div>
-                        
-                        <button 
-                          className={`book-btn ${!doctor.available ? 'disabled' : ''}`}
-                          onClick={() => bookAppointment(doctor)}
-                          disabled={!doctor.available}
-                        >
-                          {doctor.available ? 'Book Appointment' : 'Not Available'}
-                        </button>
+
+                        <div className="card-actions">
+                          <button
+                            className="profile-btn"
+                            onClick={() => navigate(`/doctors/${doctor.id}`)}
+                          >
+                            View Profile
+                          </button>
+                          <button
+                            className={`book-btn ${!doctor.available ? 'disabled' : ''}`}
+                            onClick={() => bookAppointment(doctor)}
+                            disabled={!doctor.available}
+                          >
+                            {doctor.available ? 'Book Appointment' : 'Not Available'}
+                          </button>
+                        </div>
+
                       </div>
                     </div>
                   ))}
                 </div>
               )}
-              
+
               {filteredDoctors.length === 0 && (
                 <div className="no-results">
                   <User size={48} className="no-results-icon" />
@@ -291,7 +300,7 @@ const Doctors = () => {
           </div>
         </div>
       </div>
-      
+
       {showBooking && selectedDoctor && (
         <AppointmentBooking
           doctor={selectedDoctor}

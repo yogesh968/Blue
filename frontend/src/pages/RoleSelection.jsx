@@ -29,7 +29,8 @@ const RoleSelection = ({ onLogin }) => {
         headers: {
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ token, role: selectedRole })
+        // Force role to PATIENT
+        body: JSON.stringify({ token, role: 'PATIENT' })
       });
 
       const data = await response.json();
@@ -39,19 +40,11 @@ const RoleSelection = ({ onLogin }) => {
         localStorage.setItem('user', JSON.stringify(data.user));
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('userRole', data.user.role);
-        
+
         onLogin(data.user);
-        
-        // Redirect based on role
-        if (data.user.role === 'DOCTOR') {
-          navigate('/doctor-portal');
-        } else if (data.user.role === 'PATIENT') {
-          navigate('/user-portal');
-        } else if (data.user.role === 'HOSPITAL') {
-          navigate('/hospital-portal');
-        } else {
-          navigate('/');
-        }
+
+        // Always redirect to user portal
+        navigate('/user-portal');
       } else {
         setError(data.error || 'Registration failed');
       }
@@ -70,8 +63,8 @@ const RoleSelection = ({ onLogin }) => {
     <div className="role-selection-page">
       <div className="role-selection-container">
         <div className="role-selection-header">
-          <h1>Select Your Role</h1>
-          <p>Choose how you want to use HealthCare+</p>
+          <h1>Welcome to BlueVitals</h1>
+          <p>Complete your registration as a Patient</p>
         </div>
 
         <form onSubmit={handleSubmit} className="role-selection-form">
@@ -82,53 +75,19 @@ const RoleSelection = ({ onLogin }) => {
           )}
 
           <div className="role-options">
-            <label className={`role-option ${selectedRole === 'PATIENT' ? 'selected' : ''}`}>
+            <label className={`role-option selected`}>
               <input
                 type="radio"
                 name="role"
                 value="PATIENT"
-                checked={selectedRole === 'PATIENT'}
-                onChange={(e) => setSelectedRole(e.target.value)}
+                checked={true}
+                readOnly
               />
               <div className="role-content">
                 <span className="role-icon"><FaUser /></span>
                 <div>
                   <div className="role-title">Patient</div>
                   <div className="role-desc">Book appointments & manage health records</div>
-                </div>
-              </div>
-            </label>
-
-            <label className={`role-option ${selectedRole === 'DOCTOR' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="role"
-                value="DOCTOR"
-                checked={selectedRole === 'DOCTOR'}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              />
-              <div className="role-content">
-                <span className="role-icon"><FaUserMd /></span>
-                <div>
-                  <div className="role-title">Doctor</div>
-                  <div className="role-desc">Provide medical consultations & manage appointments</div>
-                </div>
-              </div>
-            </label>
-
-            <label className={`role-option ${selectedRole === 'HOSPITAL' ? 'selected' : ''}`}>
-              <input
-                type="radio"
-                name="role"
-                value="HOSPITAL"
-                checked={selectedRole === 'HOSPITAL'}
-                onChange={(e) => setSelectedRole(e.target.value)}
-              />
-              <div className="role-content">
-                <span className="role-icon"><FaHospital /></span>
-                <div>
-                  <div className="role-title">Hospital</div>
-                  <div className="role-desc">Manage hospital operations & staff</div>
                 </div>
               </div>
             </label>

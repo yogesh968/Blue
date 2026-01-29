@@ -1,16 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  Box,
   Container,
-  Typography,
-  Button,
-  Grid,
-  Card,
-  CardContent,
   TextField,
   InputAdornment,
-  Chip,
   Avatar,
   Rating,
   CircularProgress,
@@ -27,10 +20,10 @@ import {
   ChildCare,
   Visibility,
   MedicalServices,
-  ArrowForward,
 } from '@mui/icons-material';
 import { motion } from 'framer-motion';
 import api from '../services/api';
+import './Home.css';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -49,10 +42,9 @@ const Home = () => {
       setLoading(true);
       setError(null);
       const response = await api.getDoctors('?limit=3&featured=true');
-      
+
       if (response.ok) {
         const data = await response.json();
-        // Transform API data to match DoctorCard format
         const transformedDoctors = data.map(doctor => ({
           id: doctor.id,
           name: doctor.user.name,
@@ -62,7 +54,7 @@ const Home = () => {
           reviews: 0,
           fee: doctor.fees,
           hospital: doctor.hospital.name,
-          image: "👨⚕️",
+          image: "👨‍⚕️",
           available: true
         }));
         setFeaturedDoctors(transformedDoctors);
@@ -93,7 +85,7 @@ const Home = () => {
     {
       id: 2,
       name: "Dr. Michael Chen",
-      specialty: "Neurologist", 
+      specialty: "Neurologist",
       experience: "12+ years",
       rating: 4.8,
       reviews: 98,
@@ -106,7 +98,7 @@ const Home = () => {
       id: 3,
       name: "Dr. Emily Davis",
       specialty: "Pediatrician",
-      experience: "10+ years", 
+      experience: "10+ years",
       rating: 4.9,
       reviews: 156,
       fee: 600,
@@ -116,7 +108,6 @@ const Home = () => {
     }
   ];
 
-  // Fallback to mock data if API fails
   const displayDoctors = featuredDoctors.length > 0 ? featuredDoctors : (error ? mockFeaturedDoctors : []);
 
   const handleSearch = () => {
@@ -132,547 +123,318 @@ const Home = () => {
 
   const handleQuickAction = (action) => {
     switch (action) {
-      case 'emergency':
-        navigate('/emergency');
-        break;
-      case 'appointment':
-        navigate('/doctors');
-        break;
-      case 'hospitals':
-        navigate('/hospitals');
-        break;
-      default:
-        break;
+      case 'emergency': navigate('/emergency'); break;
+      case 'appointment': navigate('/doctors'); break;
+      case 'hospitals': navigate('/hospitals'); break;
+      default: break;
     }
   };
 
   return (
-    <Box>
+    <div className="home">
       {/* Hero Section */}
-      <Box
-        sx={{
-          background: 'linear-gradient(180deg, #f8fafc 0%, #e6eef6 100%)',
-          py: { xs: 8, md: 12 },
-          color: 'text.primary',
-          position: 'relative',
-          overflow: 'hidden',
-          borderBottom: '1px solid rgba(15, 23, 42, 0.04)'
-        }}
-      >
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+      <section className="hero">
+        <Container>
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
+            className="hero-content"
           >
-            <Box textAlign="center" mb={6}>
-              <Typography
-                variant="h1"
-                sx={{
-                  fontSize: { xs: '2.5rem', md: '4rem' },
-                  fontWeight: 700,
-                  mb: 3,
-                  color: '#0f172a',
-                  lineHeight: 1.03,
+            <h1 className="hero-title">Your health, our priority</h1>
+            <p className="hero-subtitle">
+              Connect with carefully vetted doctors, book appointments instantly, and manage your health with BlueVitals — your local healthcare companion.
+            </p>
+
+            <div className="search-bar-container" style={{
+              display: 'flex',
+              gap: '1rem',
+              maxWidth: '800px',
+              margin: '0 auto 3rem',
+              background: 'white',
+              padding: '0.75rem',
+              borderRadius: '1.25rem',
+              boxShadow: 'var(--shadow-lg)'
+            }}>
+              <TextField
+                fullWidth
+                placeholder="Search doctors, specialties..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search sx={{ color: 'var(--color-primary-600)' }} />
+                    </InputAdornment>
+                  ),
                 }}
-              >
-                Your health, our priority
-              </Typography>
-              <Typography
-                variant="h5"
                 sx={{
-                  mb: 4,
-                  opacity: 0.85,
-                  maxWidth: '680px',
-                  mx: 'auto',
-                  fontSize: { xs: '1.02rem', md: '1.18rem' },
-                  color: 'text.secondary'
+                  '& .MuiOutlinedInput-root': {
+                    border: 'none',
+                    '& fieldset': { border: 'none' },
+                  },
                 }}
-              >
-                Connect with carefully vetted doctors, book appointments instantly, and manage your health with BlueVitals — your local healthcare companion.
-              </Typography>
-              
-              {/* Search Bar */}
-              <Box
+              />
+              <div style={{ width: '1px', background: 'var(--color-gray-200)', margin: '0.5rem 0' }} />
+              <TextField
+                placeholder="Location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <LocationOn sx={{ color: 'var(--color-primary-600)' }} />
+                    </InputAdornment>
+                  ),
+                }}
                 sx={{
-                  display: 'flex',
-                  gap: 2,
-                  maxWidth: '600px',
-                  mx: 'auto',
-                  mb: 6,
-                  flexDirection: { xs: 'column', sm: 'row' },
+                  minWidth: { sm: '200px' },
+                  '& .MuiOutlinedInput-root': {
+                    border: 'none',
+                    '& fieldset': { border: 'none' },
+                  },
                 }}
+              />
+              <button
+                className="btn btn-primary btn-large"
+                onClick={handleSearch}
+                style={{ whiteSpace: 'nowrap', borderRadius: '0.75rem' }}
               >
-                <TextField
-                  fullWidth
-                  placeholder="Search doctors, specialties..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <Search sx={{ color: 'primary.main' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#ffffff',
-                      boxShadow: '0 6px 18px rgba(15,23,42,0.06)',
-                    },
-                  }}
-                />
-                <TextField
-                  placeholder="Location"
-                  value={location}
-                  onChange={(e) => setLocation(e.target.value)}
-                  InputProps={{
-                    startAdornment: (
-                      <InputAdornment position="start">
-                        <LocationOn sx={{ color: 'primary.main' }} />
-                      </InputAdornment>
-                    ),
-                  }}
-                  sx={{
-                    minWidth: { sm: '200px' },
-                    '& .MuiOutlinedInput-root': {
-                      backgroundColor: '#ffffff',
-                      boxShadow: '0 6px 18px rgba(15,23,42,0.06)',
-                    },
-                  }}
-                />
-                <Button
-                  variant="contained"
-                  size="large"
-                  onClick={handleSearch}
-                  sx={{
-                    background: 'linear-gradient(135deg, #2563eb 0%, #3b82f6 100%)',
-                    color: '#fff',
-                    minWidth: { sm: '120px' },
-                    '&:hover': {
-                      background: 'linear-gradient(135deg, #1e40af 0%, #2563eb 100%)',
-                    },
-                  }}
-                >
-                  Search
-                </Button>
-              </Box>
-              
-              {/* Stats removed as requested (large aggregate counts) */}
-              <Box textAlign="center" sx={{ mt: 2 }}>
-                <Typography variant="subtitle1" sx={{ opacity: 0.85, color: 'text.secondary' }}>
-                  Trusted healthcare, close to you.
-                </Typography>
-              </Box>
-              </Box>
+                Search
+              </button>
+            </div>
+
+            <div className="hero-stats">
+              <div className="stat">
+                <span className="stat-number">500+</span>
+                <span className="stat-label">Doctors</span>
+              </div>
+              <div className="stat">
+                <span className="stat-number">50+</span>
+                <span className="stat-label">Hospitals</span>
+              </div>
+              <div className="stat">
+                <span className="stat-number">24/7</span>
+                <span className="stat-label">Support</span>
+              </div>
+            </div>
           </motion.div>
         </Container>
-      </Box>
+      </section>
 
       {/* Quick Actions */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography
-          variant="h2"
-          textAlign="center"
-          sx={{
-            mb: 6,
-            background: 'linear-gradient(135deg, #1A2A33 0%, #4DB6E2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Quick Actions
-        </Typography>
-        <Grid container spacing={4}>
-          {[
-            {
-              icon: <AirportShuttle sx={{ fontSize: 48, color: '#FF914D' }} />,
-              title: 'Emergency Care',
-              description: 'Get immediate medical attention with our 24/7 emergency services',
-              buttonText: 'Call Ambulance',
-              color: '#FF914D',
-              action: 'emergency'
-            },
-            {
-              icon: <CalendarToday sx={{ fontSize: 48, color: '#4DB6E2' }} />,
-              title: 'Book Appointment',
-              description: 'Schedule consultations with top doctors at your preferred time',
-              buttonText: 'Book Now',
-              color: '#4DB6E2',
-              action: 'appointment'
-            },
-            {
-              icon: <LocalHospital sx={{ fontSize: 48, color: '#F6C453' }} />,
-              title: 'Find Hospitals',
-              description: 'Locate nearby hospitals with advanced medical facilities',
-              buttonText: 'Find Hospitals',
-              color: '#F6C453',
-              action: 'hospitals'
-            },
-          ].map((action, index) => (
-            <Grid size={{ xs: 12, md: 4 }} key={index}>
+      <section className="quick-actions">
+        <Container>
+          <div className="section-header">
+            <h2>Quick Actions</h2>
+            <p>Everything you need for your healthcare journey</p>
+          </div>
+
+          <div className="grid grid-3">
+            {[
+              {
+                icon: <AirportShuttle className="action-icon emergency" />,
+                title: 'Emergency Care',
+                description: 'Get immediate medical attention with our 24/7 emergency services',
+                buttonText: 'Call Ambulance',
+                type: 'emergency',
+                action: 'emergency'
+              },
+              {
+                icon: <CalendarToday className="action-icon" />,
+                title: 'Book Appointment',
+                description: 'Schedule consultations with top doctors at your preferred time',
+                buttonText: 'Book Now',
+                type: 'primary',
+                action: 'appointment'
+              },
+              {
+                icon: <LocalHospital className="action-icon" />,
+                title: 'Find Hospitals',
+                description: 'Locate nearby hospitals with advanced medical facilities',
+                buttonText: 'Find Hospitals',
+                type: 'primary',
+                action: 'hospitals'
+              },
+            ].map((action, index) => (
               <motion.div
+                key={index}
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.6, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card
-                  sx={{
-                    height: '100%',
-                    textAlign: 'center',
-                    p: 3,
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(77, 182, 226, 0.1)',
-                    '&:hover': {
-                      transform: 'translateY(-8px)',
-                      boxShadow: `0px 12px 40px rgba(${action.color === '#FF914D' ? '255, 145, 77' : action.color === '#4DB6E2' ? '77, 182, 226' : '246, 196, 83'}, 0.2)`,
-                    },
-                  }}
-                >
-                  <CardContent>
-                    <Box mb={2}>{action.icon}</Box>
-                    <Typography variant="h5" gutterBottom sx={{ fontWeight: 600, color: 'text.primary' }}>
-                      {action.title}
-                    </Typography>
-                    <Typography variant="body1" color="text.secondary" sx={{ mb: 3 }}>
-                      {action.description}
-                    </Typography>
-                    <Button
-                      variant="contained"
-                      endIcon={<ArrowForward />}
-                      onClick={() => handleQuickAction(action.action)}
-                      sx={{
-                        background: `linear-gradient(135deg, ${action.color} 0%, ${action.color}CC 100%)`,
-                        color: action.color === '#F6C453' ? '#1A2A33' : 'white',
-                      }}
-                    >
-                      {action.buttonText}
-                    </Button>
-                  </CardContent>
-                </Card>
+                <div className="action-card">
+                  <div className={`action-icon ${action.type === 'emergency' ? 'emergency' : ''}`}>
+                    {action.icon}
+                  </div>
+                  <h3>{action.title}</h3>
+                  <p>{action.description}</p>
+                  <button
+                    className={`btn ${action.type === 'emergency' ? 'btn-primary' : 'btn-secondary'}`}
+                    style={action.type === 'emergency' ? { backgroundColor: 'var(--color-error)' } : { width: '100%' }}
+                    onClick={() => handleQuickAction(action.action)}
+                  >
+                    {action.buttonText}
+                  </button>
+                </div>
               </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+            ))}
+          </div>
+        </Container>
+      </section>
 
       {/* Featured Doctors */}
-      <Box sx={{ py: 8, backgroundColor: 'background.default' }}>
-        <Container maxWidth="lg">
-          <Box textAlign="center" mb={6}>
-            <Typography
-              variant="h2"
-              sx={{
-                mb: 2,
-                background: 'linear-gradient(135deg, #1A2A33 0%, #4DB6E2 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-              }}
-            >
-              Top Rated Doctors
-            </Typography>
-            <Typography variant="h6" color="text.secondary">
-              Consult with our experienced healthcare professionals
-            </Typography>
-          </Box>
-          
+      <section className="featured-doctors">
+        <Container>
+          <div className="section-header">
+            <h2>Top Rated Doctors</h2>
+            <p>Consult with our experienced healthcare professionals</p>
+          </div>
+
           {loading ? (
-            <Box display="flex" justifyContent="center" alignItems="center" py={8}>
-              <CircularProgress size={40} sx={{ color: 'primary.main' }} />
-              <Typography variant="h6" sx={{ ml: 2 }}>Loading doctors...</Typography>
-            </Box>
-          ) : displayDoctors.length === 0 ? (
-            <Box textAlign="center" py={8}>
-              <Typography variant="h6" color="text.secondary">No featured doctors available</Typography>
-            </Box>
+            <div className="loading-doctors">
+              <CircularProgress size={40} className="spinner" />
+              <p>Loading doctors...</p>
+            </div>
           ) : (
-            <Grid container spacing={4}>
-              {displayDoctors.map((doctor) => (
-                <Grid size={{ xs: 12, md: 4 }} key={doctor.id}>
+            <>
+              <div className="grid grid-3 doctors-grid">
+                {displayDoctors.map((doctor) => (
                   <motion.div
+                    key={doctor.id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5 }}
                     viewport={{ once: true }}
                   >
-                    <Card
-                      sx={{
-                        height: '100%',
-                        background: 'rgba(255, 255, 255, 0.95)',
-                        backdropFilter: 'blur(20px)',
-                        border: '1px solid rgba(77, 182, 226, 0.1)',
-                        '&:hover': {
-                          transform: 'translateY(-4px)',
-                          boxShadow: '0px 12px 40px rgba(77, 182, 226, 0.15)',
-                        },
-                      }}
-                    >
-                      <CardContent sx={{ p: 3 }}>
-                        <Box display="flex" alignItems="center" mb={2}>
-                          <Avatar
-                            sx={{
-                              width: 60,
-                              height: 60,
-                              background: 'linear-gradient(135deg, #4DB6E2, #3A9BC1)',
-                              mr: 2,
-                            }}
-                          >
-                            <MedicalServices sx={{ fontSize: 30 }} />
-                          </Avatar>
-                          <Box>
-                            <Chip
-                              label={doctor.available ? 'Available' : 'Busy'}
-                              size="small"
-                              sx={{
-                                backgroundColor: doctor.available ? '#10B981' : '#EF4444',
-                                color: 'white',
-                                fontWeight: 600,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                        
-                        <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                          {doctor.name}
-                        </Typography>
-                        <Typography variant="body2" color="primary.main" sx={{ fontWeight: 500, mb: 1 }}>
-                          {doctor.specialty}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                          {doctor.experience}
-                        </Typography>
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                          {doctor.hospital}
-                        </Typography>
-                        
-                        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-                          <Box display="flex" alignItems="center">
-                            <Rating value={doctor.rating} readOnly size="small" />
-                            <Typography variant="body2" sx={{ ml: 1 }}>
-                              {doctor.rating} ({doctor.reviews} reviews)
-                            </Typography>
-                          </Box>
-                        </Box>
-                        
-                        <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
-                          <Typography variant="body2" color="text.secondary">
-                            Consultation Fee
-                          </Typography>
-                          <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                            ₹{doctor.fee}
-                          </Typography>
-                        </Box>
-                        
-                        <Box display="flex" gap={1}>
-                          <Button 
-                            variant="outlined" 
-                            size="small" 
-                            fullWidth
-                            onClick={() => navigate(`/doctors/${doctor.id}`)}
-                          >
-                            View Profile
-                          </Button>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            fullWidth
-                            endIcon={<ArrowForward />}
-                            disabled={!doctor.available}
-                            onClick={() => navigate('/doctors')}
-                          >
-                            Book Now
-                          </Button>
-                        </Box>
-                      </CardContent>
-                    </Card>
+                    <div className="card">
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
+                        <Avatar
+                          sx={{
+                            width: 60,
+                            height: 60,
+                            bgcolor: 'var(--color-primary-50)',
+                            color: 'var(--color-primary-600)',
+                            mr: 2,
+                          }}
+                        >
+                          <MedicalServices />
+                        </Avatar>
+                        <div>
+                          <div className={`status-pill ${doctor.available ? 'CONFIRMED' : 'REJECTED'}`}>
+                            {doctor.available ? 'Available' : 'Busy'}
+                          </div>
+                        </div>
+                      </div>
+
+                      <h3 style={{ fontSize: '1.25rem', marginBottom: '0.25rem' }}>{doctor.name}</h3>
+                      <p style={{ color: 'var(--color-primary-600)', fontWeight: 600, fontSize: '0.95rem', marginBottom: '0.5rem' }}>
+                        {doctor.specialty}
+                      </p>
+                      <div style={{ color: 'var(--color-gray-500)', fontSize: '0.85rem', marginBottom: '1rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', marginBottom: '0.25rem' }}>
+                          <CalendarToday style={{ fontSize: '0.9rem' }} /> {doctor.experience}
+                        </div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                          <LocationOn style={{ fontSize: '0.9rem' }} /> {doctor.hospital}
+                        </div>
+                      </div>
+
+                      <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem', gap: '0.5rem' }}>
+                        <Rating value={doctor.rating} readOnly size="small" />
+                        <span style={{ fontSize: '0.85rem', color: 'var(--color-gray-600)' }}>
+                          {doctor.rating} ({doctor.reviews} reviews)
+                        </span>
+                      </div>
+
+                      <div style={{ borderTop: '1px solid var(--color-gray-100)', paddingTop: '1rem', marginBottom: '1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <span style={{ color: 'var(--color-gray-500)', fontSize: '0.9rem' }}>Consultation Fee</span>
+                        <span style={{ fontWeight: 700, fontSize: '1.1rem' }}>₹{doctor.fee}</span>
+                      </div>
+
+                      <div className="grid grid-2" style={{ gap: '0.5rem' }}>
+                        <button className="btn btn-secondary" onClick={() => navigate(`/doctors/${doctor.id}`)}>Profile</button>
+                        <button className="btn btn-primary" disabled={!doctor.available} onClick={() => navigate('/doctors')}>Book</button>
+                      </div>
+                    </div>
                   </motion.div>
-                </Grid>
-              ))}
-            </Grid>
+                ))}
+              </div>
+              <div className="text-center">
+                <button className="btn btn-secondary btn-large" onClick={() => navigate('/doctors')}>
+                  View All Doctors
+                </button>
+              </div>
+            </>
           )}
-          
-          <Box textAlign="center" mt={4}>
-            <Button 
-              variant="outlined" 
-              size="large"
-              onClick={() => navigate('/doctors')}
-            >
-              View All Doctors
-            </Button>
-          </Box>
         </Container>
-      </Box>
+      </section>
 
       {/* Specialties */}
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-        <Typography
-          variant="h2"
-          textAlign="center"
-          sx={{
-            mb: 6,
-            background: 'linear-gradient(135deg, #1A2A33 0%, #4DB6E2 100%)',
-            backgroundClip: 'text',
-            WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent',
-          }}
-        >
-          Popular Specialties
-        </Typography>
-        <Grid container spacing={3}>
-          {[
-            { name: 'Cardiology', icon: <Favorite />, count: '150+ Doctors', color: '#FF914D' },
-            { name: 'Neurology', icon: <Psychology />, count: '120+ Doctors', color: '#4DB6E2' },
-            { name: 'Orthopedics', icon: <Accessibility />, count: '200+ Doctors', color: '#F6C453' },
-            { name: 'Pediatrics', icon: <ChildCare />, count: '180+ Doctors', color: '#10B981' },
-            { name: 'Dermatology', icon: <MedicalServices />, count: '90+ Doctors', color: '#8B5CF6' },
-            { name: 'Gynecology', icon: <MedicalServices />, count: '110+ Doctors', color: '#EC4899' },
-            { name: 'Dentistry', icon: <MedicalServices />, count: '160+ Doctors', color: '#06B6D4' },
-            { name: 'Ophthalmology', icon: <Visibility />, count: '80+ Doctors', color: '#F59E0B' },
-          ].map((specialty, index) => (
-            <Grid size={{ xs: 6, sm: 4, md: 3 }} key={index}>
+      <section className="specialties">
+        <Container>
+          <div className="section-header">
+            <h2>Popular Specialties</h2>
+            <p>Find experts in every field</p>
+          </div>
+          <div className="grid grid-4">
+            {[
+              { name: 'Cardiology', icon: <Favorite />, count: '150+', color: '#ef4444' },
+              { name: 'Neurology', icon: <Psychology />, count: '120+', color: 'var(--color-primary-600)' },
+              { name: 'Orthopedics', icon: <Accessibility />, count: '200+', color: '#f59e0b' },
+              { name: 'Pediatrics', icon: <ChildCare />, count: '180+', color: 'var(--color-success)' },
+              { name: 'Dermatology', icon: <MedicalServices />, count: '90+', color: '#8b5cf6' },
+              { name: 'Gynecology', icon: <MedicalServices />, count: '110+', color: '#ec4899' },
+              { name: 'Dentistry', icon: <MedicalServices />, count: '160+', color: '#06b6d4' },
+              { name: 'Ophthalmology', icon: <Visibility />, count: '80+', color: '#f97316' },
+            ].map((specialty, index) => (
               <motion.div
+                key={index}
                 initial={{ opacity: 0, scale: 0.9 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5, delay: index * 0.1 }}
                 viewport={{ once: true }}
               >
-                <Card
-                  onClick={() => handleSpecialtyClick(specialty.name)}
-                  sx={{
-                    textAlign: 'center',
-                    p: 3,
-                    cursor: 'pointer',
-                    background: 'rgba(255, 255, 255, 0.9)',
-                    backdropFilter: 'blur(20px)',
-                    border: '1px solid rgba(77, 182, 226, 0.1)',
-                    '&:hover': {
-                      transform: 'translateY(-4px)',
-                      boxShadow: `0px 8px 30px rgba(${specialty.color.replace('#', '')}, 0.2)`,
-                    },
-                  }}
-                >
-                  <Box
-                    sx={{
-                      width: 60,
-                      height: 60,
-                      borderRadius: '50%',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      backgroundColor: `${specialty.color}20`,
-                      mx: 'auto',
-                      mb: 2,
-                    }}
-                  >
-                    {React.cloneElement(specialty.icon, {
-                      sx: { fontSize: 30, color: specialty.color },
-                    })}
-                  </Box>
-                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
-                    {specialty.name}
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    {specialty.count}
-                  </Typography>
-                </Card>
+                <div className="specialty-card" onClick={() => handleSpecialtyClick(specialty.name)}>
+                  <div className="specialty-icon" style={{ color: specialty.color }}>
+                    {specialty.icon}
+                  </div>
+                  <h4>{specialty.name}</h4>
+                  <p>{specialty.count} Doctors</p>
+                </div>
               </motion.div>
-            </Grid>
-          ))}
-        </Grid>
-      </Container>
+            ))}
+          </div>
+        </Container>
+      </section>
 
       {/* CTA Section */}
-      <Box
-        sx={{
-          background: 'linear-gradient(135deg, #1A2A33 0%, #4DB6E2 100%)',
-          py: 8,
-          position: 'relative',
-          overflow: 'hidden',
-        }}
-      >
-        <Box
-          sx={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            background: 'radial-gradient(circle at 70% 30%, rgba(246, 196, 83, 0.2) 0%, transparent 50%)',
-          }}
-        />
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <Box textAlign="center">
-            <Typography
-              variant="h2"
-              sx={{
-                color: 'white',
-                mb: 2,
-                fontSize: { xs: '2rem', md: '3rem' },
-              }}
-            >
-              Ready to Take Care of Your Health?
-            </Typography>
-            <Typography
-              variant="h6"
-              sx={{
-                color: 'rgba(255, 255, 255, 0.9)',
-                mb: 4,
-              }}
-            >
-              Join millions who trust us for their healthcare needs
-            </Typography>
-            <Box
-              sx={{
-                display: 'flex',
-                gap: 2,
-                justifyContent: 'center',
-                flexDirection: { xs: 'column', sm: 'row' },
-                maxWidth: '400px',
-                mx: 'auto',
-              }}
-            >
-              <Button
-                variant="contained"
-                size="large"
+      <section className="cta-section">
+        <Container>
+          <div className="cta-content">
+            <h2>Ready to Take Care of Your Health?</h2>
+            <p>Join millions who trust us for their healthcare needs</p>
+            <div className="cta-buttons">
+              <button
+                className="btn btn-primary btn-large"
+                style={{ backgroundColor: 'white', color: 'var(--color-primary-800)' }}
                 onClick={() => navigate('/doctors')}
-                sx={{
-                  background: 'linear-gradient(135deg, #F6C453 0%, #FF914D 100%)',
-                  color: '#1A2A33',
-                  fontWeight: 600,
-                  px: 4,
-                  '&:hover': {
-                    background: 'linear-gradient(135deg, #E5B03C 0%, #E67D36 100%)',
-                  },
-                }}
               >
                 Find a Doctor
-              </Button>
-              <Button
-                variant="outlined"
-                size="large"
+              </button>
+              <button
+                className="btn btn-secondary btn-large"
+                style={{ backgroundColor: 'transparent', color: 'white', borderColor: 'rgba(255,255,255,0.4)' }}
                 onClick={() => navigate('/doctors')}
-                sx={{
-                  borderColor: 'rgba(255, 255, 255, 0.5)',
-                  color: 'white',
-                  fontWeight: 600,
-                  px: 4,
-                  '&:hover': {
-                    borderColor: 'white',
-                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-                  },
-                }}
               >
                 Book Appointment
-              </Button>
-            </Box>
-          </Box>
+              </button>
+            </div>
+          </div>
         </Container>
-      </Box>
-    </Box>
+      </section>
+    </div>
   );
 };
 
