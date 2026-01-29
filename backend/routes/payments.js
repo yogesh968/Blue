@@ -79,5 +79,25 @@ router.post('/', authenticateToken, async (req, res) => {
   }
 });
 
+router.put('/:id', authenticateToken, async (req, res) => {
+  try {
+    const { prisma } = require('../db/config');
+    const { id } = req.params;
+    const { status } = req.body;
+
+    const payment = await prisma.payment.update({
+      where: { id: parseInt(id) },
+      data: {
+        paymentStatus: status,
+        transactionId: status === 'PAID' ? `TXN_${Date.now()}` : undefined
+      }
+    });
+
+    res.json(payment);
+  } catch (error) {
+    console.error('Update payment error:', error);
+    res.status(500).json({ error: 'Failed to update payment' });
+  }
+});
 
 module.exports = router;
