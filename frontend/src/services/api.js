@@ -71,6 +71,17 @@ const api = {
       headers: { 'Authorization': `Bearer ${token}` }
     }),
 
+  updatePaymentStatus: (id, status, token) =>
+    fetch(`${API_BASE_URL}/payments/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ status })
+    }),
+
+
   // Doctor Location endpoints
   getDoctorLocations: (doctorId, token) =>
     fetch(`${API_BASE_URL}/doctor/${doctorId}/locations`, {

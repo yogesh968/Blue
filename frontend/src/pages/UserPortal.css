@@ -259,8 +259,9 @@
 /* Modern Card Styles */
 .cards-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  gap: 1.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+  /* Increased gap */
 }
 
 .modern-card {
@@ -273,9 +274,9 @@
 }
 
 .modern-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-lg);
-  border-color: var(--color-primary-200);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px -10px rgba(0, 0, 0, 0.1);
+  border-color: var(--color-primary-300);
 }
 
 .card-status {
@@ -318,15 +319,16 @@
 
 
 .card-body {
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
   display: flex;
-  gap: 1rem;
+  gap: 1.5rem;
   align-items: flex-start;
 }
 
 .card-body-compact {
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
 }
+
 
 .doctor-avatar-placeholder {
   width: 50px;
@@ -352,18 +354,20 @@
 }
 
 .card-info h3 {
-  font-size: 1.1rem;
-  margin: 0 0 0.25rem;
+  font-size: 1.25rem;
+  margin: 0 0 0.5rem;
   color: var(--color-gray-900);
 }
 
-
 .specialty {
   color: var(--color-primary-600);
-  font-weight: 500;
-  font-size: 0.9rem;
-  margin-bottom: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
+
 
 .meta-row {
   display: flex;
@@ -402,18 +406,23 @@
   color: var(--color-gray-800);
 }
 
-.btn-text-danger {
-  color: var(--color-error);
-  background: none;
-  border: none;
+/* Cancel Button Modern */
+.cancel-btn-modern {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  padding: 0;
+  transition: all 0.2s;
 }
 
-.btn-text-danger:hover {
-  text-decoration: underline;
+.cancel-btn-modern:hover {
+  background: #ffe4e6;
+  border-color: #fda4af;
+  transform: scale(1.02);
 }
 
 /* Booking Form Styles */

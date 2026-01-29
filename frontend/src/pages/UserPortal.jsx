@@ -186,14 +186,23 @@ const UserPortal = () => {
     }
   };
 
-  const handlePayBill = (id) => {
+  const handlePayBill = async (id) => {
     const toastId = toast.loading('Processing payment...');
-    setTimeout(() => {
-      setBills(prev => prev.map(bill =>
-        bill.id === id ? { ...bill, status: 'PAID' } : bill
-      ));
-      toast.success('Payment successful!', { id: toastId });
-    }, 1500);
+    try {
+      const token = localStorage.getItem('token');
+      const response = await api.updatePaymentStatus(id, 'PAID', token);
+
+      if (response.ok) {
+        setBills(prev => prev.map(bill =>
+          bill.id === id ? { ...bill, status: 'PAID' } : bill
+        ));
+        toast.success('Payment successful!', { id: toastId });
+      } else {
+        throw new Error('Payment failed');
+      }
+    } catch (error) {
+      toast.error('Payment failed. Please try again.', { id: toastId });
+    }
   };
 
   if (loading) {
@@ -337,12 +346,12 @@ const UserPortal = () => {
                     </div>
                     <div className="card-footer">
                       <span className="fee">₹{appointment.fee}</span>
-                      {appointment.status === 'pending' && (
+                      {appointment.status.toUpperCase() === 'PENDING' && (
                         <button
                           onClick={() => cancelAppointment(appointment.id)}
-                          className="btn-text-danger"
+                          className="cancel-btn-modern"
                         >
-                          Cancel
+                          Cancel Appointment
                         </button>
                       )}
                     </div>
