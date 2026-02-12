@@ -125,7 +125,7 @@ const Navbar = ({ user, onLogout }) => {
               mr: 4,
             }}
           >
-            <Logo width={168} height={56} />
+            <Logo width={isMobile ? 120 : 168} height={isMobile ? 40 : 56} />
           </Box>
 
           {!isMobile && (

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import { Search, Filter, Star, MapPin, Bed, Truck, Phone } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import api from '../services/api';
@@ -7,14 +7,20 @@ import './Hospitals.css';
 
 const Hospitals = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [hospitals, setHospitals] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [locationFilter, setLocationFilter] = useState('');
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    const searchParam = searchParams.get('search');
+    const locationParam = searchParams.get('location');
+    if (searchParam) setSearchQuery(searchParam);
+    if (locationParam) setLocationFilter(locationParam);
+
     fetchHospitals();
-  }, []);
+  }, [searchParams]);
 
   const fetchHospitals = async () => {
     const mockHospitals = [
@@ -103,9 +109,9 @@ const Hospitals = () => {
         phone: '+91-80-71222222'
       }
     ];
-    
+
     try {
-      const response = await fetch('http://localhost:3001/api/hospitals');
+      const response = await api.getHospitals();
       if (response.ok) {
         const data = await response.json();
         const formattedHospitals = data.map(h => ({
@@ -120,7 +126,8 @@ const Hospitals = () => {
           availableBeds: Math.floor(Math.random() * 50) + 10,
           emergency: true,
           ambulance: true,
-          phone: h.phone
+          phone: h.phone,
+          image: "https://images.unsplash.com/photo-1586773860418-d3b9da95779c?auto=format&fit=crop&w=600&q=80"
         }));
         setHospitals(formattedHospitals);
       } else {
@@ -139,14 +146,14 @@ const Hospitals = () => {
       navigate('/login');
       return;
     }
-    
+
     // Navigate to user portal with booking info
     toast.success(`Redirecting to book bed at ${hospital.name}`);
     navigate('/user-portal?tab=beds', { state: { hospitalId: hospital.id, hospitalName: hospital.name } });
   };
 
   const filteredHospitals = hospitals.filter(hospital => {
-    const matchesSearch = !searchQuery || 
+    const matchesSearch = !searchQuery ||
       hospital.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       hospital.address.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (hospital.specialties && hospital.specialties.some(s => s.toLowerCase().includes(searchQuery.toLowerCase())));
@@ -171,7 +178,7 @@ const Hospitals = () => {
         <div className="container">
           <h1>Find Hospitals</h1>
           <p>Locate hospitals with advanced medical facilities</p>
-          
+
           <div className="search-filters">
             <div className="search-input-wrapper">
               <Search size={20} className="search-icon" />
@@ -185,7 +192,7 @@ const Hospitals = () => {
             </div>
             <div className="filter-wrapper">
               <Filter size={16} />
-              <select 
+              <select
                 value={locationFilter}
                 onChange={(e) => setLocationFilter(e.target.value)}
                 className="location-filter"
@@ -206,12 +213,14 @@ const Hospitals = () => {
           <div className="results-info">
             <h3>{filteredHospitals.length} Hospitals Found</h3>
           </div>
-          
+
           <div className="hospitals-grid">
             {filteredHospitals.map(hospital => (
               <div key={hospital.id} className="hospital-card">
                 <div className="hospital-header">
-                  <div className="hospital-icon">🏥</div>
+                  <div className="hospital-icon">
+                    <img src={hospital.image || "https://images.unsplash.com/photo-1586773860418-d3b9da95779c?auto=format&fit=crop&w=600&q=80"} alt={hospital.name} className="hospital-img" />
+                  </div>
                   <div className="hospital-basic-info">
                     <h3>{hospital.name}</h3>
                     <div className="hospital-rating">
@@ -220,13 +229,13 @@ const Hospitals = () => {
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="hospital-details">
                   <div className="detail-item">
                     <MapPin size={16} />
                     <span>{hospital.address}</span>
                   </div>
-                  
+
                   <div className="specialties">
                     <strong>Specialties:</strong>
                     <div className="specialty-tags">
@@ -235,7 +244,7 @@ const Hospitals = () => {
                       ))}
                     </div>
                   </div>
-                  
+
                   <div className="hospital-stats">
                     <div className="stat-item">
                       <Bed size={16} />
@@ -254,9 +263,9 @@ const Hospitals = () => {
                     )}
                   </div>
                 </div>
-                
+
                 <div className="hospital-actions">
-                  <button 
+                  <button
                     className="btn-secondary"
                     onClick={() => {
                       if (hospital.phone) {
@@ -268,7 +277,7 @@ const Hospitals = () => {
                   >
                     <Phone size={16} /> Call Hospital
                   </button>
-                  <button 
+                  <button
                     className="btn-primary"
                     onClick={() => handleBookBed(hospital)}
                   >
@@ -278,7 +287,7 @@ const Hospitals = () => {
               </div>
             ))}
           </div>
-          
+
           {filteredHospitals.length === 0 && (
             <div className="no-results">
               <h3>No hospitals found</h3>

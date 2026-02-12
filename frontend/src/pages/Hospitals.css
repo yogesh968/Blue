@@ -142,8 +142,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
   flex-shrink: 0;
+  overflow: hidden;
+}
+
+.hospital-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hospital-basic-info h3 {

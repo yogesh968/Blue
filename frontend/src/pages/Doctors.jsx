@@ -38,7 +38,7 @@ const Doctors = () => {
       const doctorsData = await response.json();
 
       // Transform API data to match frontend format
-      const transformedDoctors = doctorsData.map(doctor => ({
+      const transformedDoctors = doctorsData.map((doctor, index) => ({
         id: doctor.id,
         name: doctor.user?.name || 'Unknown Doctor',
         specialty: doctor.speciality,
@@ -48,7 +48,9 @@ const Doctors = () => {
         fee: doctor.fees,
         hospital: doctor.hospital?.name || 'General Hospital',
         location: doctor.hospital?.city || 'Mumbai',
-        image: "👨⚕️", // Default image
+        image: index % 2 === 0
+          ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"
+          : "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
         available: doctor.isAvailable !== false,
         qualification: doctor.qualification
       }));
@@ -86,8 +88,17 @@ const Doctors = () => {
 
   useEffect(() => {
     const specialtyParam = searchParams.get('specialty');
+    const searchParam = searchParams.get('search');
+    const locationParam = searchParams.get('location');
+
     if (specialtyParam) {
       setFilters(prev => ({ ...prev, specialty: specialtyParam }));
+    }
+    if (searchParam) {
+      setSearchQuery(searchParam);
+    }
+    if (locationParam) {
+      setFilters(prev => ({ ...prev, location: locationParam }));
     }
   }, [searchParams]);
 
@@ -95,7 +106,9 @@ const Doctors = () => {
     let filtered = doctors.filter(doctor => {
       const matchesSearch = doctor.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         doctor.specialty.toLowerCase().includes(searchQuery.toLowerCase());
-      const matchesSpecialty = !filters.specialty || doctor.specialty === filters.specialty;
+      const matchesSpecialty = !filters.specialty ||
+        doctor.specialty.toLowerCase().includes(filters.specialty.toLowerCase()) ||
+        filters.specialty.toLowerCase().includes(doctor.specialty.toLowerCase());
       const matchesLocation = !filters.location || doctor.location === filters.location;
       const matchesAvailability = !filters.availability ||
         (filters.availability === 'available' && doctor.available) ||
@@ -170,18 +183,16 @@ const Doctors = () => {
                   onChange={(e) => setFilters({ ...filters, specialty: e.target.value })}
                 >
                   <option value="">All Specialties</option>
-                  <option value="Cardiologist">Cardiologist</option>
-                  <option value="Neurologist">Neurologist</option>
-                  <option value="Pediatrician">Pediatrician</option>
-                  <option value="Orthopedic">Orthopedic</option>
-                  <option value="Dermatologist">Dermatologist</option>
-                  <option value="Cardiology">Cardiology</option>
-                  <option value="Neurology">Neurology</option>
-                  <option value="Orthopedics">Orthopedics</option>
-                  <option value="Gastroenterology">Gastroenterology</option>
-                  <option value="Dermatology">Dermatology</option>
-                  <option value="Ophthalmology">Ophthalmology</option>
-                  <option value="ENT">ENT</option>
+                  <option value="Cardiologist">Cardiologist (Cardiology)</option>
+                  <option value="Neurologist">Neurologist (Neurology)</option>
+                  <option value="Pediatrician">Pediatrician (Pediatrics)</option>
+                  <option value="Orthopedic">Orthopedic (Orthopedics)</option>
+                  <option value="Dermatologist">Dermatologist (Dermatology)</option>
+                  <option value="Gynecologist">Gynecologist (Gynecology)</option>
+                  <option value="Dentist">Dentist (Dentistry)</option>
+                  <option value="Ophthalmologist">Ophthalmologist (Ophthalmology)</option>
+                  <option value="Gastroenterologist">Gastroenterologist</option>
+                  <option value="ENT">ENT Specialist</option>
                   <option value="Pulmonology">Pulmonology</option>
                 </select>
               </div>
@@ -236,7 +247,7 @@ const Doctors = () => {
                   {filteredDoctors.map(doctor => (
                     <div key={doctor.id} className="doctor-card">
                       <div className="doctor-avatar">
-                        <User size={40} />
+                        <img src={doctor.image} alt={doctor.name} className="avatar-img" />
                       </div>
                       <div className="doctor-info">
                         <h4>{doctor.name}</h4>

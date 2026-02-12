@@ -24,6 +24,7 @@ import {
 import { motion } from 'framer-motion';
 import api from '../services/api';
 import './Home.css';
+import heroImage from '../assets/hero_medical.png';
 
 const Home = () => {
   const navigate = useNavigate();
@@ -45,7 +46,7 @@ const Home = () => {
 
       if (response.ok) {
         const data = await response.json();
-        const transformedDoctors = data.map(doctor => ({
+        const transformedDoctors = data.map((doctor, index) => ({
           id: doctor.id,
           name: doctor.user.name,
           specialty: doctor.speciality,
@@ -54,7 +55,9 @@ const Home = () => {
           reviews: 0,
           fee: doctor.fees,
           hospital: doctor.hospital.name,
-          image: "👨‍⚕️",
+          image: index % 2 === 0
+            ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"
+            : "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
           available: true
         }));
         setFeaturedDoctors(transformedDoctors);
@@ -79,7 +82,7 @@ const Home = () => {
       reviews: 127,
       fee: 800,
       hospital: "Apollo Hospital",
-      image: "👩‍⚕️",
+      image: "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
       available: true
     },
     {
@@ -91,7 +94,7 @@ const Home = () => {
       reviews: 98,
       fee: 1200,
       hospital: "Max Healthcare",
-      image: "👨‍⚕️",
+      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80",
       available: true
     },
     {
@@ -103,7 +106,7 @@ const Home = () => {
       reviews: 156,
       fee: 600,
       hospital: "Fortis Hospital",
-      image: "👩‍⚕️",
+      image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=300&q=80",
       available: false
     }
   ];
@@ -135,90 +138,99 @@ const Home = () => {
       {/* Hero Section */}
       <section className="hero">
         <Container>
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="hero-content"
-          >
-            <h1 className="hero-title">Your health, our priority</h1>
-            <p className="hero-subtitle">
-              Connect with carefully vetted doctors, book appointments instantly, and manage your health with BlueVitals — your local healthcare companion.
-            </p>
+          <div className="hero-grid">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8 }}
+              className="hero-content"
+            >
+              <h1 className="hero-title">Your health, our priority</h1>
+              <p className="hero-subtitle">
+                Connect with carefully vetted doctors, book appointments instantly, and manage your health with BlueVitals — your local healthcare companion.
+              </p>
 
-            <div className="search-bar-container" style={{
-              display: 'flex',
-              gap: '1rem',
-              maxWidth: '800px',
-              margin: '0 auto 3rem',
-              background: 'white',
-              padding: '0.75rem',
-              borderRadius: '1.25rem',
-              boxShadow: 'var(--shadow-lg)'
-            }}>
-              <TextField
-                fullWidth
-                placeholder="Search doctors, specialties..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Search sx={{ color: 'var(--color-primary-600)' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  '& .MuiOutlinedInput-root': {
-                    border: 'none',
-                    '& fieldset': { border: 'none' },
-                  },
-                }}
-              />
-              <div style={{ width: '1px', background: 'var(--color-gray-200)', margin: '0.5rem 0' }} />
-              <TextField
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <LocationOn sx={{ color: 'var(--color-primary-600)' }} />
-                    </InputAdornment>
-                  ),
-                }}
-                sx={{
-                  minWidth: { sm: '200px' },
-                  '& .MuiOutlinedInput-root': {
-                    border: 'none',
-                    '& fieldset': { border: 'none' },
-                  },
-                }}
-              />
-              <button
-                className="btn btn-primary btn-large"
-                onClick={handleSearch}
-                style={{ whiteSpace: 'nowrap', borderRadius: '0.75rem' }}
-              >
-                Search
-              </button>
-            </div>
+              <div className="search-bar-container">
+                <div className="search-input-field">
+                  <TextField
+                    fullWidth
+                    placeholder="Search doctors, specialties..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <Search sx={{ color: 'var(--color-primary-600)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        border: 'none',
+                        '& fieldset': { border: 'none' },
+                      },
+                    }}
+                  />
+                </div>
+                <div className="search-divider" />
+                <div className="search-location-field">
+                  <TextField
+                    fullWidth
+                    placeholder="Location"
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    InputProps={{
+                      startAdornment: (
+                        <InputAdornment position="start">
+                          <LocationOn sx={{ color: 'var(--color-primary-600)' }} />
+                        </InputAdornment>
+                      ),
+                    }}
+                    sx={{
+                      '& .MuiOutlinedInput-root': {
+                        border: 'none',
+                        '& fieldset': { border: 'none' },
+                      },
+                    }}
+                  />
+                </div>
+                <button
+                  className="btn btn-primary search-btn"
+                  onClick={handleSearch}
+                >
+                  Search
+                </button>
+              </div>
 
-            <div className="hero-stats">
-              <div className="stat">
-                <span className="stat-number">15+</span>
-                <span className="stat-label">Doctors</span>
+              <div className="hero-stats">
+                <div className="stat">
+                  <span className="stat-number">15+</span>
+                  <span className="stat-label">Doctors</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-number">10+</span>
+                  <span className="stat-label">Hospitals</span>
+                </div>
+                <div className="stat">
+                  <span className="stat-number">24/7</span>
+                  <span className="stat-label">Support</span>
+                </div>
               </div>
-              <div className="stat">
-                <span className="stat-number">10+</span>
-                <span className="stat-label">Hospitals</span>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.8, delay: 0.2 }}
+              className="hero-image-container"
+            >
+              <img src={heroImage} alt="Professional Healthcare" className="hero-main-image" />
+              <div className="experience-badge">
+                <span className="badge-number">10+</span>
+                <span className="badge-text">Years of Trust</span>
               </div>
-              <div className="stat">
-                <span className="stat-number">24/7</span>
-                <span className="stat-label">Support</span>
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
+          </div>
         </Container>
       </section>
 
@@ -311,16 +323,17 @@ const Home = () => {
                     <div className="card">
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <Avatar
+                          src={doctor.image}
                           sx={{
                             width: 60,
                             height: 60,
                             bgcolor: 'var(--color-primary-50)',
                             color: 'var(--color-primary-600)',
                             mr: 2,
+                            border: '2px solid white',
+                            boxShadow: 'var(--shadow-sm)'
                           }}
-                        >
-                          <MedicalServices />
-                        </Avatar>
+                        />
                         <div>
                           <div className={`status-pill ${doctor.available ? 'CONFIRMED' : 'REJECTED'}`}>
                             {doctor.available ? 'Available' : 'Busy'}
@@ -380,14 +393,14 @@ const Home = () => {
           </div>
           <div className="grid grid-4">
             {[
-              { name: 'Cardiology', icon: <Favorite />, count: '150+', color: '#ef4444' },
-              { name: 'Neurology', icon: <Psychology />, count: '120+', color: 'var(--color-primary-600)' },
-              { name: 'Orthopedics', icon: <Accessibility />, count: '200+', color: '#f59e0b' },
-              { name: 'Pediatrics', icon: <ChildCare />, count: '180+', color: 'var(--color-success)' },
-              { name: 'Dermatology', icon: <MedicalServices />, count: '90+', color: '#8b5cf6' },
-              { name: 'Gynecology', icon: <MedicalServices />, count: '110+', color: '#ec4899' },
-              { name: 'Dentistry', icon: <MedicalServices />, count: '160+', color: '#06b6d4' },
-              { name: 'Ophthalmology', icon: <Visibility />, count: '80+', color: '#f97316' },
+              { name: 'Cardiologist', label: 'Cardiology', icon: <Favorite />, count: '150+', color: '#ef4444' },
+              { name: 'Neurologist', label: 'Neurology', icon: <Psychology />, count: '120+', color: 'var(--color-primary-600)' },
+              { name: 'Orthopedic', label: 'Orthopedics', icon: <Accessibility />, count: '200+', color: '#f59e0b' },
+              { name: 'Pediatrician', label: 'Pediatrics', icon: <ChildCare />, count: '180+', color: 'var(--color-success)' },
+              { name: 'Dermatologist', label: 'Dermatology', icon: <MedicalServices />, count: '90+', color: '#8b5cf6' },
+              { name: 'Gynecologist', label: 'Gynecology', icon: <MedicalServices />, count: '110+', color: '#ec4899' },
+              { name: 'Dentist', label: 'Dentistry', icon: <MedicalServices />, count: '160+', color: '#06b6d4' },
+              { name: 'Ophthalmologist', label: 'Ophthalmology', icon: <Visibility />, count: '80+', color: '#f97316' },
             ].map((specialty, index) => (
               <motion.div
                 key={index}
@@ -400,7 +413,7 @@ const Home = () => {
                   <div className="specialty-icon" style={{ color: specialty.color }}>
                     {specialty.icon}
                   </div>
-                  <h4>{specialty.name}</h4>
+                  <h4>{specialty.label}</h4>
                   <p>{specialty.count} Doctors</p>
                 </div>
               </motion.div>
