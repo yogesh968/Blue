@@ -127,7 +127,7 @@ const Hospitals = () => {
           emergency: true,
           ambulance: true,
           phone: h.phone,
-          image: "https://images.unsplash.com/photo-1586773860418-d3b9da95779c?auto=format&fit=crop&w=600&q=80"
+          image: null
         }));
         setHospitals(formattedHospitals);
       } else {
@@ -219,7 +219,7 @@ const Hospitals = () => {
               <div key={hospital.id} className="hospital-card">
                 <div className="hospital-header">
                   <div className="hospital-icon">
-                    <img src={hospital.image || "https://images.unsplash.com/photo-1586773860418-d3b9da95779c?auto=format&fit=crop&w=600&q=80"} alt={hospital.name} className="hospital-img" />
+                    <Truck size={32} />
                   </div>
                   <div className="hospital-basic-info">
                     <h3>{hospital.name}</h3>

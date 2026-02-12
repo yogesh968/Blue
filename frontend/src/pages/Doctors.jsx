@@ -48,9 +48,7 @@ const Doctors = () => {
         fee: doctor.fees,
         hospital: doctor.hospital?.name || 'General Hospital',
         location: doctor.hospital?.city || 'Mumbai',
-        image: index % 2 === 0
-          ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"
-          : "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
+        image: null,
         available: doctor.isAvailable !== false,
         qualification: doctor.qualification
       }));
@@ -247,7 +245,7 @@ const Doctors = () => {
                   {filteredDoctors.map(doctor => (
                     <div key={doctor.id} className="doctor-card">
                       <div className="doctor-avatar">
-                        <img src={doctor.image} alt={doctor.name} className="avatar-img" />
+                        <User size={32} />
                       </div>
                       <div className="doctor-info">
                         <h4>{doctor.name}</h4>

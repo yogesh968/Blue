@@ -55,9 +55,7 @@ const Home = () => {
           reviews: 0,
           fee: doctor.fees,
           hospital: doctor.hospital.name,
-          image: index % 2 === 0
-            ? "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80"
-            : "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
+          image: null,
           available: true
         }));
         setFeaturedDoctors(transformedDoctors);
@@ -82,7 +80,7 @@ const Home = () => {
       reviews: 127,
       fee: 800,
       hospital: "Apollo Hospital",
-      image: "https://images.unsplash.com/photo-1559839734-2b71f1536783?auto=format&fit=crop&w=300&q=80",
+      image: null,
       available: true
     },
     {
@@ -94,7 +92,7 @@ const Home = () => {
       reviews: 98,
       fee: 1200,
       hospital: "Max Healthcare",
-      image: "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=300&q=80",
+      image: null,
       available: true
     },
     {
@@ -106,7 +104,7 @@ const Home = () => {
       reviews: 156,
       fee: 600,
       hospital: "Fortis Hospital",
-      image: "https://images.unsplash.com/photo-1594824476967-48c8b964273f?auto=format&fit=crop&w=300&q=80",
+      image: null,
       available: false
     }
   ];
@@ -204,11 +202,11 @@ const Home = () => {
 
               <div className="hero-stats">
                 <div className="stat">
-                  <span className="stat-number">15+</span>
+                  <span className="stat-number">35+</span>
                   <span className="stat-label">Doctors</span>
                 </div>
                 <div className="stat">
-                  <span className="stat-number">10+</span>
+                  <span className="stat-number">30+</span>
                   <span className="stat-label">Hospitals</span>
                 </div>
                 <div className="stat">
@@ -323,7 +321,6 @@ const Home = () => {
                     <div className="card">
                       <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1.5rem' }}>
                         <Avatar
-                          src={doctor.image}
                           sx={{
                             width: 60,
                             height: 60,
@@ -333,7 +330,9 @@ const Home = () => {
                             border: '2px solid white',
                             boxShadow: 'var(--shadow-sm)'
                           }}
-                        />
+                        >
+                          <LocalHospital />
+                        </Avatar>
                         <div>
                           <div className={`status-pill ${doctor.available ? 'CONFIRMED' : 'REJECTED'}`}>
                             {doctor.available ? 'Available' : 'Busy'}

@@ -5,147 +5,92 @@ const prisma = new PrismaClient();
 
 async function seedData() {
   try {
-    console.log('🌱 Starting database seeding...');
+    console.log('🌱 Starting comprehensive database seeding...');
 
-    // Create hospitals first
-    const hospitals = await Promise.all([
-      prisma.hospital.create({
-        data: {
-          name: "Apollo Hospital",
-          city: "Mumbai",
-          address: "Sahar Road, Andheri East, Mumbai, Maharashtra 400099",
-          phone: "+91-22-6767-1000"
-        }
-      }),
-      prisma.hospital.create({
-        data: {
-          name: "Max Healthcare",
-          city: "Delhi",
-          address: "Press Enclave Road, Saket, New Delhi, Delhi 110017",
-          phone: "+91-11-2651-5050"
-        }
-      }),
-      prisma.hospital.create({
-        data: {
-          name: "Fortis Hospital",
-          city: "Bangalore",
-          address: "154/9, Bannerghatta Road, Opposite IIM-B, Bangalore, Karnataka 560076",
-          phone: "+91-80-6621-4444"
-        }
-      }),
-      prisma.hospital.create({
-        data: {
-          name: "AIIMS",
-          city: "Delhi",
-          address: "Ansari Nagar, New Delhi, Delhi 110029",
-          phone: "+91-11-2658-8500"
-        }
-      }),
-      prisma.hospital.create({
-        data: {
-          name: "Manipal Hospital",
-          city: "Mumbai",
-          address: "Dhirubhai Ambani Hospital, Kokilaben Dhirubhai Ambani Hospital & Medical Research Institute",
-          phone: "+91-22-4269-6969"
-        }
-      }),
-      prisma.hospital.create({
-        data: {
-          name: "Kokilaben Hospital",
-          city: "Mumbai",
-          address: "Rao Saheb Achutrao Patwardhan Marg, Four Bunglows, Andheri West, Mumbai, Maharashtra 400053",
-          phone: "+91-22-4269-6969"
-        }
-      })
-    ]);
+    // Delete existing data to avoid uniques/duplicates
+    await prisma.appointment.deleteMany({});
+    await prisma.doctor.deleteMany({});
+    await prisma.hospital.deleteMany({});
+    await prisma.user.deleteMany({ where: { role: 'DOCTOR' } });
 
+    const hospitalData = [
+      { name: "Apollo Hospital", city: "Mumbai", address: "Sahar Road, Andheri East", phone: "+91-22-6767-1000" },
+      { name: "Max Healthcare", city: "Delhi", address: "Press Enclave Road, Saket", phone: "+91-11-2651-5050" },
+      { name: "Fortis Hospital", city: "Bangalore", address: "Bannerghatta Road", phone: "+91-80-6621-4444" },
+      { name: "AIIMS Delhi", city: "Delhi", address: "Ansari Nagar", phone: "+91-11-2658-8500" },
+      { name: "Manipal Hospital", city: "Mumbai", address: "Dhirubhai Ambani Hospital", phone: "+91-22-4269-6969" },
+      { name: "Kokilaben Hospital", city: "Mumbai", address: "Andheri West", phone: "+91-22-4269-6900" },
+      { name: "Narayana Health", city: "Bangalore", address: "Bommasandra", phone: "+91-80-7122-2222" },
+      { name: "Medanta - The Medicity", city: "Gurgaon", address: "CH Baktawar Singh Road", phone: "+91-124-414-1414" },
+      { name: "Lilavati Hospital", city: "Mumbai", address: "Bandra West", phone: "+91-22-2675-1000" },
+      { name: "Sir Ganga Ram Hospital", city: "Delhi", address: "Rajinder Nagar", phone: "+91-11-2573-5205" },
+      { name: "Aster CMI Hospital", city: "Bangalore", address: "Sahakar Nagar", phone: "+91-80-4342-0100" },
+      { name: "Nanavati Hospital", city: "Mumbai", address: "Vile Parle West", phone: "+91-22-2626-7500" },
+      { name: "Jaslok Hospital", city: "Mumbai", address: "Pedder Road", phone: "+91-22-6657-3333" },
+      { name: "BLK Super Speciality", city: "Delhi", address: "Pusa Road", phone: "+91-11-3040-3040" },
+      { name: "Columbia Asia", city: "Bangalore", address: "Hebbal", phone: "+91-80-4179-1000" },
+      { name: "Moolchand Hospital", city: "Delhi", address: "Lajpat Nagar", phone: "+91-11-4200-0000" },
+      { name: "Breach Candy Hospital", city: "Mumbai", address: "Bhulabhai Desai Road", phone: "+91-22-2367-1888" },
+      { name: "Sakra World Hospital", city: "Bangalore", address: "Outer Ring Road", phone: "+91-80-4969-4969" },
+      { name: "Holy Family Hospital", city: "Delhi", address: "Okhla Road", phone: "+91-11-2684-5900" },
+      { name: "Cloudnine Hospital", city: "Mumbai", address: "Malad West", phone: "+91-22-6177-1777" },
+      { name: "Sparsh Hospital", city: "Bangalore", address: "Yeshwanthpur", phone: "+91-80-6122-2000" },
+      { name: "St. Stephens Hospital", city: "Delhi", address: "Tis Hazari", phone: "+91-11-2396-6021" },
+      { name: "Hiranandani Hospital", city: "Mumbai", address: "Powai", phone: "+91-22-2576-3300" },
+      { name: "Rainbow Children's Hospital", city: "Bangalore", address: "Marathahalli", phone: "+91-80-4241-2345" },
+      { name: "RG Stone Urology", city: "Delhi", address: "Kailash Colony", phone: "+91-11-4163-1000" }
+    ];
+
+    const hospitals = [];
+    for (const h of hospitalData) {
+      const created = await prisma.hospital.create({ data: h });
+      hospitals.push(created);
+    }
     console.log(`✅ Created ${hospitals.length} hospitals`);
 
-    // Create doctor users and profiles
-    const doctorData = [
-      {
-        name: "Dr. Sarah Johnson",
-        email: "sarah.johnson@hospital.com",
-        speciality: "Cardiologist",
-        experience: 15,
-        fees: 800,
-        qualification: "MBBS, MD Cardiology",
-        hospitalId: hospitals[0].id // Apollo Hospital
-      },
-      {
-        name: "Dr. Michael Chen",
-        email: "michael.chen@hospital.com",
-        speciality: "Neurologist",
-        experience: 12,
-        fees: 1200,
-        qualification: "MBBS, MD Neurology",
-        hospitalId: hospitals[1].id // Max Healthcare
-      },
-      {
-        name: "Dr. Emily Davis",
-        email: "emily.davis@hospital.com",
-        speciality: "Pediatrician",
-        experience: 10,
-        fees: 600,
-        qualification: "MBBS, MD Pediatrics",
-        hospitalId: hospitals[2].id // Fortis Hospital
-      },
-      {
-        name: "Dr. Rajesh Kumar",
-        email: "rajesh.kumar@hospital.com",
-        speciality: "Orthopedic",
-        experience: 18,
-        fees: 1000,
-        qualification: "MBBS, MS Orthopedics",
-        hospitalId: hospitals[3].id // AIIMS
-      },
-      {
-        name: "Dr. Priya Sharma",
-        email: "priya.sharma@hospital.com",
-        speciality: "Dermatologist",
-        experience: 8,
-        fees: 700,
-        qualification: "MBBS, MD Dermatology",
-        hospitalId: hospitals[4].id // Manipal Hospital
-      },
-      {
-        name: "Dr. Amit Patel",
-        email: "amit.patel@hospital.com",
-        speciality: "Cardiologist",
-        experience: 20,
-        fees: 1500,
-        qualification: "MBBS, MD Cardiology, DM Interventional Cardiology",
-        hospitalId: hospitals[5].id // Kokilaben Hospital
-      }
+    const specialties = [
+      "Cardiologist", "Neurologist", "Pediatrician", "Orthopedic",
+      "Dermatologist", "Gastroenterologist", "Ophthalmologist",
+      "ENT Specialist", "Pulmonology", "Gynecologist", "Dentist"
+    ];
+
+    const doctorNames = [
+      "Sarah Johnson", "Michael Chen", "Emily Davis", "Rajesh Kumar", "Priya Sharma",
+      "Amit Patel", "Vikram Singh", "Anjali Rao", "Sanjay Dutt", "Meera Nair",
+      "Karan Mehta", "Sneha Gupta", "Arjun Reddy", "Pooja Hegde", "Rohan Joshi",
+      "Deepika Roy", "Vivek Oberoi", "Neha Kakkar", "Aditya Seal", "Tara Sutaria",
+      "Varun Dhawan", "Kiara Advani", "Ranbir Kapoor", "Alia Bhatt", "Sid Malhotra",
+      "Ishaan Khatter", "Janhvi Kapoor", "Sara Ali Khan", "Kartik Aaryan", "Ananya Panday",
+      "Vicky Kaushal", "Katrina Kaif", "Ayushmann Khurrana", "Bhumi Pednekar", "Rajkummar Rao"
     ];
 
     const hashedPassword = await bcrypt.hash('doctor123', 10);
 
-    for (const doctorInfo of doctorData) {
-      // Create user first
+    for (let i = 0; i < doctorNames.length; i++) {
+      const hospital = hospitals[i % hospitals.length];
+      const specialty = specialties[i % specialties.length];
+
       const user = await prisma.user.create({
         data: {
-          name: doctorInfo.name,
-          email: doctorInfo.email,
+          name: `Dr. ${doctorNames[i]}`,
+          email: `${doctorNames[i].toLowerCase().replace(' ', '.')}@hospital.com`,
           password: hashedPassword,
           phone: `+91-${Math.floor(Math.random() * 9000000000) + 1000000000}`,
           role: 'DOCTOR'
         }
       });
 
-      // Create doctor profile
       await prisma.doctor.create({
         data: {
           userId: user.id,
-          hospitalId: doctorInfo.hospitalId,
-          speciality: doctorInfo.speciality,
-          experience: doctorInfo.experience,
-          fees: doctorInfo.fees,
-          qualification: doctorInfo.qualification
+          hospitalId: hospital.id,
+          speciality: specialty,
+          experience: 5 + Math.floor(Math.random() * 20),
+          fees: 400 + Math.floor(Math.random() * 1600),
+          qualification: "MBBS, MD"
         }
       });
-
-      console.log(`✅ Created doctor: ${doctorInfo.name}`);
+      console.log(`✅ Created doctor: Dr. ${doctorNames[i]} - ${specialty}`);
     }
 
     console.log('🎉 Database seeding completed successfully!');

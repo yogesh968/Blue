@@ -48,7 +48,7 @@ const DoctorProfile = () => {
                     location: data.hospital?.city || 'Mumbai',
                     qualification: data.qualification,
                     bio: data.bio || `Dr. ${data.user?.name} is a highly experienced ${data.speciality} dedicated to providing exceptional care. With over ${data.experience} years in the field, they have helped numerous patients achieve better health outcomes.`,
-                    image: data.image || "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?auto=format&fit=crop&w=600&q=80",
+                    image: null,
                     available: data.isAvailable !== false,
                     achievements: [
                         "Top Rated Specialist 2023",
@@ -114,7 +114,7 @@ const DoctorProfile = () => {
                         <div className="doctor-hero-card">
                             <div className="doctor-hero-header">
                                 <div className="profile-image-large">
-                                    <img src={doctor.image} alt={doctor.name} className="profile-img-lg" />
+                                    <User size={64} />
                                 </div>
                                 <div className="hero-info">
                                     <div className="name-row">
