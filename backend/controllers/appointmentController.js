@@ -12,6 +12,12 @@ const createAppointment = async (req, res) => {
       if (patient) {
         patientId = patient.id;
       } else {
+        // Verify user exists before creating patient profile
+        const userExists = await prisma.user.findUnique({ where: { id: req.user.userId } });
+        if (!userExists) {
+          return res.status(401).json({ error: 'User account not found. Please login again.' });
+        }
+
         // Create patient profile if it doesn't exist
         const newPatient = await prisma.patient.create({
           data: {

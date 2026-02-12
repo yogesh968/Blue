@@ -305,7 +305,7 @@ const UserPortal = () => {
             <div className="content-section fade-in">
               <div className="section-header">
                 <h2>My Appointments</h2>
-                <Link to="/doctors" className="btn-primary sm">
+                <Link to="/doctors" className="btn btn-primary sm">
                   <Plus size={16} /> Book New
                 </Link>
               </div>
