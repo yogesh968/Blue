@@ -34,7 +34,6 @@ const sendAppointmentNotification = async (appointmentId, type) => {
 
     // In a real app, you would save these to a notifications table
     // and send via email/SMS
-    console.log('Notifications sent:', notifications);
     
     return notifications;
   } catch (error) {

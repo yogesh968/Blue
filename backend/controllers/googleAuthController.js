@@ -9,7 +9,6 @@ const generateToken = (userId, role) => {
 const googleCallback = async (req, res) => {
   try {
     const { googleId, email, name } = req.user;
-    console.log('Google OAuth callback:', { googleId, email, name });
     
     // Check if user exists by email OR googleId
     let user = await prisma.user.findFirst({
@@ -21,19 +20,15 @@ const googleCallback = async (req, res) => {
       }
     });
     
-    console.log('Found existing user:', user ? 'Yes' : 'No');
-    
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173';
     
     if (!user) {
       // New user - redirect to role selection
-      console.log('Redirecting to role selection');
       const tempToken = jwt.sign({ googleId, email, name }, process.env.JWT_SECRET, { expiresIn: '10m' });
       return res.redirect(`${frontendUrl}/select-role?token=${tempToken}`);
     }
     
     // Existing user - login directly
-    console.log('Existing user login:', user.role);
     const token = generateToken(user.id, user.role);
     const userParam = encodeURIComponent(JSON.stringify({
       id: user.id,
@@ -51,11 +46,9 @@ const googleCallback = async (req, res) => {
 const completeRegistration = async (req, res) => {
   try {
     const { token, role } = req.body;
-    console.log('Complete registration request:', { role });
     
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
     const { googleId, email, name } = decoded;
-    console.log('Decoded token:', { googleId, email, name });
     
     // Check if user already exists
     const existingUser = await prisma.user.findFirst({
@@ -80,8 +73,6 @@ const completeRegistration = async (req, res) => {
         googleId
       }
     });
-    
-    console.log('Created user:', { id: user.id, role: user.role });
     
     const authToken = generateToken(user.id, user.role);
     
