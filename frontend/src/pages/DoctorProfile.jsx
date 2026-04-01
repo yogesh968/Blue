@@ -131,7 +131,7 @@ const DoctorProfile = () => {
                                             <Star size={18} fill="var(--color-warning)" color="var(--color-warning)" />
                                             <span className="rating-val">{doctor.rating}</span>
                                         </div>
-                                        <span className="review-count">({doctor.reviews} patient reviews)</span>
+                                        <span className="review-count">(Based on {doctor.reviews} patient reviews)</span>
                                     </div>
                                 </div>
                             </div>
@@ -162,12 +162,12 @@ const DoctorProfile = () => {
                         </div>
 
                         <div className="profile-content-section">
-                            <h3>About Doctor</h3>
+                            <h3><User size={22} className="text-teal-600" /> About Doctor</h3>
                             <p className="bio-text">{doctor.bio}</p>
                         </div>
 
                         <div className="profile-content-section">
-                            <h3>Specializations & Expertise</h3>
+                            <h3><Award size={22} className="text-teal-600" /> Specializations & Expertise</h3>
                             <div className="tags-container">
                                 <span className="expert-tag">{doctor.specialty}</span>
                                 <span className="expert-tag">General Medicine</span>
@@ -177,7 +177,7 @@ const DoctorProfile = () => {
                         </div>
 
                         <div className="profile-content-section">
-                            <h3>Practice Location</h3>
+                            <h3><MapPin size={22} className="text-teal-600" /> Practice Location</h3>
                             <div className="hospital-info-card">
                                 <ShieldCheck size={32} className="hospital-icon" />
                                 <div className="hospital-details">
@@ -225,7 +225,9 @@ const DoctorProfile = () => {
                             <ul>
                                 {doctor.achievements.map((ach, idx) => (
                                     <li key={idx}>
-                                        <Award size={16} className="text-primary" />
+                                        <div className="achievement-icon-bg">
+                                            <Award size={16} />
+                                        </div>
                                         <span>{ach}</span>
                                     </li>
                                 ))}
