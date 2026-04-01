@@ -81,8 +81,14 @@ const DoctorProfile = () => {
     if (loading) {
         return (
             <div className="profile-loading-container">
-                <div className="spinner"></div>
-                <p>Loading doctor profile...</p>
+                <div className="medical-loader">
+                    <div className="pulse-ring"></div>
+                    <Star size={32} className="loader-icon" />
+                </div>
+                <p>Establishing secure connection to Dr. {doctor?.name || 'Profile'}...</p>
+                <div className="loading-progress-bar">
+                    <div className="progress-fill"></div>
+                </div>
             </div>
         );
     }

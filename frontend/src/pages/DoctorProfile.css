@@ -371,8 +371,90 @@
     display: flex;
 }
 
-/* Loading/Error States */
-.profile-loading-container,
+/* Premium Loading States */
+.profile-loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at center, #ffffff 0%, #f0fdf9 100%);
+    gap: 32px;
+    padding: 20px;
+}
+
+.medical-loader {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pulse-ring {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border: 3px solid #0d9488;
+    border-radius: 50%;
+    animation: ripple 2s cubic-bezier(0, 0.2, 0.8, 1) infinite;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0.1);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1.5);
+        opacity: 0;
+    }
+}
+
+.loader-icon {
+    color: #0d9488;
+    animation: heartbeat 1.5s ease-in-out infinite;
+    z-index: 2;
+}
+
+@keyframes heartbeat {
+    0%, 100% { transform: scale(1); }
+    15% { transform: scale(1.2); }
+    30% { transform: scale(1); }
+    45% { transform: scale(1.1); }
+    60% { transform: scale(1); }
+}
+
+.profile-loading-container p {
+    color: #475569;
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    text-align: center;
+}
+
+.loading-progress-bar {
+    width: 240px;
+    height: 6px;
+    background: #e2e8f0;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #0d9488, #14b8a6);
+    animation: progress-load 3s ease-in-out infinite;
+}
+
+@keyframes progress-load {
+    0% { width: 0%; transform: translateX(-10%); }
+    50% { width: 70%; }
+    100% { width: 100%; transform: translateX(0); }
+}
+
 .profile-error-container {
     display: flex;
     flex-direction: column;

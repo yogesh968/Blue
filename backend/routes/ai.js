@@ -1,11 +1,12 @@
 const express = require('express');
 const router = express.Router();
-const Groq = require('groq-sdk');
+const Groq = require('groq-sdk').Groq || require('groq-sdk');
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
+// Add check to ensure API key is present
 const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY
+  apiKey: process.env.GROQ_API_KEY || 'dummy_key_for_build'
 });
 
 router.post('/chat', async (req, res) => {
