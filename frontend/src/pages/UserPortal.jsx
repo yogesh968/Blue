@@ -211,9 +211,15 @@ const UserPortal = () => {
 
   if (loading) {
     return (
-      <div className="user-portal-loading">
-        <Loader className="spinner" size={40} />
-        <p>Loading your health dashboard...</p>
+      <div className="user-portal-loading premium-loading-container">
+        <div className="medical-loader">
+          <div className="pulse-ring"></div>
+          <Activity size={40} className="loader-icon" />
+        </div>
+        <p className="loading-text">Synchronizing your medical records...</p>
+        <div className="loading-progress-bar">
+          <div className="progress-fill"></div>
+        </div>
       </div>
     );
   }

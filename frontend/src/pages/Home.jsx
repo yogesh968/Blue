@@ -7,7 +7,6 @@ import {
   InputAdornment,
   Avatar,
   Rating,
-  CircularProgress,
 } from '@mui/material';
 import {
   Search,
@@ -304,9 +303,15 @@ const Home = () => {
           </div>
 
           {loading ? (
-            <div className="loading-doctors">
-              <CircularProgress size={40} className="spinner" />
-              <p>Loading doctors...</p>
+            <div className="premium-loading-container" style={{ minHeight: '300px' }}>
+              <div className="medical-loader">
+                <div className="pulse-ring"></div>
+                <LocalHospital style={{ width: 32, height: 32 }} className="loader-icon" />
+              </div>
+              <p className="loading-text">Loading top-rated doctors...</p>
+              <div className="loading-progress-bar">
+                <div className="progress-fill"></div>
+              </div>
             </div>
           ) : (
             <>

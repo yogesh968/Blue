@@ -164,8 +164,15 @@ const Hospitals = () => {
   if (loading) {
     return (
       <div className="hospitals-page">
-        <div className="loading-container">
-          <p>Loading hospitals...</p>
+        <div className="premium-loading-container">
+          <div className="medical-loader">
+            <div className="pulse-ring"></div>
+            <Truck size={32} className="loader-icon" />
+          </div>
+          <p className="loading-text">Locating certified medical facilities...</p>
+          <div className="loading-progress-bar">
+            <div className="progress-fill"></div>
+          </div>
         </div>
       </div>
     );

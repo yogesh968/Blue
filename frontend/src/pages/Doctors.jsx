@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
-import { CircularProgress } from '@mui/material';
+import { Stethoscope } from 'lucide-react';
 import { Search, Filter, Star, MapPin, Clock, Plus } from 'lucide-react';
 import toast, { Toaster } from 'react-hot-toast';
 import AppointmentBooking from '../components/AppointmentBooking';
@@ -244,9 +244,15 @@ const Doctors = () => {
               </div>
 
               {loading ? (
-                <div className="loading-state" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1rem', padding: '4rem 0' }}>
-                  <CircularProgress size={40} sx={{ color: '#3b82f6' }} />
-                  <p style={{ color: '#6b7280' }}>Finding top doctors...</p>
+                <div className="premium-loading-container" style={{ minHeight: '350px' }}>
+                  <div className="medical-loader">
+                    <div className="pulse-ring"></div>
+                    <Stethoscope size={32} className="loader-icon" />
+                  </div>
+                  <p className="loading-text">Finding the best doctors for you...</p>
+                  <div className="loading-progress-bar">
+                    <div className="progress-fill"></div>
+                  </div>
                 </div>
               ) : error ? (
                 <div className="error-state">
