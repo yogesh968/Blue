@@ -1,6 +1,15 @@
 const express = require('express');
 const router = express.Router();
-const Groq = require('groq-sdk').Groq || require('groq-sdk');
+let Groq;
+try {
+  const sdk = require('groq-sdk');
+  Groq = sdk.Groq || sdk.default || sdk;
+} catch (err) {
+  console.error('CRITICAL: groq-sdk module not found. Attempting dynamic import fallback.', err);
+  // Fail-over to an object that throws error on use, preventing startup crash but identifying the problem
+  Groq = class { constructor() { throw new Error('groq-sdk module not found on this environment.'); } };
+}
+
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
