@@ -1,25 +1,34 @@
 const express = require('express');
 const router = express.Router();
 let Groq;
-try {
-  const sdk = require('groq-sdk');
-  Groq = sdk.Groq || sdk.default || sdk;
-} catch (err) {
-  console.error('CRITICAL: groq-sdk module not found. Attempting dynamic import fallback.', err);
-  // Fail-over to an object that throws error on use, preventing startup crash but identifying the problem
-  Groq = class { constructor() { throw new Error('groq-sdk module not found on this environment.'); } };
-}
+let groqInitPromise = (async () => {
+  try {
+    const sdk = await import('groq-sdk');
+    Groq = sdk.Groq || sdk.default || sdk;
+    console.log('Successfully loaded Groq SDK via dynamic import');
+  } catch (err) {
+    console.error('CRITICAL: Failed to load Groq SDK:', err);
+    Groq = class { constructor() { throw new Error('groq-sdk module not found on this environment.'); } };
+  }
+})();
+
 
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Add check to ensure API key is present
-const groq = new Groq({
-  apiKey: process.env.GROQ_API_KEY || 'dummy_key_for_build'
-});
+let groqClient;
+const getGroqClient = async () => {
+    if (groqClient) return groqClient;
+    await groqInitPromise;
+    groqClient = new Groq({
+      apiKey: process.env.GROQ_API_KEY || 'dummy_key_for_build'
+    });
+    return groqClient;
+};
 
 router.post('/chat', async (req, res) => {
   try {
+    const groq = await getGroqClient();
     const { message, patientId } = req.body;
 
     if (!message) {
