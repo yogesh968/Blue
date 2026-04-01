@@ -33,7 +33,9 @@ const Login = ({ onLogin }) => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+        }
         localStorage.setItem('userId', data.user.id);
         localStorage.setItem('userRole', data.user.role);
 
@@ -64,7 +66,7 @@ const Login = ({ onLogin }) => {
       <div className="auth-container">
         <div className="auth-header">
           <h1>Welcome Back</h1>
-          <p>Sign in to your HealthCare+ account</p>
+          <p>Sign in to your BlueVitals account</p>
         </div>
 
         <GoogleLoginButton text="Sign in with Google" />

@@ -75,14 +75,14 @@ async function main() {
     ];
 
     const doctorNames = [
-      "Sarah Johnson", "Michael Chen", "Emily Davis", "Rajesh Kumar", "Priya Sharma",
-      "Amit Patel", "Vikram Singh", "Anjali Rao", "Sanjay Dutt", "Meera Nair",
-      "Karan Mehta", "Sneha Gupta", "Arjun Reddy", "Pooja Hegde", "Rohan Joshi",
-      "Deepika Roy", "Vivek Oberoi", "Neha Kakkar", "Aditya Seal", "Tara Sutaria",
-      "Varun Dhawan", "Kiara Advani", "Ranbir Kapoor", "Alia Bhatt", "Sid Malhotra",
-      "Ishaan Khatter", "Janhvi Kapoor", "Sara Ali Khan", "Kartik Aaryan", "Ananya Panday",
-      "Vicky Kaushal", "Katrina Kaif", "Ayushmann Khurrana", "Bhumi Pednekar", "Rajkummar Rao",
-      "Shraddha Kapoor", "Tiger Shroff"
+      "Aarav Gupta", "Ishaan Malhotra", "Vihaan Sharma", "Sai Reddy", "Atharv Kulkarni",
+      "Reyansh Deshmukh", "Arjun Nair", "Krishna Rao", "Shaurya Joshi", "Ayaan Bose",
+      "Aditya Iyer", "Kabir Mehta", "Aryan Mukherjee", "Rudra Agarwal", "Dhruv Patil",
+      "Ananya Deshpande", "Diya Venkatesh", "Saanvi Murthy", "Aaradhya Gopinath", "Myra Saxena",
+      "Vanya Bhatt", "Navya Singh", "Kiara Sen", "Ishani Kar", "Avni Mittal",
+      "Prisha Das", "Aaliyah Khan", "Zara Ahmed", "Inaya Qureshi", "Sana Parveen",
+      "Maria D'Souza", "Sarah Thomas", "Elizabeth Kurian", "Jessica Fernandes", "Grace Mathew",
+      "Sophia George", "Amelia Varghese"
     ];
 
     const hashedPassword = await bcrypt.hash('doctor123', 10);

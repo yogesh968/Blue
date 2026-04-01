@@ -15,6 +15,7 @@ import Services from './pages/Services';
 import Emergency from './pages/Emergency';
 import UserPortal from './pages/UserPortal';
 import DoctorProfile from './pages/DoctorProfile';
+import ChatAssistant from './components/Assistant/ChatAssistant';
 
 
 import RoleSelection from './pages/RoleSelection';
@@ -24,11 +25,17 @@ function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem('user');
-    const storedToken = localStorage.getItem('token');
+    try {
+      const storedUser = localStorage.getItem('user');
+      const storedToken = localStorage.getItem('token');
 
-    if (storedUser && storedToken) {
-      setUser(JSON.parse(storedUser));
+      if (storedUser && storedUser !== 'undefined' && storedToken && storedToken !== 'undefined') {
+        setUser(JSON.parse(storedUser));
+      }
+    } catch (error) {
+      console.error('Error parsing stored user:', error);
+      localStorage.removeItem('user');
+      localStorage.removeItem('token');
     }
   }, []);
 
@@ -104,6 +111,7 @@ function App() {
               <Route path="/hospital-portal/*" element={<Navigate to="/user-portal" replace />} />
             </Routes>
           </main>
+          <ChatAssistant />
         </div>
       </Router>
     </ThemeProvider>

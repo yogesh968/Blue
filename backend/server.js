@@ -72,6 +72,7 @@ app.use('/api/ambulances', require('./routes/ambulances'));
 app.use('/api', require('./routes/doctorLocations'));
 app.use('/api', require('./routes/doctorSchedule'));
 app.use('/api', require('./routes/hospitalManagement'));
+app.use('/api/ai', require('./routes/ai'));
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ 

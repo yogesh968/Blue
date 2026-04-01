@@ -203,11 +203,47 @@ const Navbar = ({ user, onLogout }) => {
               </>
             ) : (
               !isMobile && (
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                  <Button component={Link} to="/login" variant="outlined">
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    component={Link}
+                    to="/login"
+                    sx={{
+                      color: '#3b82f6',
+                      border: '1px solid #dbeafe',
+                      borderRadius: '50px',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      px: 5,
+                      py: 1,
+                      fontSize: '0.95rem',
+                      '&:hover': {
+                        border: '1px solid #3b82f6',
+                        backgroundColor: '#eff6ff',
+                      },
+                    }}
+                  >
                     Login
                   </Button>
-                  <Button component={Link} to="/register" variant="contained">
+                  <Button
+                    component={Link}
+                    to="/register"
+                    variant="contained"
+                    sx={{
+                      backgroundColor: '#3b82f6',
+                      color: 'white',
+                      borderRadius: '50px',
+                      textTransform: 'none',
+                      fontWeight: 600,
+                      px: 5,
+                      py: 1,
+                      fontSize: '0.95rem',
+                      boxShadow: '0 4px 14px 0 rgba(59, 130, 246, 0.39)',
+                      '&:hover': {
+                        backgroundColor: '#2563eb',
+                        boxShadow: '0 6px 20px rgba(59, 130, 246, 0.23)',
+                      },
+                    }}
+                  >
                     Sign Up
                   </Button>
                 </Box>

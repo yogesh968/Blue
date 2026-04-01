@@ -250,28 +250,6 @@ const Emergency = () => {
             </div>
           </div>
 
-          {/* Emergency Tips */}
-          <div className="emergency-tips">
-            <h2>Emergency First Aid Tips</h2>
-            <div className="tips-grid">
-              <div className="tip-card">
-                <h4>💔 Heart Attack</h4>
-                <p>Call 108 immediately. Give aspirin if available. Keep patient calm and seated.</p>
-              </div>
-              <div className="tip-card">
-                <h4>🩸 Severe Bleeding</h4>
-                <p>Apply direct pressure to wound. Elevate injured area above heart level if possible.</p>
-              </div>
-              <div className="tip-card">
-                <h4>🫁 Choking</h4>
-                <p>Perform Heimlich maneuver. Call for help if person becomes unconscious.</p>
-              </div>
-              <div className="tip-card">
-                <h4>🔥 Burns</h4>
-                <p>Cool with running water for 10-20 minutes. Do not apply ice or butter.</p>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

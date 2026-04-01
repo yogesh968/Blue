@@ -3,7 +3,7 @@ const prisma = new PrismaClient();
 
 const getDoctors = async (req, res) => {
   try {
-    const { speciality, city, hospitalId } = req.query;
+    const { speciality, city, hospitalId, limit, featured } = req.query;
 
     let where = {};
     if (speciality) where.speciality = { contains: speciality };
@@ -25,7 +25,8 @@ const getDoctors = async (req, res) => {
           select: { appointments: true, reviews: true }
         }
       },
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      take: limit ? parseInt(limit) : undefined
     });
 
     // Calculate average rating for each doctor

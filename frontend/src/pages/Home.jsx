@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import Logo from '../components/Logo';
 import {
   Container,
   TextField,
@@ -51,12 +52,12 @@ const Home = () => {
           name: doctor.user.name,
           specialty: doctor.speciality,
           experience: `${doctor.experience}+ years`,
-          rating: 4.5,
-          reviews: 0,
+          rating: doctor.averageRating || 4.5,
+          reviews: doctor.totalReviews || 0,
           fee: doctor.fees,
           hospital: doctor.hospital.name,
           image: null,
-          available: true
+          available: doctor.isAvailable !== false
         }));
         setFeaturedDoctors(transformedDoctors);
       } else {
@@ -109,7 +110,7 @@ const Home = () => {
     }
   ];
 
-  const displayDoctors = featuredDoctors.length > 0 ? featuredDoctors : (error ? mockFeaturedDoctors : []);
+  const displayDoctors = (featuredDoctors.length > 0 ? featuredDoctors : (error ? mockFeaturedDoctors : [])).slice(0, 3);
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -446,6 +447,49 @@ const Home = () => {
           </div>
         </Container>
       </section>
+
+      {/* Footer */}
+      <footer className="footer" style={{ backgroundColor: '#1e3a8a', color: 'white', padding: '5rem 0 2rem' }}>
+        <Container>
+          <div className="grid grid-4" style={{ marginBottom: '3rem' }}>
+            <div>
+              <Logo width={160} height={50} style={{ filter: 'brightness(0) invert(1)', marginBottom: '1.5rem' }} />
+              <p style={{ color: '#93c5fd', fontSize: '0.95rem', lineHeight: '1.8' }}>
+                Simplifying healthcare with cutting-edge technology and a patient-first approach. Your health, our priority.
+              </p>
+            </div>
+            <div>
+              <h4 style={{ color: 'white', marginBottom: '1.5rem' }}>Quick Links</h4>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {['Home', 'Doctors', 'Hospitals', 'Emergency'].map(item => (
+                  <li key={item} style={{ marginBottom: '0.75rem' }}>
+                    <Link to={`/${item.toLowerCase()}`} style={{ color: '#93c5fd', textDecoration: 'none', fontSize: '0.9rem' }}>{item}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 style={{ color: 'white', marginBottom: '1.5rem' }}>Services</h4>
+              <ul style={{ listStyle: 'none', padding: 0 }}>
+                {['General Checkup', 'Video Consultation', 'Health Plans', 'Lab Tests'].map(item => (
+                  <li key={item} style={{ marginBottom: '0.75rem' }}>
+                    <a href="#" style={{ color: '#93c5fd', textDecoration: 'none', fontSize: '0.9rem' }}>{item}</a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+            <div>
+              <h4 style={{ color: 'white', marginBottom: '1.5rem' }}>Contact Us</h4>
+              <p style={{ color: '#93c5fd', fontSize: '0.9rem', marginBottom: '0.75rem' }}>support@bluevitals.com</p>
+              <p style={{ color: '#93c5fd', fontSize: '0.9rem', marginBottom: '0.75rem' }}>1800-123-4567</p>
+              <p style={{ color: '#93c5fd', fontSize: '0.9rem' }}>Mumbai, India</p>
+            </div>
+          </div>
+          <div style={{ borderTop: '1px solid rgba(147, 197, 253, 0.2)', paddingTop: '2rem', textAlign: 'center', fontSize: '0.85rem', color: '#93c5fd' }}>
+            © {new Date().getFullYear()} BlueVitals Healthcare. All rights reserved. Registered Medical Facilitator.
+          </div>
+        </Container>
+      </footer>
     </div>
   );
 };

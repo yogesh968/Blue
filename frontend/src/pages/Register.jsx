@@ -36,8 +36,10 @@ const Register = ({ onLogin }) => {
 
       if (response.ok) {
         localStorage.setItem('token', data.token);
-        localStorage.setItem('user', JSON.stringify(data.user));
-        onLogin(data.user);
+        if (data.user) {
+          localStorage.setItem('user', JSON.stringify(data.user));
+          onLogin(data.user);
+        }
 
         // Check if there's a pending appointment
         const pendingAppointment = localStorage.getItem('pendingAppointment');

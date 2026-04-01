@@ -1,19 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&display=swap');
 
 :root {
-  /* Natural / Serene Palette */
-  /* Primary: Muted Teal / Ocean */
-  --color-primary-50: #f0f9fa;
-  --color-primary-100: #ccf0f3;
-  --color-primary-200: #99e0e6;
-  --color-primary-300: #5cc8d3;
-  --color-primary-400: #2aacbd;
-  --color-primary-500: #0e8f9f;
-  --color-primary-600: #0a7382;
-  /* Main Brand Color */
-  --color-primary-700: #0d5d6a;
-  --color-primary-800: #104b56;
-  --color-primary-900: #113f49;
+  /* Professional Blue Palette */
+  --color-primary-50: #eff6ff;
+  --color-primary-100: #dbeafe;
+  --color-primary-200: #bfdbfe;
+  --color-primary-300: #93c5fd;
+  --color-primary-400: #60a5fa;
+  --color-primary-500: #3b82f6;
+  /* Core Action Blue */
+  --color-primary-600: #2563eb;
+  --color-primary-700: #1d4ed8;
+  --color-primary-800: #1e40af;
+  --color-primary-900: #1e3a8a;
 
   /* Secondary: Sage / Nature Green */
   --color-secondary-50: #f4fbf7;
@@ -56,6 +55,10 @@
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
   --radius-sm: 0.5rem;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 * {
