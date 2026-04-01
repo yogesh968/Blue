@@ -22,6 +22,7 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
 
   const [availableSlots, setAvailableSlots] = useState([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
+  const [bookingLoading, setBookingLoading] = useState(false);
 
   // Fetch available slots from backend
   const fetchAvailableSlots = async (date) => {
@@ -104,11 +105,13 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
   const handleBooking = async () => {
     try {
       const token = localStorage.getItem('token');
-
+      
       if (!token) {
         toast.error('Please login to book appointment');
         return;
       }
+
+      setBookingLoading(true);
 
       // Create appointment directly
       const appointmentData = {
@@ -132,6 +135,8 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
     } catch (error) {
       console.error('Booking error:', error);
       toast.error(error.message || 'Failed to book appointment');
+    } finally {
+      setBookingLoading(false);
     }
   };
 
@@ -425,8 +430,19 @@ const AppointmentBooking = ({ doctor, onClose, onSuccess }) => {
                 Next
               </button>
             ) : (
-              <button className="btn-primary" onClick={handleBooking}>
-                Confirm & Pay ₹{doctor.fee}
+              <button 
+                className={`btn-primary ${bookingLoading ? 'loading' : ''}`} 
+                onClick={handleBooking}
+                disabled={bookingLoading}
+              >
+                {bookingLoading ? (
+                  <span className="btn-loader-content">
+                    <span className="btn-spinner"></span>
+                    Processing...
+                  </span>
+                ) : (
+                  `Confirm & Pay ₹${doctor.fee}`
+                )}
               </button>
             )}
           </div>
