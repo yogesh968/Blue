@@ -19,7 +19,7 @@ let groqClient;
 const getGroqClient = async () => {
     if (groqClient) return groqClient;
     await groqInitPromise;
-    groqClient = new Groq({
+     groqClient = new Groq({
          apiKey: process.env.GROQ_API_KEY
 });
     return groqClient;
