@@ -3,8 +3,7 @@ const router = express.Router();
 let Groq;
 let groqInitPromise = (async () => {
   try {
-    const sdk = await import('groq-sdk');
-    Groq = sdk.Groq || sdk.default || sdk;
+    const Groq = require('groq-sdk');
     console.log('Successfully loaded Groq SDK via dynamic import');
   } catch (err) {
     console.error('CRITICAL: Failed to load Groq SDK:', err);
@@ -21,8 +20,8 @@ const getGroqClient = async () => {
     if (groqClient) return groqClient;
     await groqInitPromise;
     groqClient = new Groq({
-      apiKey: process.env.GROQ_API_KEY || 'dummy_key_for_build'
-    });
+         apiKey: process.env.GROQ_API_KEY
+});
     return groqClient;
 };
 

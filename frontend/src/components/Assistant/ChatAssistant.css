@@ -7,9 +7,12 @@
 }
 
 .assistant-btn {
-  width: 65px;
-  height: 65px;
+  width: 55px;
+  height: 55px;
   border-radius: 50%;
+  background: linear-gradient(135deg, #3b82f6, #8b5cf6, #ec4899);
+  background-size: 200% 200%;
+  animation: gradientAnimation 5s ease infinite;
   background: linear-gradient(135deg, #3b82f6, #2563eb);
   border: none;
   cursor: pointer;
