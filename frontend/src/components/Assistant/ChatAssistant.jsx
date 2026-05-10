@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
+import api from '../../services/api';
 import './ChatAssistant.css';
 
 const ChatAssistant = () => {
@@ -31,16 +32,9 @@ const ChatAssistant = () => {
             const token = localStorage.getItem('token');
             const patientId = localStorage.getItem('patientId');
 
-            const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:3001/api'}/ai/chat`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': token ? `Bearer ${token}` : ''
-                },
-                body: JSON.stringify({ message: inputValue, patientId })
-            });
-
+            const response = await api.sendChatMessage(inputValue, patientId, token);
             const data = await response.json();
+            
             if (data.response) {
                 setMessages(prev => [...prev, { role: 'bot', content: data.response }]);
             } else {

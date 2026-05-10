@@ -6,6 +6,7 @@ import { Toaster } from 'react-hot-toast';
 import theme from './theme/theme';
 import Navbar from './components/Navbar';
 import ProtectedRoute from './components/ProtectedRoute';
+import ErrorBoundary from './components/ErrorBoundary';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
@@ -16,8 +17,6 @@ import Emergency from './pages/Emergency';
 import UserPortal from './pages/UserPortal';
 import DoctorProfile from './pages/DoctorProfile';
 import ChatAssistant from './components/Assistant/ChatAssistant';
-
-
 import RoleSelection from './pages/RoleSelection';
 import AuthSuccess from './pages/AuthSuccess';
 
@@ -63,14 +62,15 @@ function App() {
 
 
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-        <div className="App">
-          <Toaster position="top-right" />
-          <Navbar user={user} onLogout={handleLogout} />
-          <main>
-            <Routes>
+    <ErrorBoundary>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
+        <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+          <div className="App">
+            <Toaster position="top-right" />
+            <Navbar user={user} onLogout={handleLogout} />
+            <main>
+              <Routes>
               <Route path="/" element={<Home />} />
               <Route
                 path="/login"
@@ -109,12 +109,13 @@ function App() {
               {/* Redirect any unknown role or other portal attempts to user portal or home */}
               <Route path="/doctor-portal/*" element={<Navigate to="/user-portal" replace />} />
               <Route path="/hospital-portal/*" element={<Navigate to="/user-portal" replace />} />
-            </Routes>
-          </main>
-          <ChatAssistant />
-        </div>
-      </Router>
-    </ThemeProvider>
+              </Routes>
+            </main>
+            <ChatAssistant />
+          </div>
+        </Router>
+      </ThemeProvider>
+    </ErrorBoundary>
   );
 }
 

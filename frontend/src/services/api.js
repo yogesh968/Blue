@@ -268,6 +268,17 @@ const api = {
     }).then(handleResponse).catch(err => {
       console.error('Profile creation error:', err);
       throw err;
+    }),
+
+  // AI Chat endpoint
+  sendChatMessage: (message, patientId, token) =>
+    fetch(`${API_BASE_URL}/ai/chat`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : ''
+      },
+      body: JSON.stringify({ message, patientId })
     })
 };
 

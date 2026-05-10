@@ -31,23 +31,37 @@ const UserPortal = () => {
   const [error, setError] = useState(null);
   const [showBedBookingForm, setShowBedBookingForm] = useState(false);
   const [selectedHospital, setSelectedHospital] = useState(null);
-
   const [hospitals, setHospitals] = useState([]);
   const [showHospitalSelector, setShowHospitalSelector] = useState(false);
 
+  // Ensure component always renders by setting loading to false after timeout
   useEffect(() => {
-    // Get user from local storage
-    const storedUser = localStorage.getItem('user');
-    if (storedUser && storedUser !== 'undefined') {
-      try {
-        setUser(JSON.parse(storedUser));
-      } catch (e) {
-        console.error("Error parsing user from localStorage", e);
+    const timeout = setTimeout(() => {
+      if (loading) {
+        console.warn('Loading timeout - forcing render');
+        setLoading(false);
       }
-    }
+    }, 5000);
+    return () => clearTimeout(timeout);
+  }, [loading]);
 
-    fetchUserData();
-    fetchHospitals();
+  useEffect(() => {
+    const fetchData = async () => {
+      // Get user from local storage
+      const storedUser = localStorage.getItem('user');
+      if (storedUser && storedUser !== 'undefined') {
+        try {
+          setUser(JSON.parse(storedUser));
+        } catch (e) {
+          console.error("Error parsing user from localStorage", e);
+        }
+      }
+
+      await fetchUserData();
+      await fetchHospitals();
+    };
+
+    fetchData();
   }, []);
 
   const fetchHospitals = async () => {
@@ -84,56 +98,77 @@ const UserPortal = () => {
       const token = localStorage.getItem('token');
 
       if (!token) {
-        setError('Please login to view your data');
+        setLoading(false);
         return;
       }
 
       // Use Promise.allSettled to handle partial failures
       const [appointmentsRes, bedBookingsRes, paymentsRes] = await Promise.allSettled([
-        api.getAppointments(token),
-        api.getBedBookings(token),
-        api.getPayments(token)
+        api.getAppointments(token).catch(err => ({ ok: false, error: err })),
+        api.getBedBookings(token).catch(err => ({ ok: false, error: err })),
+        api.getPayments(token).catch(err => ({ ok: false, error: err }))
       ]);
 
       // Handle Appointments
       if (appointmentsRes.status === 'fulfilled' && appointmentsRes.value.ok) {
-        const appointmentsData = await appointmentsRes.value.json();
-        const transformedAppointments = appointmentsData.map(apt => {
-          const appointmentDate = new Date(apt.appointmentDate);
-          return {
-            id: apt.id,
-            doctorId: apt.doctor.id,
-            doctorName: apt.doctor.user.name,
-
-            specialty: apt.doctor.speciality,
-            date: appointmentDate.toLocaleDateString(),
-            time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            hospital: apt.doctor.hospital?.name || 'Hospital',
-            location: apt.doctor.hospital?.city || 'Location',
-            fee: apt.doctor.fees,
-            status: apt.status || 'PENDING',
-            reason: apt.reason
-          };
-        });
-        setAppointments(transformedAppointments);
+        try {
+          const appointmentsData = await appointmentsRes.value.json();
+          const transformedAppointments = appointmentsData.map(apt => {
+            const appointmentDate = new Date(apt.appointmentDate);
+            return {
+              id: apt.id,
+              doctorId: apt.doctor.id,
+              doctorName: apt.doctor.user.name,
+              specialty: apt.doctor.speciality,
+              date: appointmentDate.toLocaleDateString(),
+              time: appointmentDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              hospital: apt.doctor.hospital?.name || 'Hospital',
+              location: apt.doctor.hospital?.city || 'Location',
+              fee: apt.doctor.fees,
+              status: apt.status || 'PENDING',
+              reason: apt.reason
+            };
+          });
+          setAppointments(transformedAppointments);
+        } catch (err) {
+          console.error('Error processing appointments:', err);
+          setAppointments([]);
+        }
+      } else {
+        setAppointments([]);
       }
 
       // Handle Bed Bookings
       if (bedBookingsRes.status === 'fulfilled' && bedBookingsRes.value.ok) {
-        const bedBookingsData = await bedBookingsRes.value.json();
-        setBedBookings(bedBookingsData);
+        try {
+          const bedBookingsData = await bedBookingsRes.value.json();
+          setBedBookings(bedBookingsData);
+        } catch (err) {
+          console.error('Error processing bed bookings:', err);
+          setBedBookings([]);
+        }
+      } else {
+        setBedBookings([]);
       }
 
       // Handle Payments/Bills
       if (paymentsRes.status === 'fulfilled' && paymentsRes.value.ok) {
-        const paymentsData = await paymentsRes.value.json();
-        setBills(paymentsData);
+        try {
+          const paymentsData = await paymentsRes.value.json();
+          setBills(paymentsData);
+        } catch (err) {
+          console.error('Error processing payments:', err);
+          setBills([]);
+        }
       } else {
         setBills([]);
       }
 
     } catch (err) {
       console.error("Error fetching data", err);
+      setAppointments([]);
+      setBedBookings([]);
+      setBills([]);
     } finally {
       setLoading(false);
     }
@@ -216,10 +251,22 @@ const UserPortal = () => {
           <div className="pulse-ring"></div>
           <Activity size={40} className="loader-icon" />
         </div>
-        <p className="loading-text">Synchronizing your medical records...</p>
+        <p className="loading-text">Loading your dashboard...</p>
         <div className="loading-progress-bar">
           <div className="progress-fill"></div>
         </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="user-portal-loading premium-loading-container">
+        <AlertCircle size={48} color="#ef4444" />
+        <h2 style={{ marginTop: '20px' }}>{error}</h2>
+        <Link to="/login" className="btn btn-primary" style={{ marginTop: '20px' }}>
+          Go to Login
+        </Link>
       </div>
     );
   }
